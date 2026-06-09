@@ -55,6 +55,15 @@ tasks collaboratively.
 - Ensure text never overlaps or overflows buttons/cards on mobile or desktop.
 - Support keyboard navigation and visible focus states for voting and room flow.
 
+## Design Context
+
+- Read `PRODUCT.md` before design work; it captures the default `product`
+  register, users, purpose, brand personality, anti-references, design
+  principles, and accessibility baseline.
+- Read `DESIGN.md` for the starter visual direction. Re-run
+  `/impeccable document` after Angular UI code exists to replace the seed with
+  extracted tokens and component patterns.
+
 ## Quality Bar
 
 - Run formatting, linting, unit tests, and build checks before finishing changes
