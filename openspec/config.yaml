@@ -1,20 +1,76 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Project: CoffePlanningPoker is an Angular 21 planning poker app for teams running live collaborative estimation sessions.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Product direction:
+  - The first screen is usable app UI, not a marketing landing page.
+  - Core workflow: create or join a room, add or select tasks, vote with estimate cards, reveal votes, discuss differences, and save the final estimate.
+  - Optimize for live team sessions with clear state, fast interactions, accessible controls, and predictable recovery after refresh or reconnect.
+  - Keep UI copy concise and task-focused. Avoid instructional copy unless the user would be blocked without it.
+
+  Product and design register:
+  - Register: product.
+  - Users: facilitators and participants estimating tasks during focused team meetings.
+  - Personality: warm, playful, collaborative, and coffee-session flavored while still reading as a reliable work tool.
+  - Avoid casino poker cues, generic SaaS hero pages, toy-like card-game clutter, decorative card grids, and heavy dark dashboard gloom.
+  - Follow PRODUCT.md for product context and DESIGN.md for visual direction when a change affects the UI.
+
+  Technical expectations:
+  - Use Angular 21 with standalone components, strict TypeScript, and modern Angular control flow.
+  - Prefer signals for local reactive state. Use RxJS at natural stream boundaries such as sockets, HTTP, timers, and router events.
+  - Keep components small and feature-oriented.
+  - Use reactive forms for complex inputs and simple template bindings only for small local controls.
+  - Do not add broad state-management libraries unless services plus signals have clearly become insufficient.
+
+  Feature and architecture guidance:
+  - Suggested feature areas are rooms, session, tasks, identity, and shared.
+  - rooms owns room creation, joining, membership, and presence.
+  - session owns estimation flow, voting, reveal, and rounds.
+  - tasks owns backlog/task list, task selection, and final estimate.
+  - identity owns display name, avatar/color, and lightweight preferences.
+  - shared is only for reusable UI primitives, pipes, directives, and utilities with real reuse.
+  - Keep planning poker domain rules close to the feature that owns them.
+  - Model estimation cards, voting state, participants, rounds, room sessions, and participant votes with explicit TypeScript types.
+  - Treat backend, realtime, and persistence APIs as replaceable boundaries behind Angular services.
+
+  UI standards:
+  - The interface should feel like a focused collaboration tool: dense enough for repeated use, calm, readable, and responsive.
+  - Use real controls for app actions: icon buttons for common tools, tabs for views, toggles for binary settings, menus for option sets, and dialogs for focused decisions.
+  - Cards are appropriate for players, estimate cards, tasks, dialogs, and repeated list items, but avoid decorative card-heavy layouts.
+  - Ensure text never overlaps or overflows buttons/cards on mobile or desktop.
+  - Support keyboard navigation, visible focus states, semantic controls, WCAG AA contrast, reduced-motion preferences, and accessible room/voting flows.
+
+  Quality bar:
+  - Keep changes scoped and preserve unrelated user work.
+  - Add focused tests for domain rules, voting transitions, room/session services, and important component interactions.
+  - Prefer deterministic tests over timer-heavy or brittle DOM assertions.
+  - Run formatting, linting, unit tests, and build checks when the relevant scripts exist.
+  - For frontend changes, verify the app in a browser at desktop and mobile widths when a dev server can run.
+  - Keep files ASCII unless a file already uses another character set.
+
+rules:
+  proposal:
+    - "Focus on the user-visible planning poker outcome and the live-session problem being solved."
+    - "Include clear non-goals when a change could otherwise expand into unrelated room, voting, task, identity, backend, or design work."
+    - "Name capabilities around durable domain behavior, such as room-collaboration, voting-rounds, task-estimation, identity-presence, or session-recovery."
+    - "Call out impact on routing, first-screen workflow, realtime/persistence boundaries, and refresh/reconnect recovery when relevant."
+    - "Keep proposals concise and avoid implementation detail that belongs in design.md."
+  specs:
+    - "Write requirements as observable product behavior using SHALL language and concrete scenarios."
+    - "Cover facilitator and participant flows separately when permissions, state, or recovery differ."
+    - "Include accessible keyboard and focus behavior for room flow, voting, reveal, dialogs, and task controls when UI is affected."
+    - "Specify refresh, reconnect, duplicate join, invalid invite, disconnected socket, empty state, and error behavior when relevant."
+    - "Use explicit planning poker domain language: PlanningRound, EstimateCard, ParticipantVote, RoomSession, Participant, Task, and FinalEstimate."
+  design:
+    - "Keep domain rules in the owning feature area instead of spreading them across components."
+    - "Prefer Angular standalone components, signals for local state, and RxJS for socket, HTTP, timer, and router boundaries."
+    - "Define replaceable service boundaries for backend, realtime, and persistence APIs."
+    - "Explain component/service placement under rooms, session, tasks, identity, or shared."
+    - "Describe accessibility, responsive behavior, error recovery, and test strategy for user-facing changes."
+    - "Do not introduce broad state management or new dependencies without a specific need and justification."
+  tasks:
+    - "Break work into small, verifiable implementation tasks grouped by capability or feature area."
+    - "Include focused tests for domain rules, voting transitions, room/session services, and important component interactions when applicable."
+    - "Include verification tasks for formatting, linting, unit tests, build, and browser checks at desktop and mobile widths when UI changes."
+    - "Keep tasks scoped to the accepted proposal and avoid unrelated refactors or design churn."
