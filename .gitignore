@@ -19,6 +19,10 @@
 /.angular-cli.json
 /.ng/
 
+# .NET build artefacts
+bin/
+obj/
+
 # TypeScript cache
 *.tsbuildinfo
 

@@ -168,6 +168,15 @@
   margin-block-start: var(--space-4);
 }
 
+.workbench.is-entry {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.workbench.is-entry .setup-panel {
+  min-width: 0;
+}
+
 .panel,
 .recovery-panel {
   border-radius: var(--radius-xl);
@@ -291,6 +300,33 @@ h3 {
 .task-form {
   display: grid;
   gap: var(--space-3);
+}
+
+.active-room-summary {
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-raised);
+  padding: var(--space-4);
+}
+
+.active-room-summary > div {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-1);
+}
+
+.active-room-summary strong,
+.active-room-summary span,
+.room-code,
+.room-state {
+  overflow-wrap: anywhere;
+}
+
+.active-room-summary span {
+  color: var(--color-muted);
+  font-size: 0.88rem;
 }
 
 .task-form {

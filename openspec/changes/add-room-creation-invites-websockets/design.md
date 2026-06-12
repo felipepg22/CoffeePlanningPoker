@@ -4,7 +4,7 @@ The current Angular app is a single standalone root component with local signals
 
 Room creation and invitations are foundational because every later collaborative action depends on a shared room identity, stable participant identity, and realtime membership updates. Facilitators need to create a session quickly, invite teammates by link or code, and recover the room after refresh. Participants need to join with a display name and understand whether the room is connected, reconnecting, invalid, or unavailable.
 
-The implementation must preserve the product direction: warm, focused, task-oriented UI; concise copy; accessible controls; and predictable recovery during live meetings. Backend, realtime, and persistence concerns should remain behind replaceable Angular service boundaries so the initial implementation can evolve without coupling components directly to a specific transport or storage mechanism.
+The implementation must preserve the product direction: warm, focused, task-oriented UI; concise copy; accessible controls; and predictable recovery during live meetings. Backend, realtime, and persistence concerns should remain behind replaceable service boundaries so the initial implementation can evolve without coupling components directly to a specific transport or storage mechanism. This change includes a minimal ASP.NET Core SignalR backend so room membership works across browsers during local development.
 
 ## Goals / Non-Goals
 
@@ -14,7 +14,7 @@ The implementation must preserve the product direction: warm, focused, task-orie
 - Create a room only after an explicit user action with a valid room name and participant display name, then receive a stable room code plus shareable invite link.
 - Ask for a participant display name after the user chooses to create a room or enters an existing room code, before entering the session.
 - Join a room from either an invite URL or typed room code with a lightweight display name.
-- Keep participant membership and presence synchronized through WebSocket room events.
+- Keep participant membership and presence synchronized through SignalR room events.
 - Recover a recently joined room after refresh or reconnect using persisted identity/session anchors.
 - Model room, participant, invite, presence, connection, and room error states with explicit TypeScript types.
 - Keep room collaboration rules in the `rooms` feature and lightweight display-name preferences in `identity`.
@@ -25,7 +25,7 @@ The implementation must preserve the product direction: warm, focused, task-orie
 - Realtime task editing, vote synchronization, reveal synchronization, and final estimate persistence beyond the room anchors needed for this change.
 - Authentication, accounts, roles beyond facilitator/participant room behavior, or long-lived user profiles.
 - A general state-management library or global event bus.
-- A production backend implementation inside the Angular app. The app should define client boundaries and contracts, not own server internals.
+- Persistent database storage, authentication, accounts, deployment automation, or production hosting work.
 - Complex invite permissions, expiring invite management UI, or private room administration beyond invalid/expired invite handling.
 
 ## Decisions
@@ -38,7 +38,7 @@ Initial room-facing pieces:
 
 - `rooms/models/room-session.ts` for `RoomSession`, `RoomCode`, `RoomInvite`, `RoomConnectionState`, `ParticipantPresence`, and room error types.
 - `rooms/services/room.service.ts` as the component-facing facade with signal-backed state and command methods such as `createRoom`, `joinRoom`, `resumeRoom`, `leaveRoom`, and `copyInviteLink`.
-- `rooms/services/room-gateway.ts` for the WebSocket transport boundary.
+- `rooms/services/room-gateway.ts` for the SignalR transport boundary.
 - `rooms/services/room-persistence.ts` for refresh/reconnect anchors stored in browser storage.
 - `identity/services/identity.service.ts` for display name, participant id, and optional avatar/color preferences.
 - Focused components for create/join controls and room membership display once extraction is useful.
@@ -74,24 +74,33 @@ Rationale: invite links and reload recovery are core requirements. The official 
 
 Alternative considered: manually parse `window.location.pathname` and keep the app single-route. This avoids adding router setup but creates fragile refresh and navigation behavior as the app grows.
 
-### 4. Define a small, idempotent room realtime contract
+### 4. Add a minimal ASP.NET Core SignalR room backend
+
+The repo will include `server/CoffePlanningPoker.Api`, an ASP.NET Core Minimal API project with a SignalR hub at `/hubs/rooms`. The backend will own room codes, invite links, participants, presence, resume tokens, and room errors in an in-memory store. It will expose CORS for the Angular dev server at `http://localhost:4200` and listen on `http://localhost:5050` for local development.
+
+Rationale: real multi-browser collaboration needs server-owned room state. SignalR keeps the implementation small while still using WebSockets where available, and its groups map directly to room membership.
+
+Alternative considered: a frontend-only gateway fallback. That is useful for UI prototyping but cannot validate cross-device joins, backend-owned presence, or resume-token behavior.
+
+Alternative considered: raw WebSockets. This keeps the wire format minimal but requires custom connection routing, group membership, reconnect, and event dispatch plumbing that SignalR already provides.
+
+### 5. Define a small, idempotent room realtime contract
 
 The client transport should support an explicit message contract even if the concrete backend changes later.
 
-Client commands:
+SignalR hub methods:
 
-- `create_room` with room name and facilitator identity, sent only after the user chooses to create a room and submits a display name.
-- `join_room` with room code and participant identity.
-- `resume_room` with room code, participant id, and resume token when available.
-- `leave_room` for voluntary exits.
-- `heartbeat` or transport-level ping support for presence freshness.
+- `CreateRoom` with room name and facilitator identity, sent only after the user chooses to create a room and submits a display name.
+- `JoinRoom` with room code and participant identity.
+- `ResumeRoom` with room code, participant id, and resume token when available.
+- `LeaveRoom` for voluntary exits.
+- `Heartbeat` for presence freshness.
 
-Server events:
+SignalR server events:
 
-- `room_created` with room code, invite URL, participant id, and resume token.
-- `room_snapshot` with current room metadata, participants, and presence states.
-- `participant_joined`, `participant_left`, and `presence_changed` for live membership updates.
-- `room_error` for invalid invite, expired room, duplicate or rejected join, unavailable room, and transport failures.
+- `RoomSnapshot` with current room metadata, participants, presence states, local participant id, and resume token.
+- `ParticipantJoined`, `ParticipantLeft`, and `PresenceChanged` for live membership updates.
+- `RoomError` for invalid invite, expired room, duplicate or rejected join, unavailable room, and transport failures.
 
 Joins and resumes should be idempotent by participant id plus room code. Display names are not unique identifiers. Repeating a join from the same persisted participant should update that participant connection instead of creating duplicate rows.
 
@@ -99,7 +108,7 @@ Rationale: snapshots make reconnect deterministic, while delta events keep live 
 
 Alternative considered: client-only rooms using local state and copied codes. That cannot satisfy shared membership, joins, leaves, or reconnect semantics across teammates.
 
-### 5. Persist only minimal recovery anchors in browser storage
+### 6. Persist only minimal recovery anchors in browser storage
 
 `RoomPersistence` should store the minimum data needed to recover a recent session:
 
@@ -115,7 +124,7 @@ Rationale: minimal persistence supports refresh and reconnect without creating s
 
 Alternative considered: persist full room state locally. That improves offline display but risks showing stale membership and conflicts with the realtime source of truth.
 
-### 6. Treat presence as explicit state, not inferred copy
+### 7. Treat presence as explicit state, not inferred copy
 
 Participants should have a presence state such as `connected`, `reconnecting`, `disconnected`, or `left`. UI labels should remain concise, for example `Here`, `Reconnecting`, or `Left`, with hidden votes still hidden until reveal in later session work.
 
@@ -125,7 +134,7 @@ Rationale: live sessions need clear recovery state. Separating local connection 
 
 Alternative considered: infer presence only from socket connect/disconnect events. That misses transient reconnects, duplicate tabs, and backend-side stale connection detection.
 
-### 7. Keep UI flow dense, accessible, and recovery-oriented
+### 8. Keep UI flow dense, accessible, and recovery-oriented
 
 The first screen should continue to be app UI, but it should start in a neutral room entry state. The primary visible controls should be an input for a room code and an explicit action to create a new room. Creating a room should require a room name and participant display name; joining a room should require a participant display name. Invite code, room state, participants, and connection status should become visible only once a room is active and the required names have been submitted. Error states should be actionable and concise:
 
@@ -140,9 +149,9 @@ Rationale: the app is used during focused meetings, so room state should be obvi
 
 Alternative considered: a separate onboarding or marketing-like landing view before room creation. This conflicts with the product requirement that the first screen starts in the workflow.
 
-### 8. Test room rules independently from the WebSocket transport
+### 9. Test room rules independently from the SignalR transport
 
-Unit tests should cover room-code validation, display-name validation, invite URL parsing, idempotent participant merge behavior, presence transitions, persistence TTL cleanup, and recovery fallback rules. `RoomService` tests should use a fake `RoomGateway` so socket timing stays deterministic. Component tests should cover create, join, invalid invite, reconnecting, and copied-invite states with accessible labels and messages.
+Unit tests should cover backend room rules, room-code validation, display-name validation, invite URL parsing, idempotent participant merge behavior, presence transitions, persistence TTL cleanup, and recovery fallback rules. `RoomService` tests should use a fake `RoomGateway` so socket timing stays deterministic. Component tests should cover create, join, invalid invite, reconnecting, and copied-invite states with accessible labels and messages.
 
 Rationale: room collaboration has failure modes that are easier to verify through domain and service tests than through brittle DOM or timer-heavy socket tests.
 
@@ -150,31 +159,32 @@ Alternative considered: validate mostly through end-to-end browser flows. Those 
 
 ## Risks / Trade-offs
 
-- [Backend contract may change] -> Keep `RoomGateway` and message mapping isolated so component and domain code do not depend on wire-level shapes.
+- [Backend contract may change] -> Keep `RoomGateway` and SignalR message mapping isolated so component and domain code do not depend on hub-level shapes.
 - [Reconnect logic can create duplicate participants] -> Use stable participant ids, resume tokens, and idempotent server commands; test duplicate join and refresh cases directly.
 - [Browser storage can become stale or expose display names on shared devices] -> Store only minimal anchors, apply a TTL, and provide leave/clear behavior when the user exits a room.
 - [Adding router setup increases initial app structure] -> Limit routes to `/` and `/rooms/:roomCode` until more navigation exists; keep route components thin.
 - [Presence updates can become noisy for assistive technology] -> Announce only meaningful room state changes through polite live regions and avoid announcing heartbeat churn.
 - [The UI can over-index on room setup and crowd out voting] -> Keep the initial create/join entry compact, collapse setup controls once connected, and preserve the central round/task/voting area as the primary workspace.
-- [WebSocket retry behavior can become timer-heavy and flaky in tests] -> Put retry timing behind the gateway boundary and use fake schedulers or manual fake events in service tests.
+- [SignalR retry behavior can become timer-heavy and flaky in tests] -> Put retry timing behind the gateway boundary and use fake gateway events in service tests.
 
 ## Migration Plan
 
 1. Add routing and room URL parsing while preserving the current first-screen layout.
 2. Extract room and identity types from the root component into `rooms` and `identity` feature areas.
-3. Add `RoomService`, `RoomGateway`, and `RoomPersistence` with fake or configurable endpoints until the backend URL is available.
-4. Replace any pre-created mocked room state with a neutral entry state that asks the user to create a room or enter a room code.
-5. Add a required display-name step after create-room selection or room-code entry and before session participation.
-6. Replace mocked create/join/copy invite behavior with service calls and explicit pending/error states.
-7. Replace mocked participant membership with room snapshot and membership events.
-8. Add deterministic unit tests for room rules, service state transitions, persistence, and important component interactions.
-9. Run build checks and verify desktop/mobile room flows in the browser.
+3. Add the ASP.NET Core SignalR API with an in-memory room store and local dev CORS.
+4. Add `RoomService`, `RoomGateway`, and `RoomPersistence` using the local SignalR endpoint by default.
+5. Replace any pre-created mocked room state with a neutral entry state that asks the user to create a room or enter a room code.
+6. Add a required display-name step after create-room selection or room-code entry and before session participation.
+7. Replace mocked create/join/copy invite behavior with service calls and explicit pending/error states.
+8. Replace mocked participant membership with room snapshot and membership events.
+9. Add deterministic unit tests for backend room rules, frontend room rules, service state transitions, persistence, and important component interactions.
+10. Run build checks and verify desktop/mobile room flows in the browser.
 
-Rollback is straightforward while this is client-side: keep the existing mocked workflow intact until the service-backed flow is wired, then revert the route/provider/service integration if the realtime contract blocks implementation. Persisted recovery anchors can be safely ignored or cleared because they are not authoritative room data.
+Rollback is straightforward while persistence remains in-memory: keep the existing mocked workflow intact until the service-backed flow is wired, then revert the route/provider/service integration and backend project if the realtime contract blocks implementation. Persisted recovery anchors can be safely ignored or cleared because they are not authoritative room data.
 
 ## Open Questions
 
-- What backend endpoint and WebSocket URL should the Angular app target for local development and deployed environments?
+- What deployed backend URL should the Angular app target after local development?
 - Should room codes be generated by the backend only, or can the client request a human-friendly prefix such as the current `BREW-482` style?
 - What is the intended room lifetime or expiration policy for invalid/expired invite handling?
 - Should a facilitator be a distinct role in the room contract now, or should facilitator-specific permissions wait for later voting/reveal synchronization work?

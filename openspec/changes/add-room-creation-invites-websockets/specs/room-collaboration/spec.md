@@ -69,7 +69,11 @@ The system SHALL allow a Participant to join a RoomSession using either a valid 
 - **THEN** the system keeps the typed value available for correction and does not attempt to enter a RoomSession
 
 ### Requirement: Membership and Presence Synchronize Through Realtime Events
-The system SHALL synchronize active RoomSession membership and ParticipantPresence from realtime room snapshots and membership events without requiring manual refresh.
+The system SHALL synchronize active RoomSession membership and ParticipantPresence from ASP.NET Core SignalR room snapshots and membership events without requiring manual refresh.
+
+#### Scenario: Backend owns shared room state
+- **WHEN** two browser clients connect to the same RoomSession through the SignalR hub
+- **THEN** both clients receive the same backend-owned RoomSession membership state
 
 #### Scenario: Room snapshot is received
 - **WHEN** the system receives a room snapshot for the active RoomSession
