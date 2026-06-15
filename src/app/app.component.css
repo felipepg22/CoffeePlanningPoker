@@ -97,7 +97,6 @@
 .brand-name,
 .brand-context,
 .section-kicker,
-.stage-header p,
 .form-message,
 .participant-copy small,
 .task-row small,
@@ -426,8 +425,13 @@ button:focus-visible,
 
 .stage-panel {
   display: grid;
-  gap: var(--space-5);
-  background: var(--color-surface-raised);
+  gap: clamp(var(--space-4), 2vw, var(--space-6));
+}
+
+.table-stage {
+  border-color: oklch(0.5 0.08 52 / 0.45);
+  background: linear-gradient(160deg, oklch(0.2 0.055 38), oklch(0.31 0.075 48) 48%, oklch(0.17 0.05 258));
+  color: var(--color-ink-inverse);
 }
 
 .stage-header {
@@ -435,25 +439,47 @@ button:focus-visible,
   gap: var(--space-5);
 }
 
-.stage-header p {
-  max-width: 68ch;
-  color: var(--color-muted);
-  text-wrap: pretty;
+.table-sign {
+  justify-self: center;
+  width: 100%;
+  max-width: 42rem;
+  border: 1px solid oklch(0.82 0.09 70 / 0.32);
+  border-radius: var(--radius-lg);
+  background: oklch(0.16 0.05 258 / 0.86);
+  padding: var(--space-3) var(--space-4);
 }
 
-.stage-header h2 {
-  margin-block: var(--space-1) var(--space-2);
-  font-size: 1.7rem;
+.table-sign > div:first-child {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.table-sign .section-kicker,
+.table-vote-area .section-kicker {
+  color: oklch(0.86 0.08 72);
+}
+
+.table-sign strong {
+  color: var(--color-ink-inverse);
+  font-size: 1.05rem;
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.table-sign span {
+  color: oklch(0.88 0.025 82);
 }
 
 .estimate-summary,
 .suggested-estimate {
   display: grid;
-  min-width: 5.7rem;
+  min-width: 5.6rem;
   place-items: center;
   border-radius: var(--radius-lg);
-  background: var(--color-primary-wash);
-  color: var(--color-primary-hover);
+  border: 1px solid oklch(0.74 0.09 72 / 0.48);
+  background: oklch(0.91 0.07 66);
+  color: var(--color-coffee-hover);
   padding: var(--space-3);
   text-align: center;
 }
@@ -467,24 +493,62 @@ button:focus-visible,
 
 .estimate-summary small,
 .suggested-estimate small {
-  color: var(--color-primary-hover);
+  color: var(--color-coffee-hover);
   font-size: 0.76rem;
   font-weight: 760;
+}
+
+.task-plaque {
+  justify-self: center;
+  width: 100%;
+  max-width: 36rem;
+  border: 2px solid oklch(0.74 0.09 72);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, oklch(0.99 0.012 82), oklch(0.96 0.025 75));
+  color: var(--color-ink);
+  padding: clamp(var(--space-5), 4vw, var(--space-7));
+  text-align: center;
+}
+
+.task-plaque .section-kicker {
+  color: var(--color-coffee-hover);
+}
+
+.task-plaque h2 {
+  max-width: 17ch;
+  margin: var(--space-3) auto;
+  color: var(--color-ink);
+  font-size: clamp(1.55rem, 3vw, 2.65rem);
+  overflow-wrap: anywhere;
+}
+
+.task-plaque p:not(.section-kicker) {
+  max-width: 48ch;
+  margin: 0 auto;
+  color: var(--color-ink-soft);
+  font-size: 0.96rem;
+  text-wrap: pretty;
 }
 
 .readiness-card {
   display: grid;
   gap: var(--space-3);
-  border: 1px solid var(--color-line);
+  border: 1px solid oklch(0.8 0.08 72 / 0.36);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: oklch(0.98 0.008 82 / 0.92);
   padding: var(--space-4);
+}
+
+.table-progress {
+  justify-self: center;
+  width: 100%;
+  max-width: 42rem;
 }
 
 .readiness-copy {
   justify-content: space-between;
   gap: var(--space-3);
-  color: var(--color-muted);
+  color: var(--color-coffee-hover);
 }
 
 .readiness-copy strong {
@@ -495,14 +559,14 @@ button:focus-visible,
   height: 0.65rem;
   overflow: hidden;
   border-radius: 999px;
-  background: var(--color-surface-strong);
+  background: oklch(0.86 0.035 74);
 }
 
 .progress-fill {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--color-primary);
+  background: linear-gradient(90deg, var(--color-coffee), var(--color-primary));
   transition: width 220ms var(--ease-out-quint);
 }
 
@@ -516,8 +580,16 @@ button:focus-visible,
   gap: var(--space-4);
 }
 
+.table-vote-area .vote-heading-row {
+  color: var(--color-ink-inverse);
+}
+
+.table-vote-area h3 {
+  color: var(--color-ink-inverse);
+}
+
 .selected-label {
-  background: var(--color-coffee-soft);
+  background: oklch(0.91 0.07 66);
   color: var(--color-coffee-hover);
   padding: 0 var(--space-3);
 }
@@ -529,47 +601,54 @@ button:focus-visible,
 }
 
 .estimate-card {
-  position: relative;
+  display: grid;
+  place-items: center;
   min-height: 6.2rem;
-  border: 1px solid var(--color-line-strong);
-  background: var(--color-surface);
-  color: var(--color-ink);
+  border: 1px solid oklch(0.78 0.05 76);
+  background: linear-gradient(180deg, oklch(0.18 0.035 258), oklch(0.13 0.03 258));
+  color: oklch(0.96 0.026 84);
   font-size: 1.6rem;
   font-weight: 880;
   font-variant-numeric: tabular-nums;
 }
 
-.estimate-card::after {
-  position: absolute;
-  inset-block-end: 0.55rem;
-  inset-inline: 1rem;
-  height: 0.3rem;
-  border-radius: 999px;
-  background: var(--color-line);
-  content: '';
-  transition: background 180ms var(--ease-out-quart), transform 180ms var(--ease-out-quart);
+.table-card-fan {
+  display: flex;
+  max-width: 100%;
+  min-width: 0;
+  min-height: clamp(8rem, 16vw, 12rem);
+  align-items: end;
+  justify-content: center;
+  gap: clamp(0.25rem, 0.55vw, 0.65rem);
+  padding: var(--space-2) var(--space-2) var(--space-4);
+}
+
+.table-card-fan .estimate-card {
+  width: clamp(3.4rem, 4.2vw, 5.4rem);
+  min-height: auto;
+  aspect-ratio: 0.68;
+  flex: 0 1 auto;
+  transform-origin: center bottom;
+  rotate: calc((var(--card-index) - var(--card-center)) * 2.2deg);
 }
 
 .estimate-card.is-selected {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
+  border-color: var(--color-coffee-soft);
+  background: linear-gradient(180deg, var(--color-primary), var(--color-coffee));
   color: var(--color-ink-inverse);
-  box-shadow: 0 1rem 2rem oklch(0.5 0.15 258 / 0.2);
-  animation: selected-card 180ms var(--ease-out-quart);
-}
-
-.estimate-card.is-selected::after {
-  background: var(--color-coffee-soft);
-  transform: scaleX(0.72);
+  box-shadow: 0 1rem 2rem oklch(0.12 0.04 258 / 0.34);
+  translate: 0 -0.7rem;
 }
 
 .round-actions {
   flex-wrap: wrap;
   gap: var(--space-3);
+  justify-content: center;
 }
 
 .round-actions > button {
-  flex: 1 1 12rem;
+  flex: 1 1 11.5rem;
+  max-width: 15rem;
 }
 
 .result-panel {
@@ -577,18 +656,21 @@ button:focus-visible,
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  border: 1px solid var(--color-line);
+  border: 1px solid oklch(0.82 0.09 70 / 0.28);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: oklch(0.16 0.05 258 / 0.78);
+  color: var(--color-ink-inverse);
   padding: var(--space-4);
 }
 
 .result-panel.is-open {
-  border-color: var(--color-primary);
-  background: var(--color-primary-wash);
+  border-color: oklch(0.74 0.09 72);
+  background: oklch(0.97 0.016 78);
+  color: var(--color-ink);
 }
 
 .result-panel h3 {
+  color: inherit;
   margin-block: var(--space-1);
 }
 
@@ -778,10 +860,19 @@ button:hover:not(:disabled) {
 }
 
 .secondary-action:hover:not(:disabled),
-.estimate-card:hover:not(:disabled),
 .task-row:hover:not(:disabled) {
   border-color: var(--color-primary);
   background: var(--color-primary-wash);
+}
+
+.estimate-card:hover:not(:disabled):not(.is-selected) {
+  border-color: var(--color-coffee-soft);
+  background: linear-gradient(180deg, oklch(0.23 0.05 258), oklch(0.16 0.04 258));
+  color: var(--color-ink-inverse);
+}
+
+.table-card-fan .estimate-card:hover:not(:disabled):not(.is-selected) {
+  translate: 0 -0.35rem;
 }
 
 button:active:not(:disabled) {
@@ -794,15 +885,6 @@ button:disabled {
 
 .estimate-card.is-selected:disabled {
   opacity: 1;
-}
-
-@keyframes selected-card {
-  from {
-    transform: translateY(0.25rem) scale(0.98);
-  }
-  to {
-    transform: translateY(0) scale(1);
-  }
 }
 
 @media (min-width: 48rem) {
@@ -844,6 +926,10 @@ button:disabled {
     grid-template-columns: minmax(17rem, 0.72fr) minmax(34rem, 1.35fr) minmax(20rem, 0.9fr);
   }
 
+  .workbench.is-live-room {
+    grid-template-columns: minmax(16rem, 0.62fr) minmax(38rem, 1.55fr) minmax(19rem, 0.78fr);
+  }
+
   .side-panel {
     grid-column: auto;
     grid-template-columns: 1fr;
@@ -851,6 +937,37 @@ button:disabled {
 
   .recovery-panel {
     grid-column: auto;
+  }
+}
+
+@media (max-width: 48rem) {
+  .table-stage {
+    padding: var(--space-4);
+  }
+
+  .table-card-fan {
+    display: grid;
+    min-height: 0;
+    grid-template-columns: repeat(auto-fit, minmax(4.7rem, 1fr));
+    gap: var(--space-3);
+    padding: 0;
+  }
+
+  .table-card-fan .estimate-card {
+    width: auto;
+    min-height: 6.2rem;
+    aspect-ratio: auto;
+    rotate: 0deg;
+    translate: 0 0;
+  }
+
+  .estimate-card.is-selected,
+  .table-card-fan .estimate-card:hover:not(:disabled):not(.is-selected) {
+    translate: 0 -0.25rem;
+  }
+
+  .round-actions > button {
+    max-width: none;
   }
 }
 

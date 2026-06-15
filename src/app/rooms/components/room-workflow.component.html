@@ -30,7 +30,7 @@
     }
   </header>
 
-  <main id="main-content" class="workbench" [class.is-entry]="!activeRoom()" aria-labelledby="screen-title">
+  <main id="main-content" class="workbench" [class.is-entry]="!activeRoom()" [class.is-live-room]="activeRoom()" aria-labelledby="screen-title">
     <section class="setup-panel panel" aria-labelledby="screen-title">
       <div class="panel-heading compact">
         <div>
@@ -102,13 +102,13 @@
     </section>
 
     @if (activeRoom()) {
-      <section class="stage-panel panel" aria-labelledby="active-task-title">
+      <section class="stage-panel panel table-stage" aria-labelledby="active-task-title">
         @if (activeTask(); as task) {
-          <div class="stage-header">
+          <div class="stage-header table-sign" aria-label="Round summary">
             <div>
-              <p class="section-kicker">Current round</p>
-              <h2 id="active-task-title" tabindex="-1">{{ task.title }}</h2>
-              <p>{{ task.details }}</p>
+              <p class="section-kicker">Planning round</p>
+              <strong>{{ votesRevealed() ? 'Votes revealed' : 'Votes hidden' }}</strong>
+              <span>{{ readinessLabel() }}</span>
             </div>
             <div class="estimate-summary" aria-label="Saved estimate">
               <span>{{ task.estimate || finalEstimate() || 'Open' }}</span>
@@ -116,7 +116,13 @@
             </div>
           </div>
 
-          <div class="readiness-card" aria-label="Voting progress">
+          <div class="task-plaque">
+            <p class="section-kicker">Task to estimate</p>
+            <h2 id="active-task-title" tabindex="-1">{{ task.title }}</h2>
+            <p>{{ task.details }}</p>
+          </div>
+
+          <div class="readiness-card table-progress" aria-label="Voting progress">
             <div class="readiness-copy">
               <span>{{ readinessLabel() }}</span>
               <strong>{{ votesRevealed() ? 'Votes revealed' : 'Votes hidden' }}</strong>
@@ -126,10 +132,10 @@
             </div>
           </div>
 
-          <div class="vote-area" aria-labelledby="vote-heading">
+          <div class="vote-area table-vote-area" aria-labelledby="vote-heading">
             <div class="vote-heading-row">
               <div>
-                <p class="section-kicker">Your vote</p>
+                <p class="section-kicker">Your estimate</p>
                 <h3 id="vote-heading">Pick an estimate card</h3>
               </div>
               @if (selectedEstimate()) {
@@ -137,9 +143,9 @@
               }
             </div>
 
-            <div class="estimate-grid" role="group" aria-label="Estimate cards">
+            <div class="estimate-grid table-card-fan" role="group" aria-label="Estimate cards" [style.--card-center]="(estimateCards.length - 1) / 2">
               @for (card of estimateCards; track card) {
-                <button class="estimate-card" type="button" [class.is-selected]="selectedEstimate() === card" [disabled]="votesRevealed()" [attr.aria-pressed]="selectedEstimate() === card" (click)="castVote(card)">
+                <button class="estimate-card" type="button" [style.--card-index]="$index" [class.is-selected]="selectedEstimate() === card" [disabled]="votesRevealed()" [attr.aria-pressed]="selectedEstimate() === card" (click)="castVote(card)">
                   <span>{{ card }}</span>
                 </button>
               }
