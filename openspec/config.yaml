@@ -1,7 +1,7 @@
 schema: spec-driven
 
 context: |
-  Project: CoffePlanningPoker is an Angular 21 planning poker app for teams running live collaborative estimation sessions.
+  Project: CoffeePlanningPoker is an Angular 21 planning poker app for teams running live collaborative estimation sessions.
 
   Product direction:
   - The first screen is usable app UI, not a marketing landing page.

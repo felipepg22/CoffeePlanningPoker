@@ -38,7 +38,7 @@ describe('RoomService', () => {
 
     expect(service.activeRoom()?.roomCode).toBe('BREW-482');
     expect(service.participants().length).toBe(1);
-    expect(localStorage.getItem('coffe-planning-poker.room.BREW-482')).toContain('token-1');
+    expect(localStorage.getItem('coffee-planning-poker.room.BREW-482')).toContain('token-1');
   });
 
   it('joins a room and updates participants from gateway events', async () => {
@@ -80,7 +80,7 @@ describe('RoomService', () => {
 
     await expect(service.resumeRoom('BREW-482')).resolves.toBe(false);
 
-    expect(localStorage.getItem('coffe-planning-poker.room.BREW-482')).toBeNull();
+    expect(localStorage.getItem('coffee-planning-poker.room.BREW-482')).toBeNull();
     expect(service.error()?.code).toBe('resume_rejected');
   });
 });

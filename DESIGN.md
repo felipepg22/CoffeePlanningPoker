@@ -1,10 +1,10 @@
 <!-- SEED: re-run /impeccable document once there's code to capture the actual tokens and components. -->
 ---
-name: CoffePlanningPoker
+name: CoffeePlanningPoker
 description: Playful coffee-room planning poker for live team estimation.
 ---
 
-# Design System: CoffePlanningPoker
+# Design System: CoffeePlanningPoker
 
 ## 1. Overview
 

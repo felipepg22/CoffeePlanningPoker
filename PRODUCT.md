@@ -10,7 +10,7 @@ Teams running live planning poker sessions to estimate tasks collaboratively. Us
 
 ## Product Purpose
 
-CoffePlanningPoker exists to make collaborative estimation fast, clear, and resilient. Success means a team can run the core planning poker workflow from the first screen, recover predictably after refresh or reconnect, understand the current room state at a glance, and complete estimates with minimal instruction.
+CoffeePlanningPoker exists to make collaborative estimation fast, clear, and resilient. Success means a team can run the core planning poker workflow from the first screen, recover predictably after refresh or reconnect, understand the current room state at a glance, and complete estimates with minimal instruction.
 
 ## Brand Personality
 

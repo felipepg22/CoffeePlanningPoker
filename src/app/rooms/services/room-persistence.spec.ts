@@ -33,15 +33,15 @@ describe('RoomPersistence', () => {
 
   it('removes stale recovery anchors', () => {
     persistence.save(snapshot(), 'Felipe');
-    const raw = localStorage.getItem('coffe-planning-poker.room.BREW-482');
+    const raw = localStorage.getItem('coffee-planning-poker.room.BREW-482');
     expect(raw).not.toBeNull();
-    localStorage.setItem('coffe-planning-poker.room.BREW-482', JSON.stringify({
+    localStorage.setItem('coffee-planning-poker.room.BREW-482', JSON.stringify({
       ...JSON.parse(raw ?? '{}'),
       lastJoinedAt: Date.now() - 25 * 60 * 60 * 1000,
     }));
 
     expect(persistence.read('BREW-482')).toBeNull();
-    expect(localStorage.getItem('coffe-planning-poker.room.BREW-482')).toBeNull();
+    expect(localStorage.getItem('coffee-planning-poker.room.BREW-482')).toBeNull();
   });
 });
 

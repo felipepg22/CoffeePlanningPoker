@@ -76,7 +76,7 @@ Alternative considered: manually parse `window.location.pathname` and keep the a
 
 ### 4. Add a minimal ASP.NET Core SignalR room backend
 
-The repo will include `server/CoffePlanningPoker.Api`, an ASP.NET Core Minimal API project with a SignalR hub at `/hubs/rooms`. The backend will own room codes, invite links, participants, presence, resume tokens, and room errors in an in-memory store. It will expose CORS for the Angular dev server at `http://localhost:4200` and listen on `http://localhost:5050` for local development.
+The repo will include `server/CoffeePlanningPoker.Api`, an ASP.NET Core Minimal API project with a SignalR hub at `/hubs/rooms`. The backend will own room codes, invite links, participants, presence, resume tokens, and room errors in an in-memory store. It will expose CORS for the Angular dev server at `http://localhost:4200` and listen on `http://localhost:5050` for local development.
 
 Rationale: real multi-browser collaboration needs server-owned room state. SignalR keeps the implementation small while still using WebSockets where available, and its groups map directly to room membership.
 

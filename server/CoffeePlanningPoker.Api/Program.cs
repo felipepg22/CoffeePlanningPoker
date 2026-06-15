@@ -1,5 +1,5 @@
 using System.Text.Json;
-using CoffePlanningPoker.Api.Rooms;
+using CoffeePlanningPoker.Api.Rooms;
 
 var builder = WebApplication.CreateBuilder(args);
 

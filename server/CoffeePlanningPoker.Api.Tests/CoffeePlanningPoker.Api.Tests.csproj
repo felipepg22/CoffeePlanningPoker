@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CoffePlanningPoker.Api\CoffePlanningPoker.Api.csproj" />
+    <ProjectReference Include="..\CoffeePlanningPoker.Api\CoffeePlanningPoker.Api.csproj" />
   </ItemGroup>
 
 </Project>

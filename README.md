@@ -1,11 +1,11 @@
-# CoffePlanningPoker
+# CoffeePlanningPoker
 
 ![Angular](https://img.shields.io/badge/Angular-21-dd0031?logo=angular&logoColor=white)
 ![SignalR](https://img.shields.io/badge/SignalR-realtime-512bd4?logo=dotnet&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-0f766e)
 
-CoffePlanningPoker is a live planning poker app for teams estimating work together.
+CoffeePlanningPoker is a live planning poker app for teams estimating work together.
 It starts directly in the room workflow: create or join a room, add tasks, vote with
 estimate cards, reveal the spread, discuss, and save the final estimate.
 
@@ -84,8 +84,8 @@ src/
     identity/       Display-name and participant identity state
     rooms/          Room workflow, validation, persistence, SignalR gateway
 server/
-  CoffePlanningPoker.Api/        SignalR room API
-  CoffePlanningPoker.Api.Tests/  API unit tests
+  CoffeePlanningPoker.Api/        SignalR room API
+  CoffeePlanningPoker.Api.Tests/  API unit tests
 PRODUCT.md         Product register and principles
 DESIGN.md          Starter visual direction
 ```

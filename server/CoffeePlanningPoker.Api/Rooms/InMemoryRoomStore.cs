@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace CoffePlanningPoker.Api.Rooms;
+namespace CoffeePlanningPoker.Api.Rooms;
 
 public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock)
 {

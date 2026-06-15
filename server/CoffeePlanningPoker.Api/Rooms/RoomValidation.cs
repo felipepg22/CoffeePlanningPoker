@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace CoffePlanningPoker.Api.Rooms;
+namespace CoffeePlanningPoker.Api.Rooms;
 
 public static partial class RoomValidation
 {

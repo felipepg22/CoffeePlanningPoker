@@ -1,5 +1,5 @@
 {
-  "name": "coffe-planning-poker",
+  "name": "coffee-planning-poker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,10 +8,10 @@
   },
   "scripts": {
     "start": "ng serve",
-    "api": "dotnet run --project server/CoffePlanningPoker.Api/CoffePlanningPoker.Api.csproj --urls http://localhost:5050",
+    "api": "dotnet run --project server/CoffeePlanningPoker.Api/CoffeePlanningPoker.Api.csproj --urls http://localhost:5050",
     "build": "ng build",
     "test": "ng test --watch=false",
-    "test:api": "dotnet test CoffePlanningPoker.slnx",
+    "test:api": "dotnet test CoffeePlanningPoker.slnx",
     "watch": "ng build --watch --configuration development"
   },
   "dependencies": {

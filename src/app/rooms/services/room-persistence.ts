@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { RecoveryAnchor, RoomSnapshot } from '../models/room-session';
 import { normalizeRoomCode } from './room-validation';
 
-const PREFIX = 'coffe-planning-poker.room.';
+const PREFIX = 'coffee-planning-poker.room.';
 const TTL_MS = 24 * 60 * 60 * 1000;
 
 @Injectable({ providedIn: 'root' })

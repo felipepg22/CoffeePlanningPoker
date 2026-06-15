@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "coffe-planning-poker": {
+    "coffee-planning-poker": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/coffe-planning-poker",
+            "outputPath": "dist/coffee-planning-poker",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -62,10 +62,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "coffe-planning-poker:build:production"
+              "buildTarget": "coffee-planning-poker:build:production"
             },
             "development": {
-              "buildTarget": "coffe-planning-poker:build:development"
+              "buildTarget": "coffee-planning-poker:build:development"
             }
           },
           "defaultConfiguration": "development"

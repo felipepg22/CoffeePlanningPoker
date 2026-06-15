@@ -1,6 +1,6 @@
-using CoffePlanningPoker.Api.Rooms;
+using CoffeePlanningPoker.Api.Rooms;
 
-namespace CoffePlanningPoker.Api.Tests;
+namespace CoffeePlanningPoker.Api.Tests;
 
 public sealed class InMemoryRoomStoreTests
 {

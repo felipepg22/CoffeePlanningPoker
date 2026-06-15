@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
-const PARTICIPANT_ID_KEY = 'coffe-planning-poker.participant-id';
-const DISPLAY_NAME_KEY = 'coffe-planning-poker.display-name';
+const PARTICIPANT_ID_KEY = 'coffee-planning-poker.participant-id';
+const DISPLAY_NAME_KEY = 'coffee-planning-poker.display-name';
 
 @Injectable({ providedIn: 'root' })
 export class IdentityService {

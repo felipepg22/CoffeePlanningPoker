@@ -1,4 +1,4 @@
-namespace CoffePlanningPoker.Api.Rooms;
+namespace CoffeePlanningPoker.Api.Rooms;
 
 public sealed record RoomStoreOptions(string ClientOrigin, TimeSpan RoomTtl);
 

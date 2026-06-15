@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/server/">
+    <Project Path="server/CoffeePlanningPoker.Api.Tests/CoffeePlanningPoker.Api.Tests.csproj" />
+    <Project Path="server/CoffeePlanningPoker.Api/CoffeePlanningPoker.Api.csproj" />
+  </Folder>
+</Solution>

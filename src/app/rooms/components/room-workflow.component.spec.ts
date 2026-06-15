@@ -76,7 +76,7 @@ describe('RoomWorkflowComponent', () => {
   });
 
   it('keeps invite code available after failed resume', async () => {
-    localStorage.setItem('coffe-planning-poker.room.BREW-482', JSON.stringify({
+    localStorage.setItem('coffee-planning-poker.room.BREW-482', JSON.stringify({
       roomCode: 'BREW-482',
       participantId: 'p-1',
       displayName: 'Felipe',

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace CoffePlanningPoker.Api.Rooms;
+namespace CoffeePlanningPoker.Api.Rooms;
 
 public sealed class RoomHub(InMemoryRoomStore store) : Hub
 {
