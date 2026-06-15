@@ -1,9 +1,14 @@
 <a class="skip-link" href="#main-content">Skip to room workflow</a>
 
 <div class="app-shell">
-  <header class="topbar" aria-label="Room status">
+  <header class="topbar topbar-coffee-steam" aria-label="Room status">
     <div class="brand-lockup">
-      <span class="brand-cup" aria-hidden="true"><span></span></span>
+      <span class="brand-cup" aria-hidden="true">
+        <i class="coffee-steam steam-one"></i>
+        <i class="coffee-steam steam-two"></i>
+        <i class="coffee-steam steam-three"></i>
+        <span></span>
+      </span>
       <div>
         <p class="brand-name">CoffePlanningPoker</p>
         <p class="brand-context">Live estimation room</p>
@@ -31,7 +36,7 @@
   </header>
 
   <main id="main-content" class="workbench" [class.is-entry]="!activeRoom()" [class.is-live-room]="activeRoom()" aria-labelledby="screen-title">
-    <section class="setup-panel panel" aria-labelledby="screen-title">
+    <section class="setup-panel panel setup-panel-live-v1" aria-labelledby="screen-title">
       <div class="panel-heading compact">
         <div>
           <p class="section-kicker">Start here</p>

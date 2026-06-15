@@ -25,6 +25,9 @@
 }
 
 .app-shell {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--space-4);
   min-height: 100dvh;
   padding: max(var(--space-4), env(safe-area-inset-top)) max(var(--space-4), env(safe-area-inset-right)) max(var(--space-4), env(safe-area-inset-bottom)) max(var(--space-4), env(safe-area-inset-left));
 }
@@ -92,6 +95,77 @@
   height: 0.35rem;
   border-radius: 999px;
   background: var(--color-coffee-soft);
+}
+
+.topbar-coffee-steam .brand-cup {
+  overflow: visible;
+  transform-origin: 50% 70%;
+  animation: cup-breathe 2.6s var(--ease-out-quart) infinite;
+}
+
+.topbar-coffee-steam .coffee-steam {
+  position: absolute;
+  inset-block-start: -0.85rem;
+  width: 0.22rem;
+  height: 0.78rem;
+  border-radius: 999px;
+  background: oklch(0.98 0.004 258 / 0.72);
+  filter: blur(0.5px);
+  transform-origin: 50% 100%;
+  animation: steam-rise 1.8s var(--ease-out-quint) infinite;
+}
+
+.topbar-coffee-steam .steam-one {
+  inset-inline-start: 0.72rem;
+}
+
+.topbar-coffee-steam .steam-two {
+  inset-inline-start: 1.18rem;
+  animation-delay: 160ms;
+}
+
+.topbar-coffee-steam .steam-three {
+  inset-inline-start: 1.62rem;
+  animation-delay: 320ms;
+}
+
+@keyframes steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0.18rem) scaleY(0.45);
+  }
+
+  32% {
+    opacity: 0.85;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-0.7rem) scaleY(1.08);
+  }
+}
+
+@keyframes cup-breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  46% {
+    transform: translateY(-0.06rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar-coffee-steam .brand-cup,
+  .topbar-coffee-steam .coffee-steam {
+    animation: none;
+  }
+
+  .topbar-coffee-steam .coffee-steam {
+    opacity: 0.58;
+    transform: none;
+  }
 }
 
 .brand-name,
@@ -164,11 +238,14 @@
 .workbench {
   display: grid;
   gap: var(--space-4);
-  margin-block-start: var(--space-4);
+  margin-block-start: 0;
 }
 
 .workbench.is-entry {
-  max-width: 36rem;
+  width: min(100%, 48rem);
+  max-width: none;
+  min-height: 100%;
+  align-content: center;
   margin-inline: auto;
 }
 
@@ -299,6 +376,56 @@ h3 {
 .task-form {
   display: grid;
   gap: var(--space-3);
+}
+
+.setup-panel-live-v1 {
+  display: grid;
+  max-width: 33.6rem;
+  gap: calc(var(--space-4) + 0.375rem);
+  margin-inline: auto;
+  padding: calc(var(--space-4) + 0.5rem);
+  text-align: center;
+}
+
+.setup-panel-live-v1 .panel-heading {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.setup-panel-live-v1 .panel-heading > div {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+}
+
+.setup-panel-live-v1 h1 {
+  max-width: 12ch;
+  font-size: 2.25rem;
+}
+
+.setup-panel-live-v1 .session-pill {
+  background: color-mix(in oklch, var(--color-primary-soft), var(--color-coffee-soft) 35%);
+  color: var(--color-primary-hover);
+}
+
+.setup-panel-live-v1 .mode-switch {
+  max-width: 22rem;
+  margin-inline: auto;
+}
+
+.setup-panel-live-v1 .mode-switch button:not(.is-active) {
+  opacity: 0.72;
+}
+
+.setup-panel-live-v1 .room-form {
+  text-align: start;
+}
+
+.setup-panel-live-v1 .primary-action,
+.setup-panel-live-v1 .secondary-action {
+  width: 100%;
 }
 
 .active-room-summary {
