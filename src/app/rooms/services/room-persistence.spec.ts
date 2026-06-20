@@ -46,13 +46,26 @@ describe('RoomPersistence', () => {
 });
 
 function snapshot(): RoomSnapshot {
+  const now = new Date().toISOString();
   return {
     roomCode: 'BREW-482',
     roomName: 'Sprint planning',
     inviteUrl: 'http://localhost:4200/rooms/brew-482',
     localParticipantId: 'p-1',
     resumeToken: 'token-1',
-    createdAt: new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
+    snapshotVersion: 1,
     participants: [],
+    planningSession: {
+      estimateCards: ['0', '1', '2', '3', '5', '8', '13', '21', '?'],
+      tasks: [],
+      currentTaskId: null,
+      activeRound: null,
+      completedRounds: [],
+      archivedEstimateTotal: 0,
+      estimationStatus: 'active',
+      completedTotalEstimate: null,
+    },
   };
 }

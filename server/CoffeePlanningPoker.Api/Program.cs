@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton(new RoomStoreOptions(
     ClientOrigin: "http://localhost:4200",
-    RoomTtl: TimeSpan.FromHours(24)));
+    RoomTtl: TimeSpan.FromHours(2)));
 builder.Services.AddSingleton<IRoomClock, SystemRoomClock>();
 builder.Services.AddSingleton<InMemoryRoomStore>();
 builder.Services.AddSignalR()

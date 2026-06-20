@@ -1,3 +1,6 @@
+import { EstimateValue, PlanningRound } from '../../session/models/planning-round';
+import { PlanningTask, RoomEstimationStatus } from '../../tasks/models/planning-task';
+
 export type ParticipantPresence = 'connected' | 'reconnecting' | 'disconnected' | 'left';
 export type ParticipantRole = 'facilitator' | 'participant';
 export type RoomConnectionState = 'idle' | 'connecting' | 'connected' | 'reconnecting' | 'disconnected';
@@ -18,7 +21,21 @@ export interface RoomSnapshot {
   localParticipantId: string;
   resumeToken: string;
   createdAt: string;
+  updatedAt: string;
+  snapshotVersion: number;
   participants: readonly RoomParticipant[];
+  planningSession: RoomPlanningSession | null;
+}
+
+export interface RoomPlanningSession {
+  estimateCards: readonly EstimateValue[];
+  tasks: readonly PlanningTask[];
+  currentTaskId: string | null;
+  activeRound: PlanningRound | null;
+  completedRounds: readonly PlanningRound[];
+  archivedEstimateTotal: number;
+  estimationStatus: RoomEstimationStatus;
+  completedTotalEstimate: number | null;
 }
 
 export interface RoomError {
@@ -34,6 +51,16 @@ export type RoomErrorCode =
   | 'room_unavailable'
   | 'resume_rejected'
   | 'duplicate_join_rejected'
+  | 'invalid_task_title'
+  | 'forbidden'
+  | 'task_not_found'
+  | 'no_active_task'
+  | 'stale_round'
+  | 'invalid_estimate'
+  | 'vote_closed'
+  | 'round_not_revealed'
+  | 'no_numeric_votes'
+  | 'room_completed'
   | 'connection_failed';
 
 export interface RecoveryAnchor {
@@ -80,6 +107,56 @@ export interface LeaveRoomCommand {
 }
 
 export interface HeartbeatCommand {
+  roomCode: string;
+  participantId: string;
+}
+
+export interface AddTaskCommand {
+  roomCode: string;
+  participantId: string;
+  title: string;
+  details: string | null;
+}
+
+export interface SelectTaskCommand {
+  roomCode: string;
+  participantId: string;
+  taskId: string;
+}
+
+export interface CastVoteCommand {
+  roomCode: string;
+  participantId: string;
+  roundId: string;
+  estimate: EstimateValue;
+}
+
+export interface RevealVotesCommand {
+  roomCode: string;
+  participantId: string;
+  roundId: string;
+}
+
+export interface ResetRoundCommand {
+  roomCode: string;
+  participantId: string;
+  taskId: string;
+}
+
+export interface StartNextRoundCommand {
+  roomCode: string;
+  participantId: string;
+  taskId: string | null;
+}
+
+export interface SaveFinalEstimateCommand {
+  roomCode: string;
+  participantId: string;
+  taskId: string;
+  roundId: string;
+}
+
+export interface CompleteEstimationCommand {
   roomCode: string;
   participantId: string;
 }

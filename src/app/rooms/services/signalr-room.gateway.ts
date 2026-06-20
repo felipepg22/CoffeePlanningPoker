@@ -8,17 +8,25 @@ import {
 import { BehaviorSubject, Subject } from 'rxjs';
 
 import {
+  AddTaskCommand,
+  CastVoteCommand,
+  CompleteEstimationCommand,
   CreateRoomCommand,
   HeartbeatCommand,
   JoinRoomCommand,
   LeaveRoomCommand,
   ResumeRoomCommand,
+  ResetRoundCommand,
+  RevealVotesCommand,
   RoomCommandResult,
   RoomConnectionState,
   RoomError,
   RoomGatewayEvent,
   RoomParticipantEvent,
   RoomSnapshot,
+  SaveFinalEstimateCommand,
+  SelectTaskCommand,
+  StartNextRoundCommand,
 } from '../models/room-session';
 import { RoomGateway } from './room-gateway';
 
@@ -54,6 +62,38 @@ export class SignalRRoomGateway extends RoomGateway {
 
   override async heartbeat(command: HeartbeatCommand): Promise<RoomCommandResult> {
     return this.invoke('Heartbeat', command);
+  }
+
+  override async addTask(command: AddTaskCommand): Promise<RoomCommandResult> {
+    return this.invoke('AddTask', command);
+  }
+
+  override async selectTask(command: SelectTaskCommand): Promise<RoomCommandResult> {
+    return this.invoke('SelectTask', command);
+  }
+
+  override async castVote(command: CastVoteCommand): Promise<RoomCommandResult> {
+    return this.invoke('CastVote', command);
+  }
+
+  override async revealVotes(command: RevealVotesCommand): Promise<RoomCommandResult> {
+    return this.invoke('RevealVotes', command);
+  }
+
+  override async resetRound(command: ResetRoundCommand): Promise<RoomCommandResult> {
+    return this.invoke('ResetRound', command);
+  }
+
+  override async startNextRound(command: StartNextRoundCommand): Promise<RoomCommandResult> {
+    return this.invoke('StartNextRound', command);
+  }
+
+  override async saveFinalEstimate(command: SaveFinalEstimateCommand): Promise<RoomCommandResult> {
+    return this.invoke('SaveFinalEstimate', command);
+  }
+
+  override async completeEstimation(command: CompleteEstimationCommand): Promise<RoomCommandResult> {
+    return this.invoke('CompleteEstimation', command);
   }
 
   private async invoke(methodName: string, command: unknown): Promise<RoomCommandResult> {

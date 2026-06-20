@@ -4,7 +4,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { IdentityService } from '../../identity/services/identity.service';
-import { ParticipantPresence, RoomParticipant } from '../models/room-session';
+import { EstimateValue } from '../../session/models/planning-round';
+import { ParticipantVoteRow, SessionService } from '../../session/services/session.service';
+import { PlanningTask } from '../../tasks/models/planning-task';
+import { TaskService } from '../../tasks/services/task.service';
+import { ParticipantPresence } from '../models/room-session';
 import { RoomService } from '../services/room.service';
 import {
   normalizeRoomCode,
@@ -14,21 +18,7 @@ import {
   validateRoomName,
 } from '../services/room-validation';
 
-type EstimateValue = '0' | '1' | '2' | '3' | '5' | '8' | '13' | '21' | '?';
-type TaskStatus = 'ready' | 'estimating' | 'estimated';
 type RoomMode = 'create' | 'join';
-
-interface ParticipantRow extends RoomParticipant {
-  vote: EstimateValue | null;
-}
-
-interface PlanningTask {
-  id: string;
-  title: string;
-  details: string;
-  estimate: EstimateValue | null;
-  status: TaskStatus;
-}
 
 @Component({
   selector: 'app-room-workflow',
@@ -42,8 +32,8 @@ export class RoomWorkflowComponent {
   private readonly identity = inject(IdentityService);
   private readonly document = inject(DOCUMENT);
   readonly room = inject(RoomService);
-
-  readonly estimateCards: readonly EstimateValue[] = ['0', '1', '2', '3', '5', '8', '13', '21', '?'];
+  readonly session = inject(SessionService);
+  readonly taskState = inject(TaskService);
 
   readonly roomMode = signal<RoomMode>('create');
   readonly roomName = signal('');
@@ -54,18 +44,50 @@ export class RoomWorkflowComponent {
   readonly newTaskTitle = signal('');
   readonly newTaskDetails = signal('');
   readonly taskError = signal('');
-
-  readonly activeTaskId = signal('task-checkout');
-  readonly selectedEstimate = signal<EstimateValue | null>(null);
-  readonly votesRevealed = signal(false);
-  readonly finalEstimate = signal<EstimateValue | null>(null);
-  readonly isSyncing = signal(false);
   readonly notice = signal('Create a room or join with a code.');
 
   readonly activeRoom = this.room.activeRoom;
+  readonly activeTask = this.taskState.currentTask;
+  readonly tasks = this.taskState.tasks;
+  readonly participantRows = this.session.participantRows;
+  readonly totalVoters = this.session.totalVoters;
+  readonly votedCount = this.session.votedCount;
+  readonly voteProgress = this.session.voteProgress;
+  readonly readinessLabel = this.session.readinessLabel;
+  readonly selectedEstimate = this.session.localVote;
+  readonly votesRevealed = this.session.votesRevealed;
+  readonly suggestedEstimate = this.session.computedAverage;
   readonly setupMessage = computed(() => this.setupError() || this.room.error()?.message || '');
   readonly isBusy = computed(() => this.room.pendingAction() !== null);
+  readonly isCommandBusy = computed(() => this.session.pendingAction() !== null || this.taskState.pendingAction() !== null);
+  readonly taskMessage = computed(() => this.taskError() || this.taskState.error()?.message || this.session.error()?.message || '');
   readonly copyInviteLabel = computed(() => this.room.inviteCopied() ? 'Copied' : 'Copy invite');
+  readonly canSaveEstimate = computed(() =>
+    this.room.isFacilitator() &&
+    this.votesRevealed() &&
+    this.suggestedEstimate() !== null &&
+    this.taskState.pendingAction() === null,
+  );
+  readonly canComplete = this.taskState.canComplete;
+  readonly completedTotal = this.taskState.completedTotalEstimate;
+  readonly archivedEstimateTotal = this.taskState.archivedEstimateTotal;
+  readonly isCompleted = computed(() => this.taskState.estimationStatus() === 'completed');
+  readonly splitNeedsDiscussion = computed(() => {
+    if (!this.votesRevealed()) {
+      return false;
+    }
+
+    const numericVotes = this.participantRows()
+      .map((participant) => participant.estimate)
+      .filter((vote): vote is Exclude<EstimateValue, '?'> => vote !== null && vote !== '?')
+      .map(Number);
+
+    if (numericVotes.length < 2) {
+      return false;
+    }
+
+    return Math.max(...numericVotes) - Math.min(...numericVotes) >= 5;
+  });
   readonly connectionLabel = computed(() => {
     const state = this.room.connectionState();
     if (state === 'connected') {
@@ -82,97 +104,6 @@ export class RoomWorkflowComponent {
 
     return 'Not connected';
   });
-
-  readonly tasks = signal<PlanningTask[]>([
-    {
-      id: 'task-checkout',
-      title: 'Persist final estimate after reveal',
-      details: 'Save the agreed estimate to the selected backlog item and keep the round state recoverable after refresh.',
-      estimate: null,
-      status: 'estimating',
-    },
-    {
-      id: 'task-presence',
-      title: 'Show participant reconnect state',
-      details: 'Make stale connections obvious without blocking the facilitator from continuing the round.',
-      estimate: '5',
-      status: 'estimated',
-    },
-    {
-      id: 'task-join',
-      title: 'Allow invite code joins',
-      details: 'Let teammates enter a room code and land in the current round with their display name.',
-      estimate: null,
-      status: 'ready',
-    },
-  ]);
-
-  readonly activeTask = computed(() => this.tasks().find((task) => task.id === this.activeTaskId()) ?? null);
-
-  readonly participantRows = computed<readonly ParticipantRow[]>(() => {
-    const localParticipantId = this.activeRoom()?.localParticipantId;
-    return this.room.participants().map((participant) => ({
-      ...participant,
-      vote: participant.participantId === localParticipantId ? this.selectedEstimate() : null,
-    }));
-  });
-  readonly totalVoters = computed(() => this.participantRows().length);
-  readonly votedCount = computed(() => this.participantRows().filter((participant) => participant.vote !== null).length);
-  readonly voteProgress = computed(() => {
-    const total = this.totalVoters();
-    return total === 0 ? 0 : Math.round((this.votedCount() / total) * 100);
-  });
-  readonly readinessLabel = computed(() => `${this.votedCount()} of ${this.totalVoters()} voted`);
-
-  readonly suggestedEstimate = computed<EstimateValue | null>(() => {
-    if (!this.votesRevealed()) {
-      return null;
-    }
-
-    const counts = new Map<EstimateValue, number>();
-    for (const participant of this.participantRows()) {
-      if (participant.vote === null || participant.vote === '?') {
-        continue;
-      }
-      counts.set(participant.vote, (counts.get(participant.vote) ?? 0) + 1);
-    }
-
-    let winner: EstimateValue | null = null;
-    let winningCount = 0;
-
-    for (const card of this.estimateCards) {
-      if (card === '?') {
-        continue;
-      }
-      const count = counts.get(card) ?? 0;
-      if (count > winningCount) {
-        winner = card;
-        winningCount = count;
-      }
-    }
-
-    return winner;
-  });
-
-  readonly splitNeedsDiscussion = computed(() => {
-    if (!this.votesRevealed()) {
-      return false;
-    }
-
-    const numericVotes = this.participantRows()
-      .map((participant) => participant.vote)
-      .filter((vote): vote is Exclude<EstimateValue, '?'> => vote !== null && vote !== '?')
-      .map(Number);
-
-    if (numericVotes.length < 2) {
-      return false;
-    }
-
-    return Math.max(...numericVotes) - Math.min(...numericVotes) >= 5;
-  });
-
-  readonly canReveal = computed(() => this.votedCount() > 0 && !this.votesRevealed());
-  readonly canSaveEstimate = computed(() => this.votesRevealed() && this.suggestedEstimate() !== null && !this.isSyncing());
 
   constructor() {
     this.route.paramMap
@@ -228,6 +159,7 @@ export class RoomWorkflowComponent {
   updateTaskTitle(event: Event): void {
     this.newTaskTitle.set(this.inputValue(event));
     this.taskError.set('');
+    this.taskState.clearError();
   }
 
   updateTaskDetails(event: Event): void {
@@ -259,9 +191,9 @@ export class RoomWorkflowComponent {
       const created = await this.room.createRoom(roomName, displayName);
       if (created) {
         const activeRoom = this.activeRoom();
-        this.notice.set(`${activeRoom?.roomCode ?? 'Room'} is live. Start voting when the team is ready.`);
+        this.notice.set(`${activeRoom?.roomCode ?? 'Room'} is live. Add a task to begin.`);
         await this.navigateToActiveRoom();
-        this.focusSoon('active-task-title');
+        this.focusSoon('task-title');
       }
       return;
     }
@@ -284,9 +216,6 @@ export class RoomWorkflowComponent {
 
   async leaveRoom(): Promise<void> {
     await this.room.leaveRoom();
-    this.selectedEstimate.set(null);
-    this.votesRevealed.set(false);
-    this.finalEstimate.set(null);
     this.notice.set('Left the room.');
     await this.router.navigate(['/']);
     this.focusSoon('room-name');
@@ -297,8 +226,10 @@ export class RoomWorkflowComponent {
     this.notice.set(this.room.announcement());
   }
 
-  addTask(event: Event): void {
+  async addTask(event: Event): Promise<void> {
     event.preventDefault();
+    this.taskError.set('');
+    this.taskState.clearError();
 
     const title = this.newTaskTitle().trim();
     if (title.length < 3) {
@@ -306,78 +237,80 @@ export class RoomWorkflowComponent {
       return;
     }
 
-    const id = `task-${Date.now()}`;
-    const task: PlanningTask = {
-      id,
-      title,
-      details: this.newTaskDetails().trim() || 'Estimate this task with the current room.',
-      estimate: null,
-      status: 'ready',
-    };
+    const added = await this.taskState.addTask(title, this.newTaskDetails());
+    if (!added) {
+      return;
+    }
 
-    this.tasks.update((tasks) => [task, ...tasks]);
     this.newTaskTitle.set('');
     this.newTaskDetails.set('');
+    this.notice.set('Task added.');
+
+    if (this.room.isFacilitator()) {
+      const task = this.tasks().at(-1);
+      if (task) {
+        await this.selectTask(task.taskId);
+      }
+    }
+  }
+
+  async selectTask(taskId: string): Promise<void> {
     this.taskError.set('');
-    this.selectTask(id);
-    this.notice.set('Task added. Votes are reset for the new round.');
-  }
-
-  selectTask(taskId: string): void {
-    this.activeTaskId.set(taskId);
-    this.selectedEstimate.set(null);
-    this.votesRevealed.set(false);
-    this.finalEstimate.set(null);
-    this.tasks.update((tasks) => tasks.map((task) => ({
-      ...task,
-      status: task.id === taskId && task.estimate === null ? 'estimating' : task.status,
-    })));
-  }
-
-  castVote(value: EstimateValue): void {
-    if (this.votesRevealed()) {
-      return;
+    const selected = await this.taskState.selectTask(taskId);
+    if (selected) {
+      this.notice.set('Task selected. Votes are ready.');
+      this.focusSoon('active-task-title');
     }
-
-    this.selectedEstimate.set(value);
-    this.notice.set(`Your ${value} vote is saved. You can change it until reveal.`);
   }
 
-  revealVotes(): void {
-    if (!this.canReveal()) {
-      this.notice.set('Wait for at least one vote before revealing.');
-      return;
+  async castVote(value: EstimateValue): Promise<void> {
+    const voted = await this.session.castVote(value);
+    if (voted) {
+      this.notice.set(`Your ${value} vote is saved. You can change it until reveal.`);
     }
-
-    this.votesRevealed.set(true);
-    this.notice.set(this.splitNeedsDiscussion() ? 'Votes are split. Discuss the high and low estimates first.' : 'Votes are revealed. Save the final estimate when the team agrees.');
   }
 
-  saveFinalEstimate(): void {
+  async revealVotes(): Promise<void> {
+    const revealed = await this.session.revealVotes();
+    if (revealed) {
+      this.notice.set(this.splitNeedsDiscussion() ? 'Votes are split. Discuss the high and low estimates first.' : 'Votes are revealed. Save the final estimate when the team agrees.');
+    }
+  }
+
+  async saveFinalEstimate(): Promise<void> {
+    const task = this.activeTask();
     const estimate = this.suggestedEstimate();
-    const activeTask = this.activeTask();
+    const saved = await this.taskState.saveFinalEstimate(this.session.activeRound());
+    if (saved && task) {
+      this.notice.set(`Saved ${this.formatEstimate(estimate)} points for ${task.title}.`);
+    }
+  }
 
-    if (estimate === null || activeTask === null) {
+  async startReVote(): Promise<void> {
+    const task = this.activeTask();
+    if (!task) {
       return;
     }
 
-    this.isSyncing.set(true);
-    this.tasks.update((tasks) => tasks.map((task) => task.id === activeTask.id ? {
-      ...task,
-      estimate,
-      status: 'estimated',
-    } : task));
-    this.finalEstimate.set(estimate);
-    this.notice.set(`Saved ${estimate} points for ${activeTask.title}.`);
-
-    window.setTimeout(() => this.isSyncing.set(false), 420);
+    const started = await this.session.resetRound(task.taskId);
+    if (started) {
+      this.notice.set('New vote ready. Prior saved estimate stays until a newer one is saved.');
+    }
   }
 
-  startNextRound(): void {
-    this.selectedEstimate.set(null);
-    this.votesRevealed.set(false);
-    this.finalEstimate.set(null);
-    this.notice.set('New round ready. Pick a card when discussion is done.');
+  async startNextRound(): Promise<void> {
+    const started = await this.session.startNextRound();
+    if (started) {
+      this.notice.set('Next round ready. Pick a card when discussion is done.');
+      this.focusSoon('active-task-title');
+    }
+  }
+
+  async completeEstimation(): Promise<void> {
+    const completed = await this.taskState.completeEstimation();
+    if (completed) {
+      this.notice.set(`Project estimate total is ${this.formatEstimate(this.completedTotal())}.`);
+    }
   }
 
   initials(name: string): string {
@@ -389,17 +322,17 @@ export class RoomWorkflowComponent {
       .join('') || 'YP';
   }
 
-  statusLabel(participant: ParticipantRow): string {
+  statusLabel(participant: ParticipantVoteRow): string {
     const presenceLabel = this.presenceLabel(participant.presence);
     if (presenceLabel !== 'Here') {
       return presenceLabel;
     }
 
-    if (this.votesRevealed() && participant.vote !== null) {
-      return `${participant.vote} points`;
+    if (this.votesRevealed() && participant.estimate !== null) {
+      return `${participant.estimate} points`;
     }
 
-    return participant.vote === null ? 'Thinking' : 'Voted';
+    return participant.hasVoted ? 'Voted' : 'Thinking';
   }
 
   presenceLabel(presence: ParticipantPresence): string {
@@ -418,16 +351,28 @@ export class RoomWorkflowComponent {
     return 'Here';
   }
 
-  taskStatusLabel(status: TaskStatus): string {
-    if (status === 'estimated') {
+  taskStatusLabel(task: PlanningTask): string {
+    if (task.status === 'estimated') {
       return 'Estimated';
     }
 
-    if (status === 'estimating') {
-      return 'In round';
+    if (task.status === 'estimating') {
+      return task.finalEstimate ? 'Re-vote' : 'In round';
     }
 
     return 'Ready';
+  }
+
+  formatEstimate(value: number | null | undefined): string {
+    if (value === null || value === undefined) {
+      return 'Open';
+    }
+
+    return Number.isInteger(value) ? value.toString() : value.toFixed(1);
+  }
+
+  hasActiveRound(): boolean {
+    return this.session.activeRound() !== null;
   }
 
   private async resumeFromRoute(roomCode: string): Promise<void> {

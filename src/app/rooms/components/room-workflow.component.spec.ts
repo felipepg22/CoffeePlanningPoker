@@ -3,15 +3,23 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 import {
+  AddTaskCommand,
+  CastVoteCommand,
+  CompleteEstimationCommand,
   CreateRoomCommand,
   HeartbeatCommand,
   JoinRoomCommand,
   LeaveRoomCommand,
   ResumeRoomCommand,
+  ResetRoundCommand,
+  RevealVotesCommand,
   RoomCommandResult,
   RoomConnectionState,
   RoomGatewayEvent,
   RoomSnapshot,
+  SaveFinalEstimateCommand,
+  SelectTaskCommand,
+  StartNextRoundCommand,
 } from '../models/room-session';
 import { RoomGateway } from '../services/room-gateway';
 import { RoomWorkflowComponent } from './room-workflow.component';
@@ -97,6 +105,78 @@ describe('RoomWorkflowComponent', () => {
     expect(component.joinCode()).toBe('BREW-482');
     expect(component.setupMessage()).toContain('could not resume');
   });
+
+  it('adds a task and selects it for the facilitator', async () => {
+    gateway.nextResult = success(snapshot());
+    component.roomName.set('Sprint planning');
+    component.displayName.set('Felipe');
+    await component.startRoom(new Event('submit'), 'create');
+    gateway.nextAddTaskResult = success(snapshot({ snapshotVersion: 2, extraTask: true }));
+    gateway.nextSelectTaskResult = success(snapshot({ snapshotVersion: 3, activeTaskId: 'task-2', roundId: 'round-2', extraTask: true }));
+    component.newTaskTitle.set('New task');
+
+    await component.addTask(new Event('submit'));
+    fixture.detectChanges();
+
+    expect(gateway.lastAddTask?.title).toBe('New task');
+    expect(gateway.lastSelectTask?.taskId).toBe('task-2');
+    expect(fixture.nativeElement.textContent).toContain('New task');
+  });
+
+  it('casts and changes votes through session commands', async () => {
+    gateway.nextResult = success(snapshot());
+    component.roomName.set('Sprint planning');
+    component.displayName.set('Felipe');
+    await component.startRoom(new Event('submit'), 'create');
+    gateway.nextCastVoteResult = success(snapshot({ snapshotVersion: 2, localEstimate: '5', hasLocalVote: true }));
+
+    await component.castVote('5');
+    fixture.detectChanges();
+
+    expect(gateway.lastCastVote).toEqual(expect.objectContaining({ roundId: 'round-1', estimate: '5' }));
+    expect(fixture.nativeElement.textContent).toContain('Selected 5');
+  });
+
+  it('hides facilitator actions for participants while keeping voting visible', async () => {
+    gateway.nextResult = success(snapshot({ localRole: 'participant' }));
+    component.roomName.set('Sprint planning');
+    component.displayName.set('Sam');
+
+    await component.startRoom(new Event('submit'), 'create');
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain('Pick an estimate card');
+    expect(text).not.toContain('Reveal votes');
+    expect(text).not.toContain('Save final estimate');
+  });
+
+  it('shows all-discussion reveal state without enabling save', async () => {
+    gateway.nextResult = success(snapshot({ roundStatus: 'revealed', computedAverage: null, hasLocalVote: true, localEstimate: '?' }));
+    component.roomName.set('Sprint planning');
+    component.displayName.set('Felipe');
+
+    await component.startRoom(new Event('submit'), 'create');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('No numeric estimate yet');
+    expect(component.canSaveEstimate()).toBe(false);
+  });
+
+  it('shows completed totals and reconnecting state', async () => {
+    gateway.nextResult = success(snapshot({ completed: true, completedTotal: 7.5 }));
+    component.roomName.set('Sprint planning');
+    component.displayName.set('Felipe');
+
+    await component.startRoom(new Event('submit'), 'create');
+    gateway.connectionState.next('reconnecting');
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain('Project estimate');
+    expect(text).toContain('7.5');
+    expect(text).toContain('Reconnecting');
+  });
 });
 
 class FakeRoomGateway extends RoomGateway {
@@ -105,6 +185,12 @@ class FakeRoomGateway extends RoomGateway {
   override readonly events$ = this.events.asObservable();
   override readonly connectionState$ = this.connectionState.asObservable();
   nextResult: RoomCommandResult = success(snapshot());
+  nextAddTaskResult: RoomCommandResult | null = null;
+  nextSelectTaskResult: RoomCommandResult | null = null;
+  nextCastVoteResult: RoomCommandResult | null = null;
+  lastAddTask: AddTaskCommand | null = null;
+  lastSelectTask: SelectTaskCommand | null = null;
+  lastCastVote: CastVoteCommand | null = null;
 
   override createRoom(_command: CreateRoomCommand): Promise<RoomCommandResult> {
     return Promise.resolve(this.nextResult);
@@ -125,28 +211,125 @@ class FakeRoomGateway extends RoomGateway {
   override heartbeat(_command: HeartbeatCommand): Promise<RoomCommandResult> {
     return Promise.resolve(this.nextResult);
   }
+
+  override addTask(command: AddTaskCommand): Promise<RoomCommandResult> {
+    this.lastAddTask = command;
+    return Promise.resolve(this.nextAddTaskResult ?? this.nextResult);
+  }
+
+  override selectTask(command: SelectTaskCommand): Promise<RoomCommandResult> {
+    this.lastSelectTask = command;
+    return Promise.resolve(this.nextSelectTaskResult ?? this.nextResult);
+  }
+
+  override castVote(command: CastVoteCommand): Promise<RoomCommandResult> {
+    this.lastCastVote = command;
+    return Promise.resolve(this.nextCastVoteResult ?? this.nextResult);
+  }
+
+  override revealVotes(_command: RevealVotesCommand): Promise<RoomCommandResult> {
+    return Promise.resolve(this.nextResult);
+  }
+
+  override resetRound(_command: ResetRoundCommand): Promise<RoomCommandResult> {
+    return Promise.resolve(this.nextResult);
+  }
+
+  override startNextRound(_command: StartNextRoundCommand): Promise<RoomCommandResult> {
+    return Promise.resolve(this.nextResult);
+  }
+
+  override saveFinalEstimate(_command: SaveFinalEstimateCommand): Promise<RoomCommandResult> {
+    return Promise.resolve(this.nextResult);
+  }
+
+  override completeEstimation(_command: CompleteEstimationCommand): Promise<RoomCommandResult> {
+    return Promise.resolve(this.nextResult);
+  }
 }
 
 function success(snapshotValue: RoomSnapshot): RoomCommandResult {
   return { success: true, snapshot: snapshotValue, error: null };
 }
 
-function snapshot(): RoomSnapshot {
+function snapshot(options: {
+  snapshotVersion?: number;
+  extraTask?: boolean;
+  activeTaskId?: string;
+  roundId?: string;
+  localRole?: 'facilitator' | 'participant';
+  roundStatus?: 'voting' | 'revealed' | 'closed';
+  computedAverage?: number | null;
+  localEstimate?: '0' | '1' | '2' | '3' | '5' | '8' | '13' | '21' | '?';
+  hasLocalVote?: boolean;
+  completed?: boolean;
+  completedTotal?: number;
+} = {}): RoomSnapshot {
+  const now = new Date().toISOString();
+  const activeTaskId = options.activeTaskId ?? 'task-1';
+  const tasks = [
+    {
+      taskId: 'task-1',
+      title: 'Reconnect flow',
+      details: 'Keep the room state.',
+      status: activeTaskId === 'task-1' ? 'estimating' as const : 'unestimated' as const,
+      finalEstimate: null,
+    },
+  ];
+
+  if (options.extraTask) {
+    tasks.push({
+      taskId: 'task-2',
+      title: 'New task',
+      details: '',
+      status: activeTaskId === 'task-2' ? 'estimating' : 'unestimated',
+      finalEstimate: null,
+    });
+  }
+
   return {
     roomCode: 'BREW-482',
     roomName: 'Sprint planning',
     inviteUrl: 'http://localhost:4200/rooms/brew-482',
     localParticipantId: 'p-1',
     resumeToken: 'token-1',
-    createdAt: new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
+    snapshotVersion: options.snapshotVersion ?? 1,
     participants: [
       {
         participantId: 'p-1',
         displayName: 'Felipe',
-        role: 'facilitator',
+        role: options.localRole ?? 'facilitator',
         presence: 'connected',
-        lastSeenAt: new Date().toISOString(),
+        lastSeenAt: now,
       },
     ],
+    planningSession: {
+      estimateCards: ['0', '1', '2', '3', '5', '8', '13', '21', '?'],
+      tasks,
+      currentTaskId: activeTaskId,
+      activeRound: {
+        roundId: options.roundId ?? 'round-1',
+        taskId: activeTaskId,
+        status: options.roundStatus ?? 'voting',
+        createdAt: now,
+        revealedAt: options.roundStatus === 'revealed' ? now : null,
+        closedAt: options.roundStatus === 'closed' ? now : null,
+        votes: [
+          {
+            participantId: 'p-1',
+            hasVoted: options.hasLocalVote ?? false,
+            estimate: options.localEstimate ?? null,
+            votedAt: options.hasLocalVote ? now : null,
+          },
+        ],
+        computedAverage: options.computedAverage ?? null,
+      },
+      completedRounds: [],
+      archivedEstimateTotal: 0,
+      estimationStatus: options.completed ? 'completed' : 'active',
+      completedTotalEstimate: options.completed ? options.completedTotal ?? 7 : null,
+    },
   };
 }

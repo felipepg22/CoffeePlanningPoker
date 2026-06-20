@@ -9,8 +9,8 @@ import {
   HeartbeatCommand,
   JoinRoomCommand,
   LeaveRoomCommand,
-  ResumeRoomCommand,
   ResetRoundCommand,
+  ResumeRoomCommand,
   RevealVotesCommand,
   RoomCommandResult,
   RoomConnectionState,
@@ -19,13 +19,15 @@ import {
   SaveFinalEstimateCommand,
   SelectTaskCommand,
   StartNextRoundCommand,
-} from '../models/room-session';
-import { RoomGateway } from './room-gateway';
-import { RoomService } from './room.service';
+} from '../../rooms/models/room-session';
+import { RoomGateway } from '../../rooms/services/room-gateway';
+import { RoomService } from '../../rooms/services/room.service';
+import { SessionService } from './session.service';
 
-describe('RoomService', () => {
+describe('SessionService', () => {
   let gateway: FakeRoomGateway;
-  let service: RoomService;
+  let room: RoomService;
+  let service: SessionService;
 
   beforeEach(() => {
     localStorage.clear();
@@ -33,74 +35,59 @@ describe('RoomService', () => {
     TestBed.configureTestingModule({
       providers: [
         RoomService,
+        SessionService,
         { provide: RoomGateway, useValue: gateway },
       ],
     });
-    service = TestBed.inject(RoomService);
+    room = TestBed.inject(RoomService);
+    service = TestBed.inject(SessionService);
   });
 
-  it('creates a room and persists recovery anchors', async () => {
+  it('derives hidden vote progress and local vote visibility', async () => {
     gateway.nextResult = success(snapshot());
 
-    await expect(service.createRoom('Sprint planning', 'Felipe')).resolves.toBe(true);
+    await room.createRoom('Sprint planning', 'Felipe');
 
-    expect(service.activeRoom()?.roomCode).toBe('BREW-482');
-    expect(service.participants().length).toBe(1);
-    expect(localStorage.getItem('coffee-planning-poker.room.BREW-482')).toContain('token-1');
+    expect(service.votedCount()).toBe(2);
+    expect(service.totalVoters()).toBe(2);
+    expect(service.voteProgress()).toBe(100);
+    expect(service.localVote()).toBe('3');
+    expect(service.participantRows().find((participant) => participant.participantId === 'p-2')?.estimate).toBeNull();
+    expect(service.canReveal()).toBe(true);
   });
 
-  it('joins a room and updates participants from gateway events', async () => {
+  it('applies command snapshots and exposes failures without clearing current state', async () => {
     gateway.nextResult = success(snapshot());
-    await service.joinRoom('BREW-482', 'Felipe');
+    await room.createRoom('Sprint planning', 'Felipe');
+    gateway.nextResult = success(snapshot({ snapshotVersion: 2, activeEstimate: '5' }));
 
-    gateway.events.next({
-      type: 'participantJoined',
-      event: {
-        roomCode: 'BREW-482',
-        participant: {
-          participantId: 'p-2',
-          displayName: 'Sam',
-          role: 'participant',
-          presence: 'connected',
-          lastSeenAt: new Date().toISOString(),
-        },
-      },
-    });
+    await expect(service.castVote('5')).resolves.toBe(true);
+    expect(gateway.lastCastVote?.estimate).toBe('5');
+    expect(service.localVote()).toBe('5');
 
-    expect(service.participants().map((participant) => participant.displayName)).toEqual(['Felipe', 'Sam']);
-    expect(service.activeRoom()?.participants.map((participant) => participant.displayName)).toEqual(['Felipe', 'Sam']);
-  });
-
-  it('ignores stale snapshots by version', async () => {
-    gateway.nextResult = success(snapshot({ snapshotVersion: 4 }));
-    await service.createRoom('Sprint planning', 'Felipe');
-
-    gateway.events.next({ type: 'snapshot', snapshot: snapshot({ snapshotVersion: 3, roomName: 'Old room' }) });
-
-    expect(service.activeRoom()?.snapshotVersion).toBe(4);
-    expect(service.activeRoom()?.roomName).toBe('Sprint planning');
-  });
-
-  it('tracks local connection state separately from participants', () => {
-    gateway.connectionState.next('reconnecting');
-
-    expect(service.connectionState()).toBe('reconnecting');
-    expect(service.participants()).toEqual([]);
-  });
-
-  it('clears stale anchor after failed resume', async () => {
-    gateway.nextResult = success(snapshot());
-    await service.createRoom('Sprint planning', 'Felipe');
     gateway.nextResult = {
       success: false,
       snapshot: null,
-      error: { code: 'resume_rejected', message: 'Nope', roomCode: 'BREW-482' },
+      error: { code: 'stale_round', message: 'Round changed.', roomCode: 'BREW-482' },
     };
 
-    await expect(service.resumeRoom('BREW-482')).resolves.toBe(false);
+    await expect(service.castVote('8')).resolves.toBe(false);
+    expect(service.error()?.code).toBe('stale_round');
+    expect(room.activeRoom()?.snapshotVersion).toBe(2);
+  });
 
-    expect(localStorage.getItem('coffee-planning-poker.room.BREW-482')).toBeNull();
-    expect(service.error()?.code).toBe('resume_rejected');
+  it('derives revealed computed averages', async () => {
+    gateway.nextResult = success(snapshot({
+      roundStatus: 'revealed',
+      computedAverage: 4,
+      revealOtherEstimate: true,
+    }));
+
+    await room.createRoom('Sprint planning', 'Felipe');
+
+    expect(service.votesRevealed()).toBe(true);
+    expect(service.computedAverage()).toBe(4);
+    expect(service.participantRows().map((participant) => participant.estimate)).toEqual(['3', '5']);
   });
 });
 
@@ -110,6 +97,7 @@ class FakeRoomGateway extends RoomGateway {
   override readonly events$ = this.events.asObservable();
   override readonly connectionState$ = this.connectionState.asObservable();
   nextResult: RoomCommandResult = success(snapshot());
+  lastCastVote: CastVoteCommand | null = null;
 
   override createRoom(_command: CreateRoomCommand): Promise<RoomCommandResult> {
     return Promise.resolve(this.nextResult);
@@ -139,7 +127,8 @@ class FakeRoomGateway extends RoomGateway {
     return Promise.resolve(this.nextResult);
   }
 
-  override castVote(_command: CastVoteCommand): Promise<RoomCommandResult> {
+  override castVote(command: CastVoteCommand): Promise<RoomCommandResult> {
+    this.lastCastVote = command;
     return Promise.resolve(this.nextResult);
   }
 
@@ -168,7 +157,13 @@ function success(snapshotValue: RoomSnapshot): RoomCommandResult {
   return { success: true, snapshot: snapshotValue, error: null };
 }
 
-function snapshot(overrides: Partial<RoomSnapshot> = {}): RoomSnapshot {
+function snapshot(options: {
+  snapshotVersion?: number;
+  activeEstimate?: '0' | '1' | '2' | '3' | '5' | '8' | '13' | '21' | '?';
+  roundStatus?: 'voting' | 'revealed' | 'closed';
+  computedAverage?: number | null;
+  revealOtherEstimate?: boolean;
+} = {}): RoomSnapshot {
   const now = new Date().toISOString();
   return {
     roomCode: 'BREW-482',
@@ -178,7 +173,7 @@ function snapshot(overrides: Partial<RoomSnapshot> = {}): RoomSnapshot {
     resumeToken: 'token-1',
     createdAt: now,
     updatedAt: now,
-    snapshotVersion: 1,
+    snapshotVersion: options.snapshotVersion ?? 1,
     participants: [
       {
         participantId: 'p-1',
@@ -187,17 +182,53 @@ function snapshot(overrides: Partial<RoomSnapshot> = {}): RoomSnapshot {
         presence: 'connected',
         lastSeenAt: now,
       },
+      {
+        participantId: 'p-2',
+        displayName: 'Sam',
+        role: 'participant',
+        presence: 'connected',
+        lastSeenAt: now,
+      },
     ],
     planningSession: {
       estimateCards: ['0', '1', '2', '3', '5', '8', '13', '21', '?'],
-      tasks: [],
-      currentTaskId: null,
-      activeRound: null,
+      tasks: [
+        {
+          taskId: 'task-1',
+          title: 'Reconnect flow',
+          details: '',
+          status: 'estimating',
+          finalEstimate: null,
+        },
+      ],
+      currentTaskId: 'task-1',
+      activeRound: {
+        roundId: 'round-1',
+        taskId: 'task-1',
+        status: options.roundStatus ?? 'voting',
+        createdAt: now,
+        revealedAt: options.roundStatus === 'revealed' ? now : null,
+        closedAt: null,
+        computedAverage: options.computedAverage ?? null,
+        votes: [
+          {
+            participantId: 'p-1',
+            hasVoted: true,
+            estimate: options.activeEstimate ?? '3',
+            votedAt: now,
+          },
+          {
+            participantId: 'p-2',
+            hasVoted: true,
+            estimate: options.revealOtherEstimate ? '5' : null,
+            votedAt: null,
+          },
+        ],
+      },
       completedRounds: [],
       archivedEstimateTotal: 0,
       estimationStatus: 'active',
       completedTotalEstimate: null,
     },
-    ...overrides,
   };
 }

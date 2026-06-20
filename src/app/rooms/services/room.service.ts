@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdentityService } from '../../identity/services/identity.service';
 import {
   RecoveryAnchor,
+  RoomCommandResult,
   RoomConnectionState,
   RoomError,
   RoomParticipant,
@@ -37,6 +38,16 @@ export class RoomService {
   readonly inviteCopied = this.inviteCopiedSignal.asReadonly();
   readonly announcement = this.announcementSignal.asReadonly();
   readonly isActive = computed(() => this.activeRoomSignal() !== null);
+  readonly planningSession = computed(() => this.activeRoomSignal()?.planningSession ?? null);
+  readonly localParticipant = computed(() => {
+    const room = this.activeRoomSignal();
+    if (!room) {
+      return null;
+    }
+
+    return room.participants.find((participant) => participant.participantId === room.localParticipantId) ?? null;
+  });
+  readonly isFacilitator = computed(() => this.localParticipant()?.role === 'facilitator');
 
   constructor() {
     this.gateway.connectionState$
@@ -148,6 +159,19 @@ export class RoomService {
     });
   }
 
+  applyCommandResult(result: RoomCommandResult): boolean {
+    if (result.snapshot) {
+      this.applySnapshot(result.snapshot);
+      return true;
+    }
+
+    if (result.error) {
+      this.errorSignal.set(result.error);
+    }
+
+    return false;
+  }
+
   async copyInviteLink(): Promise<void> {
     const inviteUrl = this.activeRoomSignal()?.inviteUrl;
     if (!inviteUrl) {
@@ -184,6 +208,14 @@ export class RoomService {
   }
 
   private applySnapshot(snapshot: RoomSnapshot): void {
+    const current = this.activeRoomSignal();
+    if (
+      current?.roomCode === snapshot.roomCode &&
+      snapshot.snapshotVersion < current.snapshotVersion
+    ) {
+      return;
+    }
+
     this.activeRoomSignal.set(snapshot);
     this.participantsSignal.set(snapshot.participants);
     this.connectionStateSignal.set('connected');
@@ -192,14 +224,17 @@ export class RoomService {
   }
 
   private applyParticipantEvent(type: string, participant: RoomParticipant): void {
-    this.participantsSignal.update((participants) => {
+    const updateParticipants = (participants: readonly RoomParticipant[]) => {
       const index = participants.findIndex((existing) => existing.participantId === participant.participantId);
       if (index === -1) {
         return [...participants, participant];
       }
 
       return participants.map((existing) => existing.participantId === participant.participantId ? participant : existing);
-    });
+    };
+
+    this.participantsSignal.update(updateParticipants);
+    this.activeRoomSignal.update((room) => room ? { ...room, participants: updateParticipants(room.participants) } : room);
 
     if (type === 'participantJoined') {
       this.announcementSignal.set(`${participant.displayName} joined.`);

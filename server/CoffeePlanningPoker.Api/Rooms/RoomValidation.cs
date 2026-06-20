@@ -19,6 +19,12 @@ public static partial class RoomValidation
         return normalized.Length is >= 2 and <= 40;
     }
 
+    public static bool IsValidTaskTitle(string value)
+    {
+        var normalized = value.Trim();
+        return normalized.Length is >= 3 and <= 120;
+    }
+
     public static bool IsValidRoomCode(string value)
     {
         var normalized = NormalizeRoomCode(value);

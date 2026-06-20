@@ -100,37 +100,48 @@
           <label for="task-details">Task notes</label>
           <textarea id="task-details" name="task-details" rows="3" [value]="newTaskDetails()" (input)="updateTaskDetails($event)" placeholder="What should the team consider?"></textarea>
 
-          <button class="secondary-action" type="submit">Add task</button>
-          <p id="task-error" class="form-message" [class.is-error]="taskError()" aria-live="polite">{{ taskError() || 'New tasks open a fresh hidden vote.' }}</p>
+          <button class="secondary-action" type="submit" [disabled]="taskState.pendingAction() === 'addTask'">{{ taskState.pendingAction() === 'addTask' ? 'Adding task' : 'Add task' }}</button>
+          <p id="task-error" class="form-message" [class.is-error]="taskMessage()" aria-live="polite">{{ taskMessage() || 'New tasks are shared with the room.' }}</p>
         </form>
       }
     </section>
 
     @if (activeRoom()) {
       <section class="stage-panel panel table-stage" aria-labelledby="active-task-title">
+        @if (isCompleted()) {
+          <div class="completion-panel" aria-live="polite">
+            <p class="section-kicker">Project estimate</p>
+            <strong>{{ formatEstimate(completedTotal()) }}</strong>
+            <span>Total includes archived estimates and saved visible tasks.</span>
+          </div>
+        }
+
         @if (activeTask(); as task) {
           <div class="stage-header table-sign" aria-label="Round summary">
             <div>
               <p class="section-kicker">Planning round</p>
-              <strong>{{ votesRevealed() ? 'Votes revealed' : 'Votes hidden' }}</strong>
-              <span>{{ readinessLabel() }}</span>
+              <strong>{{ votesRevealed() ? 'Votes revealed' : hasActiveRound() ? 'Votes hidden' : 'No active vote' }}</strong>
+              <span>{{ hasActiveRound() ? readinessLabel() : 'Start a round when ready' }}</span>
             </div>
             <div class="estimate-summary" aria-label="Saved estimate">
-              <span>{{ task.estimate || finalEstimate() || 'Open' }}</span>
-              <small>{{ task.estimate ? 'saved points' : 'estimate' }}</small>
+              <span>{{ formatEstimate(task.finalEstimate?.value) }}</span>
+              <small>{{ task.finalEstimate ? 'saved points' : 'estimate' }}</small>
             </div>
           </div>
 
           <div class="task-plaque">
             <p class="section-kicker">Task to estimate</p>
             <h2 id="active-task-title" tabindex="-1">{{ task.title }}</h2>
-            <p>{{ task.details }}</p>
+            <p>{{ task.details || 'No notes added.' }}</p>
+            @if (task.finalEstimate && hasActiveRound()) {
+              <span class="state-note">Re-vote in progress. Saved estimate stays until a newer average is saved.</span>
+            }
           </div>
 
           <div class="readiness-card table-progress" aria-label="Voting progress">
             <div class="readiness-copy">
-              <span>{{ readinessLabel() }}</span>
-              <strong>{{ votesRevealed() ? 'Votes revealed' : 'Votes hidden' }}</strong>
+              <span>{{ hasActiveRound() ? readinessLabel() : 'No active round' }}</span>
+              <strong>{{ votesRevealed() ? 'Votes revealed' : hasActiveRound() ? 'Votes hidden' : 'Waiting for facilitator' }}</strong>
             </div>
             <div class="progress-track" aria-hidden="true">
               <span class="progress-fill" [style.width.%]="voteProgress()"></span>
@@ -148,37 +159,52 @@
               }
             </div>
 
-            <div class="estimate-grid table-card-fan" role="group" aria-label="Estimate cards" [style.--card-center]="(estimateCards.length - 1) / 2">
-              @for (card of estimateCards; track card) {
-                <button class="estimate-card" type="button" [style.--card-index]="$index" [class.is-selected]="selectedEstimate() === card" [disabled]="votesRevealed()" [attr.aria-pressed]="selectedEstimate() === card" (click)="castVote(card)">
+            <div class="estimate-grid table-card-fan" role="group" aria-label="Estimate cards" [style.--card-center]="(session.estimateCards().length - 1) / 2">
+              @for (card of session.estimateCards(); track card) {
+                <button class="estimate-card" type="button" [style.--card-index]="$index" [class.is-selected]="selectedEstimate() === card" [disabled]="!session.canVote() || isCompleted()" [attr.aria-pressed]="selectedEstimate() === card" (click)="castVote(card)">
                   <span>{{ card }}</span>
                 </button>
               }
             </div>
           </div>
 
-          <div class="round-actions" aria-label="Round actions">
-            <button class="coffee-action" type="button" [disabled]="!canReveal()" (click)="revealVotes()">Reveal votes</button>
-            <button class="primary-action" type="button" [disabled]="!canSaveEstimate()" (click)="saveFinalEstimate()">
-              {{ isSyncing() ? 'Saving estimate' : 'Save final estimate' }}
-            </button>
-            <button class="secondary-action" type="button" (click)="startNextRound()">Start next round</button>
-          </div>
+          @if (room.isFacilitator()) {
+            <div class="round-actions" aria-label="Round actions">
+              <button class="coffee-action" type="button" [disabled]="!session.canReveal() || isCompleted()" (click)="revealVotes()">Reveal votes</button>
+              <button class="primary-action" type="button" [disabled]="!canSaveEstimate() || isCompleted()" (click)="saveFinalEstimate()">
+                {{ taskState.pendingAction() === 'saveFinalEstimate' ? 'Saving estimate' : 'Save final estimate' }}
+              </button>
+              <button class="secondary-action" type="button" [disabled]="!activeTask() || isCommandBusy() || isCompleted()" (click)="startReVote()">Start re-vote</button>
+              <button class="secondary-action" type="button" [disabled]="tasks().length === 0 || isCommandBusy() || isCompleted()" (click)="startNextRound()">Start next round</button>
+              <button class="secondary-action" type="button" [disabled]="!canComplete()" (click)="completeEstimation()">Complete estimation</button>
+            </div>
+          }
 
           <div class="result-panel" [class.is-open]="votesRevealed()" aria-live="polite">
             @if (votesRevealed()) {
               <div>
                 <p class="section-kicker">Reveal</p>
-                <h3>{{ splitNeedsDiscussion() ? 'Discuss the spread' : 'Consensus is close' }}</h3>
-                <p>{{ splitNeedsDiscussion() ? 'Ask the high and low voters what changed their estimate.' : 'The room has a clear center. Save it when the team agrees.' }}</p>
+                @if (suggestedEstimate() !== null) {
+                  <h3>{{ splitNeedsDiscussion() ? 'Discuss the spread' : 'Average is ready' }}</h3>
+                  <p>{{ splitNeedsDiscussion() ? 'Ask the high and low voters what changed their estimate.' : 'Save the backend-computed average when the team agrees.' }}</p>
+                } @else {
+                  <h3>No numeric estimate yet</h3>
+                  <p>All revealed votes are discussion signals. Start a re-vote with at least one numeric card.</p>
+                }
               </div>
               <div class="suggested-estimate">
-                <span>{{ suggestedEstimate() || '?' }}</span>
-                <small>suggested</small>
+                <span>{{ formatEstimate(suggestedEstimate()) }}</span>
+                <small>average</small>
               </div>
             } @else {
               <p>Votes stay covered until the facilitator reveals them.</p>
             }
+          </div>
+        } @else {
+          <div class="empty-round-state" aria-live="polite">
+            <p class="section-kicker">Planning round</p>
+            <h2 id="active-task-title" tabindex="-1">No task selected</h2>
+            <p>Add a task, then the facilitator selects it to start hidden voting.</p>
           </div>
         }
       </section>
@@ -201,7 +227,7 @@
                   <strong>{{ participant.displayName }}</strong>
                   <small>{{ participant.role === 'facilitator' ? 'Facilitator' : 'Participant' }}</small>
                 </span>
-                <span class="vote-chip" [class.is-revealed]="votesRevealed() && participant.vote !== null" [class.is-thinking]="participant.vote === null" [class.is-away]="participant.presence !== 'connected'">{{ statusLabel(participant) }}</span>
+                <span class="vote-chip" [class.is-revealed]="votesRevealed() && participant.estimate !== null" [class.is-thinking]="!participant.hasVoted" [class.is-away]="participant.presence !== 'connected'">{{ statusLabel(participant) }}</span>
               </li>
             }
           </ul>
@@ -216,25 +242,30 @@
           </div>
 
           <ul class="task-list">
-            @for (task of tasks(); track task.id) {
+            @for (task of tasks(); track task.taskId) {
               <li>
-                <button class="task-row" type="button" [class.is-active]="task.id === activeTaskId()" (click)="selectTask(task.id)">
+                <button class="task-row" type="button" [class.is-active]="task.taskId === activeTask()?.taskId" [disabled]="!room.isFacilitator() || taskState.pendingAction() === 'selectTask' || isCompleted()" (click)="selectTask(task.taskId)">
                   <span>
                     <strong>{{ task.title }}</strong>
-                    <small>{{ taskStatusLabel(task.status) }}</small>
+                    <small>{{ taskStatusLabel(task) }}</small>
                   </span>
-                  <span class="task-estimate">{{ task.estimate || 'Open' }}</span>
+                  <span class="task-estimate">{{ formatEstimate(task.finalEstimate?.value) }}</span>
                 </button>
               </li>
+            } @empty {
+              <li class="empty-list-item">No tasks yet.</li>
             }
           </ul>
+          @if (archivedEstimateTotal() > 0) {
+            <p class="archived-total">Archived estimate total: {{ formatEstimate(archivedEstimateTotal()) }}</p>
+          }
         </section>
 
         <section class="recovery-panel" aria-labelledby="recovery-title">
           <span class="recovery-mark" aria-hidden="true"></span>
           <div>
             <h2 id="recovery-title">Refresh safe</h2>
-            <p>Room code and resume token are saved locally; room state comes back from SignalR.</p>
+            <p>Room code and resume token are saved locally; tasks and votes recover from SignalR snapshots.</p>
           </div>
         </section>
       </aside>
@@ -242,7 +273,7 @@
   </main>
 
   <footer class="status-bar" aria-live="polite">
-    <span class="status-dot small" [class.is-live]="!isSyncing() && room.connectionState() === 'connected'"></span>
-    <span>{{ isSyncing() ? 'Saving the estimate...' : room.announcement() || notice() }}</span>
+    <span class="status-dot small" [class.is-live]="!isCommandBusy() && room.connectionState() === 'connected'"></span>
+    <span>{{ isCommandBusy() ? 'Syncing room state...' : notice() || room.announcement() }}</span>
   </footer>
 </div>

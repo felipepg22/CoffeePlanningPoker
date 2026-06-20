@@ -70,6 +70,30 @@ public sealed class RoomHub(InMemoryRoomStore store) : Hub
         return result;
     }
 
+    public Task<RoomCommandResult> AddTask(AddTaskRequest request) =>
+        MutatePlanningSession(store.AddTask(request));
+
+    public Task<RoomCommandResult> SelectTask(SelectTaskRequest request) =>
+        MutatePlanningSession(store.SelectTask(request));
+
+    public Task<RoomCommandResult> CastVote(CastVoteRequest request) =>
+        MutatePlanningSession(store.CastVote(request));
+
+    public Task<RoomCommandResult> RevealVotes(RevealVotesRequest request) =>
+        MutatePlanningSession(store.RevealVotes(request));
+
+    public Task<RoomCommandResult> ResetRound(ResetRoundRequest request) =>
+        MutatePlanningSession(store.ResetRound(request));
+
+    public Task<RoomCommandResult> StartNextRound(StartNextRoundRequest request) =>
+        MutatePlanningSession(store.StartNextRound(request));
+
+    public Task<RoomCommandResult> SaveFinalEstimate(SaveFinalEstimateRequest request) =>
+        MutatePlanningSession(store.SaveFinalEstimate(request));
+
+    public Task<RoomCommandResult> CompleteEstimation(CompleteEstimationRequest request) =>
+        MutatePlanningSession(store.CompleteEstimation(request));
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var participantEvent = store.MarkDisconnected(Context.ConnectionId);
@@ -79,6 +103,18 @@ public sealed class RoomHub(InMemoryRoomStore store) : Hub
         }
 
         await base.OnDisconnectedAsync(exception);
+    }
+
+    private async Task<RoomCommandResult> MutatePlanningSession(RoomCommandResult result)
+    {
+        if (!result.Success || result.Snapshot is null)
+        {
+            await SendError(result);
+            return result;
+        }
+
+        await BroadcastSnapshots(result.Snapshot.RoomCode);
+        return result;
     }
 
     private async Task BroadcastEvent(RoomCommandResult result)
@@ -104,6 +140,14 @@ public sealed class RoomHub(InMemoryRoomStore store) : Hub
         }
 
         await clients.SendAsync("PresenceChanged", payload);
+    }
+
+    private async Task BroadcastSnapshots(string roomCode)
+    {
+        foreach (var clientSnapshot in store.GetClientSnapshots(roomCode))
+        {
+            await Clients.Client(clientSnapshot.ConnectionId).SendAsync("RoomSnapshot", clientSnapshot.Snapshot);
+        }
     }
 
     private async Task SendError(RoomCommandResult result)
