@@ -1,0 +1,32 @@
+{
+  "id": "0a590b18",
+  "phase": "completed",
+  "pageUrl": "/",
+  "sourceFile": "src/app/rooms/components/room-workflow.component.html",
+  "previewFile": null,
+  "previewMode": null,
+  "expectedVariants": 3,
+  "arrivedVariants": 3,
+  "visibleVariant": 1,
+  "paramValues": {
+    "breath": 0.5,
+    "width": 0.45,
+    "focus": "create"
+  },
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 11,
+  "activeOwner": "4857010b",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [
+    {
+      "error": "carbonize_cleanup_required",
+      "file": "src/app/rooms/components/room-workflow.component.html",
+      "message": "Accepted variant still has carbonize markers that must be folded into source CSS."
+    }
+  ],
+  "updatedAt": "2026-06-15T22:40:30.030Z"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "d0ccbfc7",
+  "phase": "discarded",
+  "pageUrl": "/",
+  "sourceFile": "src/app/rooms/components/room-workflow.component.html",
+  "previewFile": null,
+  "previewMode": null,
+  "expectedVariants": 3,
+  "arrivedVariants": 3,
+  "visibleVariant": 2,
+  "paramValues": {
+    "density": 1,
+    "structure": "grid"
+  },
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 18,
+  "activeOwner": "4857010b",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [],
+  "updatedAt": "2026-06-15T22:44:42.616Z"
+}
