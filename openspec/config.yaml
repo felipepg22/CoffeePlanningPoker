@@ -47,6 +47,7 @@ context: |
   - Prefer deterministic tests over timer-heavy or brittle DOM assertions.
   - Run formatting, linting, unit tests, and build checks when the relevant scripts exist.
   - For frontend changes, verify the app in a browser at desktop and mobile widths when a dev server can run.
+  - For frontend design, UI implementation, or browser verification tasks, always check whether Impeccable skills are available and applicable; use them when they apply, and document the fallback if they are unavailable.
   - Keep files ASCII unless a file already uses another character set.
 
 rules:
@@ -73,4 +74,5 @@ rules:
     - "Break work into small, verifiable implementation tasks grouped by capability or feature area."
     - "Include focused tests for domain rules, voting transitions, room/session services, and important component interactions when applicable."
     - "Include verification tasks for formatting, linting, unit tests, build, and browser checks at desktop and mobile widths when UI changes."
+    - "For frontend tasks, include an explicit Impeccable skill applicability check and use the installed Impeccable workflow when it applies."
     - "Keep tasks scoped to the accepted proposal and avoid unrelated refactors or design churn."

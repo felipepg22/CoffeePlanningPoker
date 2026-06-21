@@ -88,6 +88,8 @@ tasks collaboratively.
 
 - Preserve user changes. Do not reset, revert, or overwrite unrelated work.
 - Keep changes scoped to the requested feature or fix.
+- Update `README.md` whenever a significant app change affects setup, scripts,
+  architecture, workflows, capabilities, product behavior, or verification steps.
 - If requirements are ambiguous, make the smallest reasonable assumption and
   document it in the final response.
 - If adding dependencies, explain why they are needed and prefer established
