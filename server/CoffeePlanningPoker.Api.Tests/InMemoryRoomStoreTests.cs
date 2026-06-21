@@ -318,6 +318,32 @@ public sealed class InMemoryRoomStoreTests
     }
 
     [Fact]
+    public void CompleteEstimationRequiresSavedFinalEstimate()
+    {
+        var store = CreateStore();
+        var (roomCode, _, _) = CreateSelectedTask(store);
+
+        var completed = store.CompleteEstimation(new CompleteEstimationRequest(roomCode, "p-1"));
+
+        Assert.False(completed.Success);
+        Assert.Equal(RoomErrorCodes.NoNumericVotes, completed.Error!.Code);
+        Assert.Equal("Save at least one final estimate before completing estimation.", completed.Error.Message);
+    }
+
+    [Fact]
+    public void CompleteEstimationAllowsSavedZeroFinalEstimate()
+    {
+        var store = CreateStore();
+        var (roomCode, taskId, roundId) = CreateSelectedTask(store);
+        SaveRound(store, roomCode, taskId, roundId, "0", "0");
+
+        var completed = store.CompleteEstimation(new CompleteEstimationRequest(roomCode, "p-1"));
+
+        Assert.True(completed.Success);
+        Assert.Equal(0m, completed.Snapshot!.PlanningSession!.CompletedTotalEstimate);
+    }
+
+    [Fact]
     public void ResumeSnapshotPreservesPlanningState()
     {
         var store = CreateStore();

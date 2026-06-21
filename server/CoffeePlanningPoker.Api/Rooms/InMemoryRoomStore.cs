@@ -394,6 +394,11 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
     {
         return MutateAsFacilitator(request.RoomCode, request.ParticipantId, (room, participant, now) =>
         {
+            if (!HasSavedFinalEstimate(room))
+            {
+                return Failure(RoomErrorCodes.NoNumericVotes, "Save at least one final estimate before completing estimation.", room.RoomCode);
+            }
+
             room.EstimationStatus = RoomEstimationStatuses.Completed;
             room.CompletedTotalEstimate = CalculateTotal(room);
             Touch(room, now);
@@ -643,6 +648,9 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
             .Where(estimate => estimate is { Archived: false })
             .Select(estimate => estimate!.Value)
             .Sum();
+
+    private static bool HasSavedFinalEstimate(RoomState room) =>
+        room.Tasks.Any(task => task.FinalEstimate is not null);
 
     private static RoomCommandResult Failure(string code, string message, string? roomCode = null) =>
         new(false, null, new RoomErrorDto(code, message, roomCode));
