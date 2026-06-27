@@ -80,7 +80,7 @@ describe('RoomWorkflowComponent', () => {
     expect(component.activeRoom()?.roomCode).toBe('BREW-482');
     expect(text).toContain('Pick an estimate card');
     expect(text).toContain('Participants');
-    expect(router.navigate).toHaveBeenCalledWith(['/rooms', 'brew-482'], { replaceUrl: true });
+    expect(router.navigate).toHaveBeenCalledWith(['/en-US/rooms/brew-482'], { replaceUrl: true });
   });
 
   it('keeps invite code available after failed resume', async () => {

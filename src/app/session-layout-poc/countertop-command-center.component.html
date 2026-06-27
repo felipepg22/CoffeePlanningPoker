@@ -1,0 +1,137 @@
+<section class="poc-layout command-center" aria-label="Countertop Command Center session layout">
+  <header class="poc-topbar">
+    <div class="poc-brand">
+      <span class="poc-cup" aria-hidden="true"><span></span></span>
+      <strong>CoffeePlanningPoker</strong>
+    </div>
+    <span class="poc-room-code">BREW-482</span>
+    <span class="poc-live"><span></span>Connected</span>
+    <button class="poc-button poc-button-ghost" type="button">Invite people</button>
+    <button class="poc-icon-button" type="button" aria-label="Room menu">...</button>
+  </header>
+
+  <div class="command-grid">
+    <aside class="poc-panel task-column" aria-labelledby="command-tasks-title">
+      <div class="poc-panel-header">
+        <h2 id="command-tasks-title">Tasks</h2>
+        <button class="poc-icon-button poc-button-warm" type="button" aria-label="Add task">+</button>
+      </div>
+
+      <label class="poc-search">
+        <span>Filter tasks</span>
+        <input type="search" placeholder="Filter tasks">
+      </label>
+
+      <div class="poc-list">
+        @for (taskItem of state.tasks(); track taskItem.id) {
+          <button
+            class="task-row"
+            type="button"
+            [class.is-active]="taskItem.id === state.activeTask().id"
+            (click)="state.selectTask(taskItem.id)"
+          >
+            <span>
+              <strong>{{ taskItem.code }}</strong>
+              <small>{{ taskItem.title }}</small>
+            </span>
+            <span class="poc-chip">{{ state.taskStatusLabel(taskItem) }}</span>
+          </button>
+        }
+      </div>
+
+      <form class="poc-form">
+        <h3>Add task</h3>
+        <input type="text" placeholder="Task title">
+        <textarea rows="4" placeholder="Add details"></textarea>
+        <button class="poc-button poc-button-primary" type="button">Add task</button>
+      </form>
+    </aside>
+
+    @if (state.activeTask(); as task) {
+      <main class="poc-panel focus-stage stage-dim" aria-labelledby="command-active-task">
+        <div class="stage-heading">
+          <div>
+            <p class="poc-label">Active task</p>
+            <h2 id="command-active-task">{{ task.title }}</h2>
+            <span>{{ task.details }}</span>
+          </div>
+          <span class="poc-pill">Saved {{ task.estimate ?? '-' }}</span>
+        </div>
+
+        <div class="progress-card">
+          <span>{{ state.votedCount() }} of {{ state.totalVoters() }} voted</span>
+          <span class="progress-track" aria-hidden="true">
+            <span [style.width.%]="state.voteProgress()"></span>
+          </span>
+        </div>
+
+        <section class="estimate-zone" aria-labelledby="command-estimate-heading">
+          <div class="poc-section-row">
+            <h3 id="command-estimate-heading">Pick an estimate</h3>
+            <span class="selected-note">Selected {{ state.selectedEstimate() }}</span>
+          </div>
+          <div class="estimate-grid">
+            @for (card of state.cards; track card) {
+              <button
+                class="estimate-card"
+                type="button"
+                [class.is-selected]="state.selectedEstimate() === card"
+                [attr.aria-pressed]="state.selectedEstimate() === card"
+                (click)="selectEstimate(card)"
+              >
+                {{ card }}
+              </button>
+            }
+          </div>
+        </section>
+
+        <div class="action-row">
+          <button class="poc-button poc-button-warm" type="button" (click)="state.revealVotes()">Reveal votes</button>
+          <button class="poc-button poc-button-primary" type="button" [disabled]="!state.canSave()" (click)="state.saveFinalEstimate()">Save final estimate</button>
+          <button class="poc-button poc-button-secondary" type="button" (click)="state.startReVote()">Start re-vote</button>
+        </div>
+
+        <section class="reveal-panel" aria-live="polite">
+          @if (state.revealed()) {
+            <div>
+              <p class="poc-label">Reveal</p>
+              <h3>Average is ready</h3>
+              <span>Range 5 - 13</span>
+            </div>
+            <strong>Average {{ state.averageEstimate() }}</strong>
+          } @else {
+            <span>Votes stay covered until reveal.</span>
+          }
+        </section>
+      </main>
+    }
+
+    <aside class="poc-panel people-column" aria-labelledby="command-people-title">
+      <div class="poc-panel-header">
+        <h2 id="command-people-title">Participants</h2>
+        <span class="count-pill">{{ state.totalVoters() }}</span>
+      </div>
+
+      <div class="poc-list">
+        @for (participant of state.participants(); track participant.id) {
+          <div class="participant-row" [class.is-away]="participant.presence === 'reconnecting'">
+            <span class="avatar" [class]="'avatar tone-' + participant.tone">{{ participant.initials }}</span>
+            <span>
+              <strong>{{ participant.name }}</strong>
+              <small>{{ participant.role }}</small>
+            </span>
+            <span class="vote-chip">{{ state.participantVoteLabel(participant) }}</span>
+          </div>
+        }
+      </div>
+
+      <button class="poc-button poc-button-secondary full-width" type="button">Copy invite link</button>
+    </aside>
+  </div>
+
+  <footer class="poc-status">
+    <span class="poc-live"><span></span>{{ state.notice() }}</span>
+    <span>Auto-sync is on</span>
+    <button class="poc-button poc-button-secondary" type="button">Room settings</button>
+  </footer>
+</section>

@@ -1,0 +1,1104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="skip.roomWorkflow" datatype="html">
+        <source>Skip to room workflow</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">1,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.roomStatus" datatype="html">
+        <source>Room status</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">4,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.currentRoom" datatype="html">
+        <source>Current room</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">11,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.copyInvite" datatype="html">
+        <source>Copy invite</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">161</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="room.noRoom" datatype="html">
+        <source>No room</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">34,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="room.createOrJoin" datatype="html">
+        <source>Create or join</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">35,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.leaveRoom" datatype="html">
+        <source>Leave room</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.roomMenu" datatype="html">
+        <source>Room menu</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">47,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="setup.startHere" datatype="html">
+        <source>Start here</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">57,58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="setup.setRoom" datatype="html">
+        <source>Set the room</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="setup.roomDetailsHint" datatype="html">
+        <source>Room details appear after create or join succeeds.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">59,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.setupMode" datatype="html">
+        <source>Choose room setup mode</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">62,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.createRoom" datatype="html">
+        <source>Create room</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">63,64</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">79,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.joinRoom" datatype="html">
+        <source>Join room</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">64,67</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">95,96</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="label.roomName" datatype="html">
+        <source>Room name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">69,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholder.roomName" datatype="html">
+        <source>Sprint planning</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">70,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="label.displayName" datatype="html">
+        <source>Your display name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">72,73</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">88,89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholder.displayName" datatype="html">
+        <source>Your name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">73,75</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">89,91</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.creatingRoom" datatype="html">
+        <source>Creating room</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">77,78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="label.roomCode" datatype="html">
+        <source>Room code</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">85,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.joiningRoom" datatype="html">
+        <source>Joining room</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">93,94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.entryReady" datatype="html">
+        <source>Create a room or join with a code.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">105,107</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="heading.tasks" datatype="html">
+        <source>Tasks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">112,113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.addTask" datatype="html">
+        <source>Add task</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">114,115</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">171,172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.taskMenu" datatype="html">
+        <source>Task menu</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">117,118</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="label.filterTasks" datatype="html">
+        <source>Filter tasks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">125,126</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholder.filterTasks" datatype="html">
+        <source>Filter tasks...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">126,127</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="task.noTasksYet" datatype="html">
+        <source>No tasks yet.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">144,146</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="task.count" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ tasks().length }}"/> tasks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">148,150</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="heading.addTask" datatype="html">
+        <source>Add a task</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">153,154</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.collapseAddTask" datatype="html">
+        <source>Collapse add task</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">154,155</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="label.taskTitle" datatype="html">
+        <source>Task title</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">159,160</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholder.taskTitle" datatype="html">
+        <source>Task title...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">160,162</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="label.taskNotes" datatype="html">
+        <source>Task notes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">162,163</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholder.taskNotes" datatype="html">
+        <source>Add details (optional)...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">163,165</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.cancel" datatype="html">
+        <source>Cancel</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">166,167</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.addingTask" datatype="html">
+        <source>Adding task</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">169,170</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="task.sharedHint" datatype="html">
+        <source>New tasks are shared with the room.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">180,181</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="section.projectEstimate" datatype="html">
+        <source>Project estimate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">190,191</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="completion.totalHint" datatype="html">
+        <source>Total includes archived estimates and saved visible tasks.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">192,195</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="section.taskToEstimate" datatype="html">
+        <source>Active task</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">199,200</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.bookmarkTask" datatype="html">
+        <source>Bookmark task</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">206,207</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.taskOptions" datatype="html">
+        <source>Task options</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">209,210</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.votingProgress" datatype="html">
+        <source>Voting progress</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">215,216</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="heading.pickEstimate" datatype="html">
+        <source>Pick an estimate card</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">225,226</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vote.selected" datatype="html">
+        <source>Selected <x id="INTERPOLATION" equiv-text="{{ selectedEstimate() }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">227,228</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.estimateCards" datatype="html">
+        <source>Estimate cards</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">230,231</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vote.changeUntilReveal" datatype="html">
+        <source>Tip: You can change your vote until revealed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">238,241</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.roundActions" datatype="html">
+        <source>Round actions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">242,243</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.revealVotes" datatype="html">
+        <source>Reveal votes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">245,246</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="estimate.averageValue" datatype="html">
+        <source>Average <x id="INTERPOLATION" equiv-text="{{ formatEstimate(suggestedEstimate()) }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">264,265</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="estimate.range" datatype="html">
+        <source>Range: <x id="INTERPOLATION" equiv-text="{{ revealedVoteRange() }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">266,267</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="reveal.noNumericEstimate" datatype="html">
+        <source>No numeric estimate yet</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">269,270</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="reveal.discussionSignals" datatype="html">
+        <source>All revealed votes are discussion signals. Start a re-vote with at least one numeric card.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">270,272</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.savingEstimate" datatype="html">
+        <source>Saving estimate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">279,280</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.saveFinalEstimate" datatype="html">
+        <source>Save final estimate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">281,283</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.startRevote" datatype="html">
+        <source>Start re-vote</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">284,285</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.startNextRound" datatype="html">
+        <source>Start next round</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">285,286</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.completeEstimation" datatype="html">
+        <source>Complete estimation</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">286,288</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="round.coveredUntilReveal" datatype="html">
+        <source>Votes stay covered until the facilitator reveals them.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">290,292</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="section.planningRound" datatype="html">
+        <source>Planning round</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">295,296</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="round.noTaskSelected" datatype="html">
+        <source>No task selected</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">296,297</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="round.addTaskThenSelect" datatype="html">
+        <source>Add a task, then the facilitator selects it to start hidden voting.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">297,300</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="heading.participants" datatype="html">
+        <source>Participants</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">305,306</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aria.participantMenu" datatype="html">
+        <source>Participant menu</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">308,309</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="label.searchParticipants" datatype="html">
+        <source>Search participants</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">315,316</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholder.searchParticipants" datatype="html">
+        <source>Search participants...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">316,319</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="participant.you" datatype="html">
+        <source>(You)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">327,329</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="role.facilitator" datatype="html">
+        <source>Facilitator</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">334,335</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="participant.noMatches" datatype="html">
+        <source>No participants match that search.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">341,345</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="estimate.archivedTotal" datatype="html">
+        <source>Archived estimate total: <x id="INTERPOLATION" equiv-text="{{ formatEstimate(archivedEstimateTotal()) }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">346,349</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="status.syncing" datatype="html">
+        <source>Syncing room state...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">362,363</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sync.autoOn" datatype="html">
+        <source>Auto-sync is on</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">371,372</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.roomSettings" datatype="html">
+        <source>Room settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.html</context>
+          <context context-type="linenumber">375,377</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="round.readiness" datatype="html">
+        <source><x id="votedCount" equiv-text="this.votedCount()"/> of <x id="totalVoters" equiv-text="this.totalVoters()"/> voted</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">137</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="button.copied" datatype="html">
+        <source>Copied</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">161</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sync.notStarted" datatype="html">
+        <source>Not synced yet</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">175</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sync.available" datatype="html">
+        <source>Sync available</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">180</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sync.lastSync" datatype="html">
+        <source>Last sync: <x id="time" equiv-text="updated.toLocaleTimeString(this.localeId, { hour: &apos;numeric&apos;, minute: &apos;2-digit&apos; })"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">183</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.connected" datatype="html">
+        <source>Connected</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">204</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.reconnecting" datatype="html">
+        <source>Reconnecting</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">208</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.disconnected" datatype="html">
+        <source>Disconnected</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">212</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.notConnected" datatype="html">
+        <source>Not connected</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">215</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.invalidInvite" datatype="html">
+        <source>That invite link is not valid.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">233</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.roomCreated" datatype="html">
+        <source><x id="roomCode" equiv-text="activeRoom?.roomCode ?? &apos;Room&apos;"/> is live. Add a task to begin.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">316</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.roomJoined" datatype="html">
+        <source>Joined <x id="roomCode" equiv-text="roomCode"/>. Your vote is hidden until reveal.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">333</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.roomLeft" datatype="html">
+        <source>Left the room.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">341</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/services/room.service.ts</context>
+          <context context-type="linenumber">147</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.taskAdded" datatype="html">
+        <source>Task added.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">376</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.taskSelected" datatype="html">
+        <source>Task selected. Votes are ready.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">390</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.voteSaved" datatype="html">
+        <source>Your <x id="estimate" equiv-text="value"/> vote is saved. You can change it until reveal.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">398</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.votesSplit" datatype="html">
+        <source>Votes are split. Discuss the high and low estimates first.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">406</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.votesRevealed" datatype="html">
+        <source>Votes are revealed. Save the final estimate when the team agrees.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">407</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.finalEstimateSaved" datatype="html">
+        <source>Saved <x id="PH" equiv-text="this.formatEstimate(estimate)"/> points for <x id="taskTitle" equiv-text="task.title"/>.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">416</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.revoteReady" datatype="html">
+        <source>New vote ready. Prior saved estimate stays until a newer one is saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">428</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.nextRoundReady" datatype="html">
+        <source>Next round ready. Pick a card when discussion is done.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">435</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.estimationCompleted" datatype="html">
+        <source>Project estimate total is <x id="estimate" equiv-text="this.formatEstimate(this.completedTotal())"/>.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">443</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vote.points" datatype="html">
+        <source><x id="estimate" equiv-text="participant.estimate"/> points</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">463</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vote.voted" datatype="html">
+        <source>Voted</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">466</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vote.thinking" datatype="html">
+        <source>Thinking</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">466</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vote.hidden" datatype="html">
+        <source>Hidden</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">478</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="presence.reconnecting" datatype="html">
+        <source>Reconnecting</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">483</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="presence.disconnected" datatype="html">
+        <source>Disconnected</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">487</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="presence.left" datatype="html">
+        <source>Left</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">491</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="presence.here" datatype="html">
+        <source>Here</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">494</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskStatus.estimated" datatype="html">
+        <source>Estimated</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">499</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskStatus.revote" datatype="html">
+        <source>Re-vote</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">503</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskStatus.inRound" datatype="html">
+        <source>In round</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">503</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskStatus.ready" datatype="html">
+        <source>Ready</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">506</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="task.reference" datatype="html">
+        <source>Task <x id="taskNumber" equiv-text="index + 1"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">514</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vote.unknownEstimate" datatype="html">
+        <source>Unknown</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">531</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vote.zeroEstimate" datatype="html">
+        <source>Zero</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">535</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.rejoined" datatype="html">
+        <source>Rejoined <x id="roomCode" equiv-text="roomCode"/>.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">549</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.resumeFailed" datatype="html">
+        <source>We could not resume that room. Enter your name to join again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">555</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.inviteCopied" datatype="html">
+        <source>Room link copied.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">568</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/services/room.service.ts</context>
+          <context context-type="linenumber">184</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.shareCode" datatype="html">
+        <source>Share code <x id="roomCode" equiv-text="code"/>.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/components/room-workflow.component.ts</context>
+          <context context-type="linenumber">572</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/services/room.service.ts</context>
+          <context context-type="linenumber">188</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.roomLive" datatype="html">
+        <source><x id="roomCode" equiv-text="snapshot.roomCode"/> is live.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/services/room.service.ts</context>
+          <context context-type="linenumber">223</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.participantJoined" datatype="html">
+        <source><x id="displayName" equiv-text="participant.displayName"/> joined.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/services/room.service.ts</context>
+          <context context-type="linenumber">240</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.participantLeft" datatype="html">
+        <source><x id="displayName" equiv-text="participant.displayName"/> left.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/services/room.service.ts</context>
+          <context context-type="linenumber">242</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.participantReconnecting" datatype="html">
+        <source><x id="displayName" equiv-text="participant.displayName"/> is reconnecting.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/services/room.service.ts</context>
+          <context context-type="linenumber">244</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notice.participantReconnected" datatype="html">
+        <source><x id="displayName" equiv-text="participant.displayName"/> reconnected.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/rooms/services/room.service.ts</context>
+          <context context-type="linenumber">246</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="estimate.open" datatype="html">
+        <source>Open</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/estimate-format.ts</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="locale.selectorLabel" datatype="html">
+        <source>Language</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/locale-selector.component.ts</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="locale.ptBR" datatype="html">
+        <source>Portuguese (Brazil)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/locales.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="locale.enUS" datatype="html">
+        <source>English (United States)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/locales.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="locale.esES" datatype="html">
+        <source>Spanish (Spain)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/locales.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.roomNameTooShort" datatype="html">
+        <source>Enter a room name with at least <x id="min" equiv-text="result.params[&apos;min&apos;]"/> characters.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.roomNameTooLong" datatype="html">
+        <source>Keep the room name under <x id="max" equiv-text="result.params[&apos;max&apos;]"/> characters.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.displayNameTooShort" datatype="html">
+        <source>Enter a display name with at least <x id="min" equiv-text="result.params[&apos;min&apos;]"/> characters.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.displayNameTooLong" datatype="html">
+        <source>Keep your display name under <x id="max" equiv-text="result.params[&apos;max&apos;]"/> characters.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.invalidRoomCode" datatype="html">
+        <source>Enter a valid room code.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.taskTitleTooShort" datatype="html">
+        <source>Add a task title before starting a new round.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.taskTitleTooLong" datatype="html">
+        <source>Keep the task title under <x id="max" equiv-text="result.params[&apos;max&apos;]"/> characters.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.taskDetailsTooLong" datatype="html">
+        <source>Keep task notes under <x id="max" equiv-text="result.params[&apos;max&apos;]"/> characters.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.unknown" datatype="html">
+        <source>Something changed before that action finished. Try again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.invalidRoomName" datatype="html">
+        <source>Enter a valid room name and try again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.invalidDisplayName" datatype="html">
+        <source>Enter a valid display name and try again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.invalidRoomCode" datatype="html">
+        <source>Check the room code and try again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.roomUnavailable" datatype="html">
+        <source>That room is unavailable. Check the code or create a new room.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.resumeRejected" datatype="html">
+        <source>We could not resume that room. Enter your name to join again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.duplicateJoinRejected" datatype="html">
+        <source>That participant session is already active. Rejoin with your saved browser session.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.invalidTaskTitle" datatype="html">
+        <source>Add a task title before starting a new round.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.forbidden" datatype="html">
+        <source>Only the facilitator can do that.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.taskNotFound" datatype="html">
+        <source>That task is no longer available.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.noActiveTask" datatype="html">
+        <source>Select a task before working with votes.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.staleRound" datatype="html">
+        <source>This round changed. Use the latest room state.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.invalidEstimate" datatype="html">
+        <source>Choose a valid estimate card.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.voteClosed" datatype="html">
+        <source>Votes are closed for this round.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.roundNotRevealed" datatype="html">
+        <source>Reveal votes before saving an estimate.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.noNumericVotes" datatype="html">
+        <source>A numeric vote is required before saving an estimate.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.roomCompleted" datatype="html">
+        <source>This room estimation is already complete.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.connectionFailed" datatype="html">
+        <source>The room connection failed. Check your network and retry.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/messages.ts</context>
+          <context context-type="linenumber">73</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

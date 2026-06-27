@@ -1,0 +1,39 @@
+<section class="poc-page" aria-labelledby="layout-poc-title">
+  <header class="poc-lab-header">
+    <div>
+      <p class="poc-label">Session layout proof of concept</p>
+      <h1 id="layout-poc-title">CoffeePlanningPoker session layouts</h1>
+    </div>
+    <a class="poc-home-link" href="/">Room workflow</a>
+  </header>
+
+  <nav class="poc-layout-nav" aria-label="Session layout concepts">
+    @for (layout of layouts; track layout.id) {
+      <button
+        type="button"
+        [class.is-active]="activeLayout() === layout.id"
+        [attr.aria-pressed]="activeLayout() === layout.id"
+        (click)="showLayout(layout.id)"
+      >
+        {{ layout.label }}
+      </button>
+    }
+  </nav>
+
+  <main class="poc-layout-stage">
+    @switch (activeLayout()) {
+      @case ('countertop') {
+        <app-countertop-command-center />
+      }
+      @case ('round-table') {
+        <app-round-table-focus />
+      }
+      @case ('facilitator') {
+        <app-facilitator-roaster-console />
+      }
+      @case ('compact') {
+        <app-coffee-break-compact />
+      }
+    }
+  </main>
+</section>

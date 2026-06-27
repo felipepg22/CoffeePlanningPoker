@@ -1,0 +1,145 @@
+<section class="poc-layout facilitator-console" aria-label="Facilitator Roaster Console session layout">
+  <header class="poc-topbar">
+    <div class="poc-brand">
+      <span class="poc-cup" aria-hidden="true"><span></span></span>
+      <strong>CoffeePlanningPoker</strong>
+    </div>
+    <span class="poc-room-code">Room BREW-482</span>
+    <span class="poc-pill">Facilitator</span>
+    <span class="poc-live push-right"><span></span>Connected</span>
+    <button class="poc-button poc-button-ghost" type="button">Invite people</button>
+  </header>
+
+  <div class="console-grid">
+    <aside class="poc-panel command-rail" aria-labelledby="console-command-title">
+      <h2 id="console-command-title">Current task</h2>
+      @if (state.activeTask(); as task) {
+        <div class="active-task-card">
+          <strong>{{ task.code }}</strong>
+          <span>{{ task.title }}</span>
+          <small>{{ task.details }}</small>
+        </div>
+      }
+
+      <section class="rail-section" aria-labelledby="console-actions-title">
+        <h3 id="console-actions-title">Round actions</h3>
+        <div class="round-stepper" aria-label="Round step">
+          <span>1</span>
+          <strong>2</strong>
+          <span>3</span>
+        </div>
+        <span class="rail-progress">{{ state.votedCount() }} of {{ state.totalVoters() }} voted</span>
+        <button class="poc-button poc-button-warm full-width" type="button" (click)="state.revealVotes()">Reveal votes</button>
+        <button class="poc-button poc-button-primary full-width" type="button" [disabled]="!state.canSave()" (click)="state.saveFinalEstimate()">Save final estimate</button>
+        <button class="poc-button poc-button-secondary full-width" type="button" (click)="state.startReVote()">Start re-vote</button>
+        <button class="poc-button poc-button-secondary full-width" type="button" (click)="state.startNextRound()">Start next round</button>
+        <button class="poc-button poc-button-outline full-width" type="button" (click)="state.completeEstimation()">Complete estimation</button>
+      </section>
+
+      <section class="rail-section" aria-labelledby="console-queue-title">
+        <h3 id="console-queue-title">Queue</h3>
+        <div class="poc-list">
+          @for (taskItem of state.tasks().slice(1, 6); track taskItem.id) {
+            <button
+              class="task-row tight"
+              type="button"
+              [class.is-active]="taskItem.id === state.activeTask().id"
+              (click)="state.selectTask(taskItem.id)"
+            >
+              <strong>{{ taskItem.code }}</strong>
+              <span>{{ taskItem.title }}</span>
+            </button>
+          }
+        </div>
+      </section>
+    </aside>
+
+    @if (state.activeTask(); as task) {
+      <main class="poc-panel console-stage" aria-labelledby="console-active-title">
+        <div class="stage-heading">
+          <div>
+            <p class="poc-label">Active task</p>
+            <h2 id="console-active-title"><span>{{ task.code }}</span> {{ task.title }}</h2>
+            <span>{{ task.details }}</span>
+          </div>
+          <button class="poc-button poc-button-secondary" type="button">{{ task.title }}</button>
+        </div>
+
+        <div class="progress-card flat">
+          <span>{{ state.votedCount() }} of {{ state.totalVoters() }} voted</span>
+          <span class="progress-track" aria-hidden="true">
+            <span [style.width.%]="state.voteProgress()"></span>
+          </span>
+          <span>1 remaining</span>
+          <span class="warning-dot">Reconnecting</span>
+        </div>
+
+        <section class="estimate-zone" aria-labelledby="console-estimate-heading">
+          <h3 id="console-estimate-heading">Select an estimate</h3>
+          <div class="estimate-grid console-cards">
+            @for (card of state.cards; track card) {
+              <button
+                class="estimate-card light-card"
+                type="button"
+                [class.is-selected]="state.selectedEstimate() === card"
+                [attr.aria-pressed]="state.selectedEstimate() === card"
+                (click)="selectEstimate(card)"
+              >
+                {{ card }}
+              </button>
+            }
+          </div>
+        </section>
+
+        <section class="revealed-votes" aria-labelledby="console-revealed-title">
+          <div class="poc-section-row">
+            <h3 id="console-revealed-title">Revealed votes</h3>
+            <strong class="average-badge">Average {{ state.revealed() ? state.averageEstimate() : '-' }}</strong>
+          </div>
+          <div class="vote-card-row">
+            @for (participant of state.participants(); track participant.id) {
+              <div class="vote-card" [class.is-away]="participant.presence === 'reconnecting'">
+                <strong>{{ state.revealed() ? state.participantVoteLabel(participant) : 'Hidden' }}</strong>
+                <span>{{ participant.name }}</span>
+                <small>{{ participant.role }}</small>
+              </div>
+            }
+          </div>
+          <button class="poc-button poc-button-secondary discuss-button" type="button">Discuss spread</button>
+        </section>
+      </main>
+    }
+
+    <aside class="poc-panel participant-ledger" aria-labelledby="console-participants-title">
+      <div class="poc-panel-header">
+        <h2 id="console-participants-title">Participants</h2>
+        <span class="count-pill">{{ state.totalVoters() }}</span>
+      </div>
+      <div class="poc-list">
+        @for (participant of state.participants(); track participant.id) {
+          <div class="participant-row ledger-row" [class.is-away]="participant.presence === 'reconnecting'">
+            <span class="avatar" [class]="'avatar tone-' + participant.tone">{{ participant.initials }}</span>
+            <span>
+              <strong>{{ participant.name }}</strong>
+              <small>{{ participant.role }}</small>
+            </span>
+            <span class="vote-chip">{{ state.participantVoteLabel(participant) }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="vote-status-grid">
+        <span>Voted</span>
+        <span>Unrevealed</span>
+        <span>Not voted</span>
+        <span>Reconnecting</span>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="poc-status">
+    <span class="poc-live"><span></span>{{ state.notice() }}</span>
+    <span>Refresh safe</span>
+    <span>Last updated 2:47 PM</span>
+  </footer>
+</section>

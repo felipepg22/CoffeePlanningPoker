@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 
+import { SupportedLocale, isSupportedLocale } from '../../shared/i18n/locales';
+
 const PARTICIPANT_ID_KEY = 'coffee-planning-poker.participant-id';
 const DISPLAY_NAME_KEY = 'coffee-planning-poker.display-name';
+const LOCALE_KEY = 'coffee-planning-poker.locale';
 
 @Injectable({ providedIn: 'root' })
 export class IdentityService {
@@ -22,6 +25,15 @@ export class IdentityService {
 
   setDisplayName(displayName: string): void {
     this.storage()?.setItem(DISPLAY_NAME_KEY, displayName.trim());
+  }
+
+  localePreference(): SupportedLocale | null {
+    const stored = this.storage()?.getItem(LOCALE_KEY);
+    return isSupportedLocale(stored) ? stored : null;
+  }
+
+  setLocalePreference(locale: SupportedLocale): void {
+    this.storage()?.setItem(LOCALE_KEY, locale);
   }
 
   private createId(): string {

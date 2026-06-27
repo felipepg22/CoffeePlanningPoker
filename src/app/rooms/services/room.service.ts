@@ -144,7 +144,7 @@ export class RoomService {
     this.persistence.clear(room.roomCode);
     this.activeRoomSignal.set(null);
     this.participantsSignal.set([]);
-    this.announcementSignal.set('Left the room.');
+    this.announcementSignal.set($localize`:@@notice.roomLeft:Left the room.`);
   }
 
   async heartbeat(): Promise<void> {
@@ -181,11 +181,11 @@ export class RoomService {
     try {
       await navigator.clipboard.writeText(inviteUrl);
       this.inviteCopiedSignal.set(true);
-      this.announcementSignal.set('Room link copied.');
+      this.announcementSignal.set($localize`:@@notice.inviteCopied:Room link copied.`);
       window.setTimeout(() => this.inviteCopiedSignal.set(false), 1800);
     } catch {
       this.inviteCopiedSignal.set(false);
-      this.announcementSignal.set(`Share code ${this.activeRoomSignal()?.roomCode ?? ''}.`);
+      this.announcementSignal.set($localize`:@@notice.shareCode:Share code ${this.activeRoomSignal()?.roomCode ?? ''}:roomCode:.`);
     }
   }
 
@@ -220,7 +220,7 @@ export class RoomService {
     this.participantsSignal.set(snapshot.participants);
     this.connectionStateSignal.set('connected');
     this.errorSignal.set(null);
-    this.announcementSignal.set(`${snapshot.roomCode} is live.`);
+    this.announcementSignal.set($localize`:@@notice.roomLive:${snapshot.roomCode}:roomCode: is live.`);
   }
 
   private applyParticipantEvent(type: string, participant: RoomParticipant): void {
@@ -237,13 +237,13 @@ export class RoomService {
     this.activeRoomSignal.update((room) => room ? { ...room, participants: updateParticipants(room.participants) } : room);
 
     if (type === 'participantJoined') {
-      this.announcementSignal.set(`${participant.displayName} joined.`);
+      this.announcementSignal.set($localize`:@@notice.participantJoined:${participant.displayName}:displayName: joined.`);
     } else if (type === 'participantLeft') {
-      this.announcementSignal.set(`${participant.displayName} left.`);
+      this.announcementSignal.set($localize`:@@notice.participantLeft:${participant.displayName}:displayName: left.`);
     } else if (participant.presence === 'reconnecting') {
-      this.announcementSignal.set(`${participant.displayName} is reconnecting.`);
+      this.announcementSignal.set($localize`:@@notice.participantReconnecting:${participant.displayName}:displayName: is reconnecting.`);
     } else if (participant.presence === 'connected') {
-      this.announcementSignal.set(`${participant.displayName} reconnected.`);
+      this.announcementSignal.set($localize`:@@notice.participantReconnected:${participant.displayName}:displayName: reconnected.`);
     }
   }
 }

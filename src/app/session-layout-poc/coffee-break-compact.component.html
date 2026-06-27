@@ -1,0 +1,157 @@
+<section class="poc-layout compact-showcase" aria-label="Coffee Break Compact session layout">
+  <div class="device phone-device">
+    <header class="mobile-topbar">
+      <div class="poc-brand">
+        <span class="poc-cup" aria-hidden="true"><span></span></span>
+        <strong>CoffeePlanningPoker</strong>
+      </div>
+      <div class="mobile-status">
+        <span class="poc-room-code">BREW-482</span>
+        <span class="poc-live"><span></span>Connected</span>
+        <button class="poc-icon-button" type="button" aria-label="Invite">+</button>
+      </div>
+    </header>
+
+    @if (state.activeTask(); as task) {
+      <main class="mobile-content" aria-labelledby="compact-phone-task">
+        <button class="task-banner" type="button">{{ task.title }}</button>
+        <section class="mobile-task-card">
+          <span>User Story</span>
+          <strong id="compact-phone-task">{{ task.title }}</strong>
+          <small>#27</small>
+        </section>
+
+        <div class="mobile-progress">
+          <span>{{ state.votedCount() }} of {{ state.totalVoters() }} voted</span>
+          <span class="progress-track" aria-hidden="true">
+            <span [style.width.%]="state.voteProgress()"></span>
+          </span>
+        </div>
+
+        <section class="estimate-zone" aria-labelledby="compact-phone-estimate">
+          <h3 id="compact-phone-estimate">Pick an estimate</h3>
+          <div class="estimate-grid mobile-cards">
+            @for (card of state.cards; track card) {
+              <button
+                class="estimate-card"
+                type="button"
+                [class.is-selected]="state.selectedEstimate() === card"
+                [attr.aria-pressed]="state.selectedEstimate() === card"
+                (click)="selectEstimate(card)"
+              >
+                {{ card }}
+              </button>
+            }
+          </div>
+          <span class="selected-note">Selected {{ state.selectedEstimate() }}</span>
+        </section>
+
+        <section class="mobile-team" aria-labelledby="compact-team-title">
+          <h3 id="compact-team-title">Team</h3>
+          <div class="avatar-strip">
+            @for (participant of state.participants(); track participant.id) {
+              <span class="avatar" [class]="'avatar tone-' + participant.tone">{{ participant.initials }}</span>
+            }
+          </div>
+        </section>
+
+        <section class="bottom-sheet" aria-label="Tasks and team">
+          <div class="sheet-tabs">
+            <button class="is-active" type="button">Team</button>
+            <button type="button">Tasks</button>
+          </div>
+          <div class="poc-list">
+            @for (taskItem of state.tasks().slice(0, 3); track taskItem.id) {
+              <button
+                class="task-row tight"
+                type="button"
+                [class.is-active]="taskItem.id === state.activeTask().id"
+                (click)="state.selectTask(taskItem.id)"
+              >
+                <strong>#{{ $index + 27 }}</strong>
+                <span>{{ taskItem.title }}</span>
+                <em>{{ taskItem.progress }}</em>
+              </button>
+            }
+          </div>
+        </section>
+      </main>
+    }
+
+    <footer class="sticky-actions">
+      <button class="poc-button poc-button-secondary" type="button" (click)="state.revealVotes()">Reveal votes</button>
+      <button class="poc-button poc-button-secondary" type="button">Average {{ state.revealed() ? state.averageEstimate() : '-' }}</button>
+      <button class="poc-button poc-button-warm" type="button" [disabled]="!state.canSave()" (click)="state.saveFinalEstimate()">Save</button>
+    </footer>
+  </div>
+
+  <div class="device tablet-device">
+    <header class="mobile-topbar">
+      <div class="poc-brand">
+        <span class="poc-cup" aria-hidden="true"><span></span></span>
+        <strong>CoffeePlanningPoker</strong>
+      </div>
+      <span class="poc-room-code">BREW-482</span>
+      <span class="poc-live"><span></span>Connected</span>
+      <button class="poc-button poc-button-ghost" type="button">Invite</button>
+    </header>
+
+    @if (state.activeTask(); as task) {
+      <main class="tablet-grid">
+        <aside class="poc-panel compact-ledger" aria-labelledby="compact-tablet-team">
+          <div class="sheet-tabs">
+            <button class="is-active" type="button" id="compact-tablet-team">Team</button>
+            <button type="button">Tasks</button>
+          </div>
+          <div class="poc-list">
+            @for (participant of state.participants(); track participant.id) {
+              <div class="participant-row ledger-row">
+                <span class="avatar" [class]="'avatar tone-' + participant.tone">{{ participant.initials }}</span>
+                <span>
+                  <strong>{{ participant.name }}</strong>
+                  <small>{{ participant.role }}</small>
+                </span>
+                <span class="vote-chip">{{ state.participantVoteLabel(participant) }}</span>
+              </div>
+            }
+          </div>
+        </aside>
+
+        <section class="poc-panel tablet-stage" aria-labelledby="compact-tablet-task">
+          <button class="task-banner" type="button">{{ task.title }}</button>
+          <div class="mobile-task-card flat">
+            <span>User Story</span>
+            <strong id="compact-tablet-task">{{ task.title }}</strong>
+            <small>#27</small>
+          </div>
+          <div class="mobile-progress">
+            <span>{{ state.votedCount() }} of {{ state.totalVoters() }} voted</span>
+            <span class="progress-track" aria-hidden="true">
+              <span [style.width.%]="state.voteProgress()"></span>
+            </span>
+          </div>
+          <section class="estimate-zone" aria-labelledby="compact-tablet-estimate">
+            <h3 id="compact-tablet-estimate">Pick an estimate</h3>
+            <div class="estimate-grid tablet-cards">
+              @for (card of state.cards; track card) {
+                <button
+                  class="estimate-card"
+                  type="button"
+                  [class.is-selected]="state.selectedEstimate() === card"
+                  [attr.aria-pressed]="state.selectedEstimate() === card"
+                  (click)="selectEstimate(card)"
+                >
+                  {{ card }}
+                </button>
+              }
+            </div>
+          </section>
+          <div class="action-row">
+            <button class="poc-button poc-button-secondary" type="button">Average {{ state.revealed() ? state.averageEstimate() : '-' }}</button>
+            <button class="poc-button poc-button-warm" type="button" (click)="state.revealVotes()">Reveal votes</button>
+          </div>
+        </section>
+      </main>
+    }
+  </div>
+</section>

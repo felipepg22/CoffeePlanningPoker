@@ -1,279 +1,379 @@
-<a class="skip-link" href="#main-content">Skip to room workflow</a>
+<a class="skip-link" href="#main-content" i18n="@@skip.roomWorkflow">Skip to room workflow</a>
 
-<div class="app-shell">
-  <header class="topbar topbar-coffee-steam" aria-label="Room status">
+<div class="room-shell" [class.is-entry]="!activeRoom()" [class.is-live-room]="activeRoom()">
+  <header class="room-topbar" i18n-aria-label="@@aria.roomStatus" aria-label="Room status">
     <div class="brand-lockup">
-      <span class="brand-cup" aria-hidden="true">
-        <i class="coffee-steam steam-one"></i>
-        <i class="coffee-steam steam-two"></i>
-        <i class="coffee-steam steam-three"></i>
-        <span></span>
-      </span>
-      <div>
-        <p class="brand-name">CoffeePlanningPoker</p>
-        <p class="brand-context">Live estimation room</p>
-      </div>
+      <span class="brand-cup" aria-hidden="true">☕</span>
+      <strong>CoffeePlanningPoker</strong>
     </div>
 
     @if (activeRoom(); as roomSession) {
-      <div class="room-strip" aria-label="Current room">
-        <span class="status-dot" [class.is-live]="room.connectionState() === 'connected'"></span>
-        <div>
-          <span class="room-code">{{ roomSession.roomCode }}</span>
-          <span class="room-state">{{ connectionLabel() }}</span>
-        </div>
-        <button class="ghost-button light" type="button" (click)="copyRoomLink()">{{ copyInviteLabel() }}</button>
+      <div class="room-code-control" i18n-aria-label="@@aria.currentRoom" aria-label="Current room">
+        <span>{{ roomSession.roomCode }}</span>
+        <button class="icon-button compact" type="button" (click)="copyRoomLink()" i18n-aria-label="@@button.copyInvite" aria-label="Copy invite">
+          <svg lucideCopy size="17" aria-hidden="true"></svg>
+        </button>
       </div>
+
+      <span class="connection-pill" [class.is-connected]="room.connectionState() === 'connected'">
+        <span aria-hidden="true"></span>
+        {{ connectionLabel() }}
+      </span>
+
+      <div class="topbar-title">
+        <strong>{{ roomSession.roomName }}</strong>
+        <svg lucideChevronDown size="17" aria-hidden="true"></svg>
+      </div>
+
+      <button class="invite-button" type="button" (click)="copyRoomLink()">
+        <svg lucideUserPlus size="18" aria-hidden="true"></svg>
+        {{ copyInviteLabel() }}
+      </button>
     } @else {
-      <div class="room-strip idle" aria-label="No active room">
-        <span class="status-dot"></span>
-        <div>
-          <span class="room-code">No room</span>
-          <span class="room-state">Create or join</span>
-        </div>
+      <div class="topbar-title idle">
+        <strong i18n="@@room.noRoom">No room</strong>
+        <span i18n="@@room.createOrJoin">Create or join</span>
       </div>
     }
+
+    <div class="topbar-tools">
+      <svg lucideGlobe size="22" aria-hidden="true"></svg>
+      <app-locale-selector />
+      @if (activeRoom()) {
+        <button class="icon-button" type="button" (click)="leaveRoom()" i18n-aria-label="@@button.leaveRoom" aria-label="Leave room">
+          <svg lucideLogOut size="20" aria-hidden="true"></svg>
+        </button>
+      }
+      <button class="icon-button" type="button" i18n-aria-label="@@aria.roomMenu" aria-label="Room menu">
+        <svg lucideMoreVertical size="20" aria-hidden="true"></svg>
+      </button>
+    </div>
   </header>
 
-  <main id="main-content" class="workbench" [class.is-entry]="!activeRoom()" [class.is-live-room]="activeRoom()" aria-labelledby="screen-title">
-    <section class="setup-panel panel setup-panel-live-v1" aria-labelledby="screen-title">
-      <div class="panel-heading compact">
-        <div>
-          <p class="section-kicker">Start here</p>
-          <h1 id="screen-title">{{ activeRoom() ? 'Room ready' : 'Set the room' }}</h1>
+  <main id="main-content" class="room-workbench" [class.is-entry]="!activeRoom()" [class.is-live-room]="activeRoom()" aria-labelledby="screen-title">
+    @if (!activeRoom()) {
+      <section class="entry-card" aria-labelledby="screen-title">
+        <div class="entry-heading">
+          <span class="session-pill" i18n="@@setup.startHere">Start here</span>
+          <h1 id="screen-title" i18n="@@setup.setRoom">Set the room</h1>
+          <p i18n="@@setup.roomDetailsHint">Room details appear after create or join succeeds.</p>
         </div>
-        <span class="session-pill" [class.is-live]="activeRoom()">
-          {{ activeRoom() ? 'Live' : 'Not started' }}
-        </span>
-      </div>
 
-      @if (!activeRoom()) {
-        <div class="mode-switch" aria-label="Choose room setup mode">
-          <button type="button" [class.is-active]="roomMode() === 'create'" [attr.aria-pressed]="roomMode() === 'create'" (click)="setRoomMode('create')">Create room</button>
-          <button type="button" [class.is-active]="roomMode() === 'join'" [attr.aria-pressed]="roomMode() === 'join'" (click)="setRoomMode('join')">Join room</button>
+        <div class="mode-switch" i18n-aria-label="@@aria.setupMode" aria-label="Choose room setup mode">
+          <button type="button" [class.is-active]="roomMode() === 'create'" [attr.aria-pressed]="roomMode() === 'create'" (click)="setRoomMode('create')" i18n="@@button.createRoom">Create room</button>
+          <button type="button" [class.is-active]="roomMode() === 'join'" [attr.aria-pressed]="roomMode() === 'join'" (click)="setRoomMode('join')" i18n="@@button.joinRoom">Join room</button>
         </div>
 
         @if (roomMode() === 'create') {
           <form class="room-form" (submit)="startRoom($event, 'create')" novalidate>
-            <label for="room-name">Room name</label>
-            <input id="room-name" name="room-name" type="text" autocomplete="off" [value]="roomName()" (input)="updateRoomName($event)" placeholder="Sprint planning" aria-describedby="setup-error">
+            <label for="room-name" i18n="@@label.roomName">Room name</label>
+            <input id="room-name" name="room-name" type="text" autocomplete="off" [value]="roomName()" (input)="updateRoomName($event)" i18n-placeholder="@@placeholder.roomName" placeholder="Sprint planning" aria-describedby="setup-error">
 
-            <label for="display-name-create">Your display name</label>
-            <input id="display-name-create" name="display-name" type="text" autocomplete="name" [value]="displayName()" (input)="updateDisplayName($event)" placeholder="Your name" aria-describedby="setup-error">
+            <label for="display-name-create" i18n="@@label.displayName">Your display name</label>
+            <input id="display-name-create" name="display-name" type="text" autocomplete="name" [value]="displayName()" (input)="updateDisplayName($event)" i18n-placeholder="@@placeholder.displayName" placeholder="Your name" aria-describedby="setup-error">
 
-            <button class="primary-action" type="submit" [disabled]="isBusy()">{{ room.pendingAction() === 'create' ? 'Creating room' : 'Create room' }}</button>
+            <button class="primary-action" type="submit" [disabled]="isBusy()">
+              @if (room.pendingAction() === 'create') {
+                <ng-container i18n="@@button.creatingRoom">Creating room</ng-container>
+              } @else {
+                <ng-container i18n="@@button.createRoom">Create room</ng-container>
+              }
+            </button>
           </form>
         } @else {
           <form class="room-form" (submit)="startRoom($event, 'join')" novalidate>
-            <label for="join-code">Room code</label>
+            <label for="join-code" i18n="@@label.roomCode">Room code</label>
             <input id="join-code" name="join-code" type="text" inputmode="text" autocomplete="off" [value]="joinCode()" (input)="updateJoinCode($event)" placeholder="BREW-482" aria-describedby="setup-error">
 
-            <label for="display-name-join">Your display name</label>
-            <input id="display-name-join" name="display-name" type="text" autocomplete="name" [value]="displayName()" (input)="updateDisplayName($event)" placeholder="Your name" aria-describedby="setup-error">
+            <label for="display-name-join" i18n="@@label.displayName">Your display name</label>
+            <input id="display-name-join" name="display-name" type="text" autocomplete="name" [value]="displayName()" (input)="updateDisplayName($event)" i18n-placeholder="@@placeholder.displayName" placeholder="Your name" aria-describedby="setup-error">
 
-            <button class="primary-action" type="submit" [disabled]="isBusy()">{{ room.pendingAction() === 'join' || room.pendingAction() === 'resume' ? 'Joining room' : 'Join room' }}</button>
+            <button class="primary-action" type="submit" [disabled]="isBusy()">
+              @if (room.pendingAction() === 'join' || room.pendingAction() === 'resume') {
+                <ng-container i18n="@@button.joiningRoom">Joining room</ng-container>
+              } @else {
+                <ng-container i18n="@@button.joinRoom">Join room</ng-container>
+              }
+            </button>
           </form>
         }
 
-        <p id="setup-error" class="form-message" [class.is-error]="setupMessage()" aria-live="polite">{{ setupMessage() || 'Room details appear after create or join succeeds.' }}</p>
-      } @else {
-        <div class="active-room-summary" aria-label="Invite details">
-          <div>
-            <p class="section-kicker">Room</p>
-            <strong>{{ activeRoom()?.roomName }}</strong>
-            <span>{{ activeRoom()?.inviteUrl }}</span>
+        <p id="setup-error" class="form-message" [class.is-error]="setupMessage()" aria-live="polite">
+          @if (setupMessage()) {
+            {{ setupMessage() }}
+          } @else {
+            <ng-container i18n="@@notice.entryReady">Create a room or join with a code.</ng-container>
+          }
+        </p>
+      </section>
+    } @else {
+      <aside class="session-panel task-panel" aria-labelledby="tasks-title">
+        <div class="panel-heading">
+          <h2 id="tasks-title" i18n="@@heading.tasks">Tasks</h2>
+          <div class="panel-actions">
+            <button class="icon-button warm" type="button" [attr.aria-expanded]="addTaskOpen()" aria-controls="add-task-panel" (click)="toggleAddTask()" i18n-aria-label="@@button.addTask" aria-label="Add task">
+              <svg lucidePlus size="18" aria-hidden="true"></svg>
+            </button>
+            <button class="icon-button" type="button" i18n-aria-label="@@aria.taskMenu" aria-label="Task menu">
+              <svg lucideMoreVertical size="18" aria-hidden="true"></svg>
+            </button>
           </div>
-          <button class="secondary-action" type="button" (click)="leaveRoom()" [disabled]="room.pendingAction() === 'leave'">Leave room</button>
         </div>
 
-        <form class="task-form" (submit)="addTask($event)" novalidate>
-          <div class="panel-heading inline">
-            <div>
-              <p class="section-kicker">Backlog</p>
-              <h2>Add a task</h2>
+        <label class="search-field" for="task-filter">
+          <svg lucideSearch size="18" aria-hidden="true"></svg>
+          <span class="visually-hidden" i18n="@@label.filterTasks">Filter tasks</span>
+          <input id="task-filter" type="search" [value]="taskSearch()" (input)="updateTaskSearch($event)" i18n-placeholder="@@placeholder.filterTasks" placeholder="Filter tasks...">
+          <svg lucideFilter size="17" aria-hidden="true"></svg>
+        </label>
+
+        <ul class="task-list">
+          @for (task of filteredTasks(); track task.taskId; let index = $index) {
+            <li>
+              <button class="task-row" type="button" [class.is-active]="task.taskId === activeTask()?.taskId" [disabled]="!room.isFacilitator() || taskState.pendingAction() === 'selectTask' || isCompleted()" (click)="selectTask(task.taskId)">
+                <svg lucideGripVertical size="18" aria-hidden="true"></svg>
+                <span>
+                  <strong>{{ taskReference(index) }}</strong>
+                  <small>{{ task.title }}</small>
+                </span>
+                <span class="task-status">{{ taskStatusLabel(task) }}</span>
+                <svg lucideChevronRight size="18" aria-hidden="true"></svg>
+              </button>
+            </li>
+          } @empty {
+            <li class="empty-list-item" i18n="@@task.noTasksYet">No tasks yet.</li>
+          }
+        </ul>
+
+        <p class="panel-count" i18n="@@task.count">{{ tasks().length }} tasks</p>
+
+        @if (addTaskOpen()) {
+          <form id="add-task-panel" class="add-task-card" (submit)="addTask($event)" novalidate>
+            <div class="add-task-heading">
+              <h3 i18n="@@heading.addTask">Add a task</h3>
+              <button class="icon-button compact" type="button" (click)="toggleAddTask()" i18n-aria-label="@@aria.collapseAddTask" aria-label="Collapse add task">
+                <svg lucideChevronDown size="18" aria-hidden="true"></svg>
+              </button>
             </div>
-          </div>
 
-          <label for="task-title">Task title</label>
-          <input id="task-title" name="task-title" type="text" [value]="newTaskTitle()" (input)="updateTaskTitle($event)" placeholder="Estimate reconnect fallback" aria-describedby="task-error">
+            <label class="visually-hidden" for="task-title" i18n="@@label.taskTitle">Task title</label>
+            <input id="task-title" name="task-title" type="text" [value]="newTaskTitle()" (input)="updateTaskTitle($event)" i18n-placeholder="@@placeholder.taskTitle" placeholder="Task title..." aria-describedby="task-error">
 
-          <label for="task-details">Task notes</label>
-          <textarea id="task-details" name="task-details" rows="3" [value]="newTaskDetails()" (input)="updateTaskDetails($event)" placeholder="What should the team consider?"></textarea>
+            <label class="visually-hidden" for="task-details" i18n="@@label.taskNotes">Task notes</label>
+            <textarea id="task-details" name="task-details" rows="4" [value]="newTaskDetails()" (input)="updateTaskDetails($event)" i18n-placeholder="@@placeholder.taskNotes" placeholder="Add details (optional)..."></textarea>
 
-          <button class="secondary-action" type="submit" [disabled]="taskState.pendingAction() === 'addTask'">{{ taskState.pendingAction() === 'addTask' ? 'Adding task' : 'Add task' }}</button>
-          <p id="task-error" class="form-message" [class.is-error]="taskMessage()" aria-live="polite">{{ taskMessage() || 'New tasks are shared with the room.' }}</p>
-        </form>
-      }
-    </section>
+            <div class="form-actions">
+              <button class="secondary-action" type="button" (click)="toggleAddTask()" i18n="@@button.cancel">Cancel</button>
+              <button class="primary-action" type="submit" [disabled]="taskState.pendingAction() === 'addTask'">
+                @if (taskState.pendingAction() === 'addTask') {
+                  <ng-container i18n="@@button.addingTask">Adding task</ng-container>
+                } @else {
+                  <ng-container i18n="@@button.addTask">Add task</ng-container>
+                }
+              </button>
+            </div>
 
-    @if (activeRoom()) {
-      <section class="stage-panel panel table-stage" aria-labelledby="active-task-title">
+            <p id="task-error" class="form-message" [class.is-error]="taskMessage()" aria-live="polite">
+              @if (taskMessage()) {
+                {{ taskMessage() }}
+              } @else {
+                <ng-container i18n="@@task.sharedHint">New tasks are shared with the room.</ng-container>
+              }
+            </p>
+          </form>
+        }
+      </aside>
+
+      <section class="session-stage" aria-labelledby="active-task-title">
         @if (isCompleted()) {
-          <div class="completion-panel" aria-live="polite">
-            <p class="section-kicker">Project estimate</p>
+          <div class="completion-banner" aria-live="polite">
+            <p i18n="@@section.projectEstimate">Project estimate</p>
             <strong>{{ formatEstimate(completedTotal()) }}</strong>
-            <span>Total includes archived estimates and saved visible tasks.</span>
+            <span i18n="@@completion.totalHint">Total includes archived estimates and saved visible tasks.</span>
           </div>
         }
 
         @if (activeTask(); as task) {
-          <div class="stage-header table-sign" aria-label="Round summary">
+          <div class="stage-toolbar">
             <div>
-              <p class="section-kicker">Planning round</p>
-              <strong>{{ votesRevealed() ? 'Votes revealed' : hasActiveRound() ? 'Votes hidden' : 'No active vote' }}</strong>
-              <span>{{ hasActiveRound() ? readinessLabel() : 'Start a round when ready' }}</span>
-            </div>
-            <div class="estimate-summary" aria-label="Saved estimate">
-              <span>{{ formatEstimate(task.finalEstimate?.value) }}</span>
-              <small>{{ task.finalEstimate ? 'saved points' : 'estimate' }}</small>
-            </div>
-          </div>
-
-          <div class="task-plaque">
-            <p class="section-kicker">Task to estimate</p>
-            <h2 id="active-task-title" tabindex="-1">{{ task.title }}</h2>
-            <p>{{ task.details || 'No notes added.' }}</p>
-            @if (task.finalEstimate && hasActiveRound()) {
-              <span class="state-note">Re-vote in progress. Saved estimate stays until a newer average is saved.</span>
-            }
-          </div>
-
-          <div class="readiness-card table-progress" aria-label="Voting progress">
-            <div class="readiness-copy">
-              <span>{{ hasActiveRound() ? readinessLabel() : 'No active round' }}</span>
-              <strong>{{ votesRevealed() ? 'Votes revealed' : hasActiveRound() ? 'Votes hidden' : 'Waiting for facilitator' }}</strong>
-            </div>
-            <div class="progress-track" aria-hidden="true">
-              <span class="progress-fill" [style.width.%]="voteProgress()"></span>
-            </div>
-          </div>
-
-          <div class="vote-area table-vote-area" aria-labelledby="vote-heading">
-            <div class="vote-heading-row">
-              <div>
-                <p class="section-kicker">Your estimate</p>
-                <h3 id="vote-heading">Pick an estimate card</h3>
-              </div>
-              @if (selectedEstimate()) {
-                <span class="selected-label">Selected {{ selectedEstimate() }}</span>
+              <p i18n="@@section.taskToEstimate">Active task</p>
+              <h1 id="active-task-title" tabindex="-1">{{ task.title }}</h1>
+              @if (task.details) {
+                <span>{{ task.details }}</span>
               }
             </div>
+            <div class="stage-icons">
+              <button class="icon-button" type="button" i18n-aria-label="@@aria.bookmarkTask" aria-label="Bookmark task">
+                <svg lucideBookmark size="22" aria-hidden="true"></svg>
+              </button>
+              <button class="icon-button" type="button" i18n-aria-label="@@aria.taskOptions" aria-label="Task options">
+                <svg lucideMoreVertical size="22" aria-hidden="true"></svg>
+              </button>
+            </div>
+          </div>
 
-            <div class="estimate-grid table-card-fan" role="group" aria-label="Estimate cards" [style.--card-center]="(session.estimateCards().length - 1) / 2">
+          <div class="vote-progress-card" i18n-aria-label="@@aria.votingProgress" aria-label="Voting progress">
+            <svg lucideUsers size="28" aria-hidden="true"></svg>
+            <strong>{{ readinessLabel() }}</strong>
+            <span class="progress-track" aria-hidden="true">
+              <span [style.width.%]="voteProgress()"></span>
+            </span>
+          </div>
+
+          <section class="estimate-zone" aria-labelledby="vote-heading">
+            <div class="estimate-heading">
+              <h2 id="vote-heading" i18n="@@heading.pickEstimate">Pick an estimate card</h2>
+              @if (selectedEstimate()) {
+                <span class="selected-pill" i18n="@@vote.selected">Selected {{ selectedEstimate() }}</span>
+              }
+            </div>
+            <div class="estimate-grid" role="group" i18n-aria-label="@@aria.estimateCards" aria-label="Estimate cards">
               @for (card of session.estimateCards(); track card) {
-                <button class="estimate-card" type="button" [style.--card-index]="$index" [class.is-selected]="selectedEstimate() === card" [disabled]="!session.canVote() || isCompleted()" [attr.aria-pressed]="selectedEstimate() === card" (click)="castVote(card)">
+                <button class="estimate-card" type="button" [class.is-selected]="selectedEstimate() === card" [disabled]="!session.canVote() || isCompleted()" [attr.aria-pressed]="selectedEstimate() === card" (click)="castVote(card)">
                   <span>{{ card }}</span>
+                  <small>{{ cardAssistLabel(card) }}</small>
                 </button>
               }
             </div>
-          </div>
+            <p class="vote-tip" i18n="@@vote.changeUntilReveal">Tip: You can change your vote until revealed</p>
+          </section>
 
           @if (room.isFacilitator()) {
-            <div class="round-actions" aria-label="Round actions">
-              <button class="coffee-action" type="button" [disabled]="!session.canReveal() || isCompleted()" (click)="revealVotes()">Reveal votes</button>
-              <button class="primary-action" type="button" [disabled]="!canSaveEstimate() || isCompleted()" (click)="saveFinalEstimate()">
-                {{ taskState.pendingAction() === 'saveFinalEstimate' ? 'Saving estimate' : 'Save final estimate' }}
+            <div class="primary-command-row" i18n-aria-label="@@aria.roundActions" aria-label="Round actions">
+              <button class="primary-action reveal-action" type="button" [disabled]="!session.canReveal() || isCompleted()" (click)="revealVotes()">
+                <svg lucideEye size="21" aria-hidden="true"></svg>
+                <ng-container i18n="@@button.revealVotes">Reveal votes</ng-container>
               </button>
-              <button class="secondary-action" type="button" [disabled]="!activeTask() || isCommandBusy() || isCompleted()" (click)="startReVote()">Start re-vote</button>
-              <button class="secondary-action" type="button" [disabled]="tasks().length === 0 || isCommandBusy() || isCompleted()" (click)="startNextRound()">Start next round</button>
-              <button class="secondary-action" type="button" [disabled]="!canComplete()" (click)="completeEstimation()">Complete estimation</button>
             </div>
           }
 
-          <div class="result-panel" [class.is-open]="votesRevealed()" aria-live="polite">
+          <section class="reveal-board" [class.is-open]="votesRevealed()" aria-live="polite">
             @if (votesRevealed()) {
-              <div>
-                <p class="section-kicker">Reveal</p>
-                @if (suggestedEstimate() !== null) {
-                  <h3>{{ splitNeedsDiscussion() ? 'Discuss the spread' : 'Average is ready' }}</h3>
-                  <p>{{ splitNeedsDiscussion() ? 'Ask the high and low voters what changed their estimate.' : 'Save the backend-computed average when the team agrees.' }}</p>
-                } @else {
-                  <h3>No numeric estimate yet</h3>
-                  <p>All revealed votes are discussion signals. Start a re-vote with at least one numeric card.</p>
+              <div class="revealed-votes">
+                @for (participant of participantRows(); track participant.participantId; let index = $index) {
+                  <article class="vote-result-card">
+                    <span [attr.class]="'mini-avatar ' + participantTone(participant, index)">{{ initials(participant.displayName) }}</span>
+                    <strong>{{ participant.displayName }}</strong>
+                    <span>{{ participantVoteLabel(participant) }}</span>
+                  </article>
                 }
               </div>
-              <div class="suggested-estimate">
-                <span>{{ formatEstimate(suggestedEstimate()) }}</span>
-                <small>average</small>
+
+              <div class="average-panel">
+                @if (suggestedEstimate() !== null) {
+                  <strong i18n="@@estimate.averageValue">Average {{ formatEstimate(suggestedEstimate()) }}</strong>
+                  @if (revealedVoteRange()) {
+                    <span i18n="@@estimate.range">Range: {{ revealedVoteRange() }}</span>
+                  }
+                } @else {
+                  <strong i18n="@@reveal.noNumericEstimate">No numeric estimate yet</strong>
+                  <span i18n="@@reveal.discussionSignals">All revealed votes are discussion signals. Start a re-vote with at least one numeric card.</span>
+                }
               </div>
+
+              @if (room.isFacilitator()) {
+                <div class="secondary-command-row">
+                  <button class="primary-action save-action" type="button" [disabled]="!canSaveEstimate() || isCompleted()" (click)="saveFinalEstimate()">
+                    <svg lucideSave size="21" aria-hidden="true"></svg>
+                    @if (taskState.pendingAction() === 'saveFinalEstimate') {
+                      <ng-container i18n="@@button.savingEstimate">Saving estimate</ng-container>
+                    } @else {
+                      <ng-container i18n="@@button.saveFinalEstimate">Save final estimate</ng-container>
+                    }
+                  </button>
+                  <button class="secondary-action" type="button" [disabled]="!activeTask() || isCommandBusy() || isCompleted()" (click)="startReVote()" i18n="@@button.startRevote">Start re-vote</button>
+                  <button class="secondary-action" type="button" [disabled]="tasks().length === 0 || isCommandBusy() || isCompleted()" (click)="startNextRound()" i18n="@@button.startNextRound">Start next round</button>
+                  <button class="secondary-action" type="button" [disabled]="!canComplete()" (click)="completeEstimation()" i18n="@@button.completeEstimation">Complete estimation</button>
+                </div>
+              }
             } @else {
-              <p>Votes stay covered until the facilitator reveals them.</p>
+              <p i18n="@@round.coveredUntilReveal">Votes stay covered until the facilitator reveals them.</p>
             }
-          </div>
+          </section>
         } @else {
           <div class="empty-round-state" aria-live="polite">
-            <p class="section-kicker">Planning round</p>
-            <h2 id="active-task-title" tabindex="-1">No task selected</h2>
-            <p>Add a task, then the facilitator selects it to start hidden voting.</p>
+            <p i18n="@@section.planningRound">Planning round</p>
+            <h1 id="active-task-title" tabindex="-1" i18n="@@round.noTaskSelected">No task selected</h1>
+            <span i18n="@@round.addTaskThenSelect">Add a task, then the facilitator selects it to start hidden voting.</span>
           </div>
         }
       </section>
 
-      <aside class="side-panel" aria-label="Participants and task queue">
-        <section class="panel participants-panel" aria-labelledby="participants-title">
-          <div class="panel-heading inline">
-            <div>
-              <p class="section-kicker">Team</p>
-              <h2 id="participants-title">Participants</h2>
-            </div>
-            <span class="count-pill">{{ totalVoters() }}</span>
-          </div>
+      <aside class="session-panel participants-panel" aria-labelledby="participants-title">
+        <div class="panel-heading">
+          <h2 id="participants-title">
+            <ng-container i18n="@@heading.participants">Participants</ng-container>
+            <span>{{ totalVoters() }}</span>
+          </h2>
+          <button class="icon-button" type="button" i18n-aria-label="@@aria.participantMenu" aria-label="Participant menu">
+            <svg lucideMoreVertical size="18" aria-hidden="true"></svg>
+          </button>
+        </div>
 
-          <ul class="participant-list">
-            @for (participant of participantRows(); track participant.participantId) {
-              <li class="participant-row" [class.is-away]="participant.presence !== 'connected'">
-                <span class="avatar" [class.tone-coffee]="participant.role === 'facilitator'" [class.tone-slate]="participant.participantId === activeRoom()?.localParticipantId" aria-hidden="true">{{ initials(participant.displayName) }}</span>
-                <span class="participant-copy">
-                  <strong>{{ participant.displayName }}</strong>
-                  <small>{{ participant.role === 'facilitator' ? 'Facilitator' : 'Participant' }}</small>
-                </span>
-                <span class="vote-chip" [class.is-revealed]="votesRevealed() && participant.estimate !== null" [class.is-thinking]="!participant.hasVoted" [class.is-away]="participant.presence !== 'connected'">{{ statusLabel(participant) }}</span>
-              </li>
-            }
-          </ul>
-        </section>
+        <label class="search-field" for="participant-filter">
+          <svg lucideSearch size="18" aria-hidden="true"></svg>
+          <span class="visually-hidden" i18n="@@label.searchParticipants">Search participants</span>
+          <input id="participant-filter" type="search" [value]="participantSearch()" (input)="updateParticipantSearch($event)" i18n-placeholder="@@placeholder.searchParticipants" placeholder="Search participants...">
+        </label>
 
-        <section class="panel tasks-panel" aria-labelledby="tasks-title">
-          <div class="panel-heading inline">
-            <div>
-              <p class="section-kicker">Queue</p>
-              <h2 id="tasks-title">Tasks</h2>
-            </div>
-          </div>
-
-          <ul class="task-list">
-            @for (task of tasks(); track task.taskId) {
-              <li>
-                <button class="task-row" type="button" [class.is-active]="task.taskId === activeTask()?.taskId" [disabled]="!room.isFacilitator() || taskState.pendingAction() === 'selectTask' || isCompleted()" (click)="selectTask(task.taskId)">
-                  <span>
-                    <strong>{{ task.title }}</strong>
-                    <small>{{ taskStatusLabel(task) }}</small>
-                  </span>
-                  <span class="task-estimate">{{ formatEstimate(task.finalEstimate?.value) }}</span>
-                </button>
-              </li>
-            } @empty {
-              <li class="empty-list-item">No tasks yet.</li>
-            }
-          </ul>
-          @if (archivedEstimateTotal() > 0) {
-            <p class="archived-total">Archived estimate total: {{ formatEstimate(archivedEstimateTotal()) }}</p>
+        <ul class="participant-list">
+          @for (participant of filteredParticipantRows(); track participant.participantId; let index = $index) {
+            <li class="participant-row" [class.is-away]="participant.presence !== 'connected'">
+              <span [attr.class]="'avatar ' + participantTone(participant, index)" aria-hidden="true">{{ initials(participant.displayName) }}</span>
+              <span class="participant-copy">
+                <strong>
+                  {{ participant.displayName }}
+                  @if (participant.participantId === activeRoom()?.localParticipantId) {
+                    <span i18n="@@participant.you">(You)</span>
+                  }
+                </strong>
+                <small>
+                  <span class="presence-dot" aria-hidden="true"></span>
+                  {{ presenceLabel(participant.presence) }}
+                  @if (participant.role === 'facilitator') {
+                    · <ng-container i18n="@@role.facilitator">Facilitator</ng-container>
+                  }
+                </small>
+              </span>
+              <span class="vote-chip" [class.is-revealed]="votesRevealed() && participant.estimate !== null" [class.is-thinking]="!participant.hasVoted" [class.is-away]="participant.presence !== 'connected'">{{ participantVoteLabel(participant) }}</span>
+            </li>
+          } @empty {
+            <li class="empty-list-item" i18n="@@participant.noMatches">No participants match that search.</li>
           }
-        </section>
+        </ul>
 
-        <section class="recovery-panel" aria-labelledby="recovery-title">
-          <span class="recovery-mark" aria-hidden="true"></span>
-          <div>
-            <h2 id="recovery-title">Refresh safe</h2>
-            <p>Room code and resume token are saved locally; tasks and votes recover from SignalR snapshots.</p>
-          </div>
-        </section>
+        @if (archivedEstimateTotal() > 0) {
+          <p class="archived-total" i18n="@@estimate.archivedTotal">Archived estimate total: {{ formatEstimate(archivedEstimateTotal()) }}</p>
+        }
+
+        <button class="copy-link-button" type="button" (click)="copyRoomLink()">
+          <svg lucideLink size="20" aria-hidden="true"></svg>
+          {{ copyInviteLabel() }}
+        </button>
       </aside>
     }
   </main>
 
-  <footer class="status-bar" aria-live="polite">
-    <span class="status-dot small" [class.is-live]="!isCommandBusy() && room.connectionState() === 'connected'"></span>
-    <span>{{ isCommandBusy() ? 'Syncing room state...' : notice() || room.announcement() }}</span>
-  </footer>
+  @if (activeRoom()) {
+    <footer class="session-status" aria-live="polite">
+      <span class="status-item success">
+        <svg lucideCheckCircle size="22" aria-hidden="true"></svg>
+        @if (isCommandBusy()) {
+          <ng-container i18n="@@status.syncing">Syncing room state...</ng-container>
+        } @else {
+          {{ notice() || room.announcement() }}
+        }
+      </span>
+      <span aria-hidden="true">•</span>
+      <span>{{ lastSyncLabel() }}</span>
+      <span class="status-item center">
+        <svg lucideCloud size="24" aria-hidden="true"></svg>
+        <ng-container i18n="@@sync.autoOn">Auto-sync is on</ng-container>
+      </span>
+      <button class="status-button" type="button">
+        <svg lucideSettings size="22" aria-hidden="true"></svg>
+        <ng-container i18n="@@button.roomSettings">Room settings</ng-container>
+      </button>
+    </footer>
+  }
 </div>

@@ -201,6 +201,42 @@
   padding: var(--space-3);
 }
 
+.locale-selector {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-self: flex-end;
+  border: 1px solid oklch(0.98 0.004 258 / 0.2);
+  border-radius: var(--radius-md);
+  background: var(--color-shell-deep);
+  padding: var(--space-1);
+}
+
+.locale-option {
+  display: grid;
+  width: 2.25rem;
+  min-width: 2.25rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink-inverse);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.locale-option:hover,
+.locale-option.is-active {
+  border-color: oklch(0.98 0.004 258 / 0.35);
+  background: oklch(0.98 0.004 258 / 0.14);
+}
+
+.locale-option:focus-visible {
+  outline: 3px solid var(--color-coffee-soft);
+  outline-offset: 2px;
+}
+
 .room-strip > div {
   display: grid;
 }

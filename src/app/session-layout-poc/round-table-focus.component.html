@@ -1,0 +1,119 @@
+<section class="poc-layout round-table" aria-label="Round Table Focus session layout">
+  <header class="poc-topbar">
+    <div class="poc-brand">
+      <span class="poc-cup" aria-hidden="true"><span></span></span>
+      <strong>CoffeePlanningPoker</strong>
+    </div>
+    <span class="poc-room-code">BREW-482</span>
+    <span class="poc-live"><span></span>Connected</span>
+    <button class="poc-button poc-button-ghost" type="button">Invite</button>
+  </header>
+
+  <nav class="round-tabs" aria-label="Room sections">
+    <button type="button">Backlog</button>
+    <button class="is-active" type="button">Current round</button>
+    <button type="button">History</button>
+  </nav>
+
+  <div class="round-grid">
+    <aside class="poc-panel queue-rail" aria-labelledby="round-queue-title">
+      <div class="poc-panel-header">
+        <h2 id="round-queue-title">Queue</h2>
+        <span class="count-pill">{{ state.tasks().length }}</span>
+      </div>
+      <div class="poc-list">
+        @for (taskItem of state.tasks(); track taskItem.id) {
+          <button
+            class="task-row compact"
+            type="button"
+            [class.is-active]="taskItem.id === state.activeTask().id"
+            (click)="state.selectTask(taskItem.id)"
+          >
+            <span>
+              <strong>{{ taskItem.code }}</strong>
+              <small>{{ taskItem.title }}</small>
+            </span>
+            <span class="poc-chip">{{ taskItem.progress }}</span>
+          </button>
+        }
+      </div>
+      <button class="poc-button poc-button-secondary full-width" type="button">Add issue</button>
+    </aside>
+
+    @if (state.activeTask(); as task) {
+      <main class="coffee-table-stage" aria-labelledby="round-active-task">
+        <div class="stage-task-card">
+          <div>
+            <p class="poc-label">Current round</p>
+            <h2 id="round-active-task">{{ task.title }}</h2>
+          </div>
+          <div class="progress-line">
+            <span class="progress-track" aria-hidden="true">
+              <span [style.width.%]="state.voteProgress()"></span>
+            </span>
+            <span>{{ state.votedCount() }} of {{ state.totalVoters() }} voted</span>
+          </div>
+        </div>
+
+        <section class="estimate-zone centered" aria-labelledby="round-estimate-heading">
+          <h3 id="round-estimate-heading">Pick an estimate</h3>
+          <div class="estimate-grid wide">
+            @for (card of state.cards; track card) {
+              <button
+                class="estimate-card table-card"
+                type="button"
+                [class.is-selected]="state.selectedEstimate() === card"
+                [attr.aria-pressed]="state.selectedEstimate() === card"
+                (click)="selectEstimate(card)"
+              >
+                {{ card }}
+              </button>
+            }
+          </div>
+          <span class="selected-note">Selected {{ state.selectedEstimate() }}</span>
+        </section>
+
+        <section class="team-strip" aria-labelledby="round-team-title">
+          <h3 id="round-team-title">Team</h3>
+          <div class="participant-cards">
+            @for (participant of state.participants(); track participant.id) {
+              <div class="mini-participant">
+                <span class="avatar" [class]="'avatar tone-' + participant.tone">{{ participant.initials }}</span>
+                <strong>{{ participant.name }}</strong>
+                <span>{{ state.participantVoteLabel(participant) }}</span>
+              </div>
+            }
+          </div>
+        </section>
+      </main>
+
+      <aside class="poc-panel round-actions-panel" aria-labelledby="round-actions-title">
+        <h2 id="round-actions-title">Round actions</h2>
+        <button class="poc-button poc-button-warm full-width" type="button" (click)="state.revealVotes()">Reveal votes</button>
+        <button class="poc-button poc-button-primary full-width" type="button" [disabled]="!state.canSave()" (click)="state.saveFinalEstimate()">Save final estimate</button>
+        <button class="poc-button poc-button-secondary full-width" type="button" (click)="state.startNextRound()">Skip to next issue</button>
+        <button class="poc-button poc-button-secondary full-width" type="button" (click)="state.startReVote()">Restart round</button>
+
+        <div class="round-metrics" aria-live="polite">
+          <div>
+            <span>Progress</span>
+            <strong>{{ state.votedCount() }} of {{ state.totalVoters() }} voted</strong>
+          </div>
+          <div>
+            <span>Average</span>
+            <strong>{{ state.revealed() ? state.averageEstimate() : '-' }}</strong>
+          </div>
+          <div>
+            <span>High / Low</span>
+            <strong>{{ state.revealed() ? '13 / 5' : '-' }}</strong>
+          </div>
+        </div>
+      </aside>
+    }
+  </div>
+
+  <footer class="poc-status">
+    <span class="poc-live"><span></span>{{ state.notice() }}</span>
+    <span>Tip: votes can change before reveal.</span>
+  </footer>
+</section>
