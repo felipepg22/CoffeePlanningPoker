@@ -17,11 +17,58 @@ import { LOCALE_OPTIONS, SupportedLocale, localizedUrlFor, resolveLocale } from 
           [title]="option.nativeLabel"
           (click)="selectLocale(option.locale)"
         >
-          <span aria-hidden="true">{{ option.flag }}</span>
+          <span class="flag-emoji" aria-hidden="true">{{ option.flag }}</span>
         </button>
       }
     </div>
   `,
+  styles: [`
+    .locale-selector {
+      display: inline-flex;
+      gap: var(--space-1);
+      border: 1px solid oklch(0.98 0.004 258 / 0.2);
+      border-radius: var(--radius-md);
+      background: var(--color-shell-deep);
+      padding: var(--space-1);
+    }
+
+    .locale-option {
+      display: grid;
+      width: 2.25rem;
+      min-width: 2.25rem;
+      height: 2rem;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-ink-inverse);
+      font: inherit;
+      transition: background 180ms var(--ease-out-quart), border-color 180ms var(--ease-out-quart), box-shadow 180ms var(--ease-out-quart), transform 160ms var(--ease-out-quart);
+    }
+
+    .locale-option:hover,
+    .locale-option.is-active {
+      border-color: oklch(0.98 0.004 258 / 0.35);
+      background: oklch(0.98 0.004 258 / 0.14);
+    }
+
+    .locale-option:focus-visible {
+      outline: 3px solid var(--color-coffee-soft);
+      outline-offset: 2px;
+    }
+
+    .flag-emoji {
+      font-size: 1.08rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .locale-option {
+        transition-duration: 0.01ms;
+      }
+    }
+  `],
 })
 export class LocaleSelectorComponent {
   private readonly identity = inject(IdentityService);

@@ -22,7 +22,7 @@ describe('LocaleSelectorComponent', () => {
   it('renders compact locale controls with selected state', () => {
     const buttons = Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[];
 
-    expect(buttons.map((button) => button.textContent?.trim())).toEqual(['BR', 'US', 'ES']);
+    expect(buttons.map((button) => button.textContent?.trim())).toEqual(['🇧🇷', '🇺🇸', '🇪🇸']);
     expect(buttons[1].getAttribute('aria-pressed')).toBe('true');
     expect(buttons.every((button) => button.getAttribute('aria-label'))).toBe(true);
   });
