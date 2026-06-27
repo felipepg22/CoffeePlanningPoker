@@ -75,30 +75,6 @@ export function localizedPathFor(locale: SupportedLocale, pathname: string, sear
   return `/${locale}${normalizedRoute}${search}${hash}`;
 }
 
-export function localizedUrlFor(locale: SupportedLocale, location: Pick<Location, 'hash' | 'hostname' | 'pathname' | 'port' | 'protocol' | 'search'>): string {
-  const path = localizedPathFor(locale, location.pathname, location.search, location.hash);
-  const devPort = localDevPortFor(locale, location);
-  if (devPort === null) {
-    return path;
-  }
-
-  return `${location.protocol}//${location.hostname}:${devPort}${path}`;
-}
-
-function localDevPortFor(locale: SupportedLocale, location: Pick<Location, 'hostname' | 'port'>): string | null {
-  if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-    return null;
-  }
-
-  if (!['4200', '4201', '4202'].includes(location.port)) {
-    return null;
-  }
-
-  const ports: Record<SupportedLocale, string> = {
-    'pt-BR': '4200',
-    'es-ES': '4201',
-    'en-US': '4202',
-  };
-
-  return ports[locale];
+export function localizedUrlFor(locale: SupportedLocale, location: Pick<Location, 'hash' | 'pathname' | 'search'>): string {
+  return localizedPathFor(locale, location.pathname, location.search, location.hash);
 }

@@ -2,6 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LocaleSelectorComponent } from './locale-selector.component';
 
+type LocaleSelectorNavigation = LocaleSelectorComponent & {
+  navigate(target: string): void;
+};
+
 describe('LocaleSelectorComponent', () => {
   let fixture: ComponentFixture<LocaleSelectorComponent>;
   let component: LocaleSelectorComponent;
@@ -31,11 +35,46 @@ describe('LocaleSelectorComponent', () => {
     expect(component.localeTarget('pt-BR')).toBe('/pt-BR/rooms/brew-482');
   });
 
-  it('persists selected locale when current target already matches', () => {
-    history.replaceState(null, '', '/en-US');
+  it('preserves search and hash in localized targets without changing origin', () => {
+    history.replaceState(null, '', '/en-US/rooms/brew-482?round=active#votes');
+
+    expect(component.localeTarget('es-ES')).toBe('/es-ES/rooms/brew-482?round=active#votes');
+  });
+
+  it.each([
+    ['pt-BR', '/pt-BR/rooms/brew-482'],
+    ['es-ES', '/es-ES/rooms/brew-482'],
+  ] as const)('persists %s and navigates to its localized route', (locale, target) => {
+    const navigate = spyOnNavigate();
+
+    component.selectLocale(locale);
+
+    expect(localStorage.getItem('coffee-planning-poker.locale')).toBe(locale);
+    expect(navigate).toHaveBeenCalledOnce();
+    expect(navigate).toHaveBeenCalledWith(target);
+  });
+
+  it('persists selected locale without reloading when current target already matches', () => {
+    const navigate = spyOnNavigate();
 
     component.selectLocale('en-US');
 
     expect(localStorage.getItem('coffee-planning-poker.locale')).toBe('en-US');
+    expect(navigate).not.toHaveBeenCalled();
   });
+
+  it('does not reload when the selected target matches the full current URL', () => {
+    const navigate = spyOnNavigate();
+    const currentUrl = new URL('/en-US/rooms/brew-482', globalThis.location.href).href;
+    vi.spyOn(component, 'localeTarget').mockReturnValue(currentUrl);
+
+    component.selectLocale('en-US');
+
+    expect(localStorage.getItem('coffee-planning-poker.locale')).toBe('en-US');
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  function spyOnNavigate() {
+    return vi.spyOn(component as unknown as LocaleSelectorNavigation, 'navigate').mockImplementation(() => undefined);
+  }
 });

@@ -118,7 +118,7 @@ Start the realtime API:
 npm run api
 ```
 
-In a second terminal, start the Angular app:
+In a second terminal, start the localized Angular dev variants:
 
 ```bash
 npm start
@@ -136,7 +136,12 @@ Static session layout proof-of-concepts are available without the API at:
 http://localhost:4200/layout-poc
 ```
 
-Localized dev variants are available with:
+`npm start` and `npm run start:locales` run the same multi-locale launcher. The
+browser stays on `http://localhost:4200`; `/en-US`, `/pt-BR`, and `/es-ES` are
+served from that origin. The launcher keeps the Portuguese and Spanish dev
+servers on private local ports behind the Angular dev-server proxy.
+
+The launcher and single-locale dev variants are available as:
 
 ```bash
 npm run start:locales
@@ -144,10 +149,6 @@ npm run start:en-US
 npm run start:pt-BR
 npm run start:es-ES
 ```
-
-Use `npm run start:locales` when testing the language selector locally. It starts
-`pt-BR` on port `4200`, `es-ES` on port `4201`, and `en-US` on port `4202`, so
-the flag controls can reload the matching localized app variant.
 
 The Angular app expects the SignalR hub at:
 
@@ -159,11 +160,11 @@ http://localhost:5050/hubs/rooms
 
 | Command | Purpose |
 | --- | --- |
-| `npm start` | Run the Angular dev server. |
-| `npm run start:locales` | Run all localized app variants for local language switching. |
-| `npm run start:en-US` | Run the English localized app variant on port `4202`. |
-| `npm run start:pt-BR` | Run the Brazilian Portuguese localized app variant on port `4200`. |
-| `npm run start:es-ES` | Run the Spanish localized app variant on port `4201`. |
+| `npm start` | Run all localized app variants on `http://localhost:4200` for local language switching. |
+| `npm run start:locales` | Run the same localized dev launcher as `npm start`. |
+| `npm run start:en-US` | Run the English localized app variant on port `4200`. |
+| `npm run start:pt-BR` | Run only the Brazilian Portuguese localized app variant on port `4200`. |
+| `npm run start:es-ES` | Run only the Spanish localized app variant on port `4200`. |
 | `npm run api` | Run the ASP.NET Core SignalR API on port `5050`. |
 | `npm run build` | Build the Angular app for production. |
 | `npm run build:locales` | Build all configured locale variants. |
@@ -183,8 +184,10 @@ preference, browser languages, then `en-US`.
 
 Angular localization is compiled per locale, so switching language reloads the
 matching localized app variant. In production, serve the `build:locales` output
-from one origin. In local development, use `npm run start:locales`; a single
-`ng serve --configuration <locale>` process only serves that one language.
+from one origin. In local development, use `npm start` or
+`npm run start:locales` to keep locale switching on `http://localhost:4200`.
+A single `ng serve --configuration <locale>` process only serves that one
+language.
 
 Invite links copied from an active room remain locale-neutral so recipients can
 join with their own language preference. Room names, display names, task titles,

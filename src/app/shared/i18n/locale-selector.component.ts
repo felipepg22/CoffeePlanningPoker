@@ -83,7 +83,7 @@ export class LocaleSelectorComponent {
   selectLocale(locale: SupportedLocale): void {
     this.identity.setLocalePreference(locale);
     const target = this.localeTarget(locale);
-    if (target !== this.currentUrl()) {
+    if (this.absoluteUrl(target) !== this.currentUrl()) {
       this.navigate(target);
     }
   }
@@ -97,7 +97,10 @@ export class LocaleSelectorComponent {
   }
 
   private currentUrl(): string {
-    const location = globalThis.location;
-    return `${location.pathname}${location.search}${location.hash}`;
+    return globalThis.location.href;
+  }
+
+  private absoluteUrl(target: string): string {
+    return new URL(target, globalThis.location.href).href;
   }
 }

@@ -7,10 +7,10 @@
     "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
   },
   "scripts": {
-    "start": "ng serve",
-    "start:en-US": "ng serve --configuration en-US --port 4202",
-    "start:pt-BR": "ng serve --configuration pt-BR --port 4200",
-    "start:es-ES": "ng serve --configuration es-ES --port 4201",
+    "start": "node scripts/serve-locales.mjs",
+    "start:en-US": "ng serve --configuration en-US --host 127.0.0.1 --port 4200",
+    "start:pt-BR": "ng serve --configuration pt-BR --host 127.0.0.1 --port 4200",
+    "start:es-ES": "ng serve --configuration es-ES --host 127.0.0.1 --port 4200",
     "start:locales": "node scripts/serve-locales.mjs",
     "api": "dotnet run --project server/CoffeePlanningPoker.Api/CoffeePlanningPoker.Api.csproj --urls http://localhost:5050",
     "build": "ng build",

@@ -25,14 +25,26 @@ describe('locale helpers', () => {
     expect(localizedPathFor('en-US', '/')).toBe('/en-US');
   });
 
-  it('uses fixed local dev ports when switching served locale variants', () => {
-    expect(localizedUrlFor('es-ES', {
+  it('keeps locale switches on the current origin', () => {
+    const spanishDevLocation = {
+      protocol: 'http:',
+      hostname: 'localhost',
+      port: '4202',
+      pathname: '/es-ES/rooms/brew-482',
+      search: '',
+      hash: '',
+    };
+
+    const englishDevLocation = {
       protocol: 'http:',
       hostname: 'localhost',
       port: '4200',
-      pathname: '/pt-BR/rooms/brew-482',
-      search: '',
-      hash: '',
-    })).toBe('http://localhost:4201/es-ES/rooms/brew-482');
+      pathname: '/en-US/rooms/brew-482',
+      search: '?round=active',
+      hash: '#votes',
+    };
+
+    expect(localizedUrlFor('en-US', spanishDevLocation)).toBe('/en-US/rooms/brew-482');
+    expect(localizedUrlFor('pt-BR', englishDevLocation)).toBe('/pt-BR/rooms/brew-482?round=active#votes');
   });
 });
