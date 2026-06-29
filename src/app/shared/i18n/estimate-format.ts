@@ -2,9 +2,9 @@ import { DecimalPipe } from '@angular/common';
 
 import { EstimateValue } from '../../session/models/planning-round';
 
-export function formatAppEstimate(value: number | null | undefined, locale: string): string {
+export function formatAppEstimate(value: number | null | undefined, locale: string, openLabel = 'Open'): string {
   if (value === null || value === undefined) {
-    return $localize`:@@estimate.open:Open`;
+    return openLabel;
   }
 
   return new DecimalPipe(locale).transform(value, '1.0-1') ?? String(value);

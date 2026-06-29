@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, LOCALE_ID, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -28,8 +28,9 @@ import { IdentityService } from '../../identity/services/identity.service';
 import { EstimateValue } from '../../session/models/planning-round';
 import { ParticipantVoteRow, SessionService } from '../../session/services/session.service';
 import { formatAppEstimate } from '../../shared/i18n/estimate-format';
+import { I18nService } from '../../shared/i18n/i18n.service';
 import { LocaleSelectorComponent } from '../../shared/i18n/locale-selector.component';
-import { localizedPathFor, resolveLocale } from '../../shared/i18n/locales';
+import { localizedPathFor } from '../../shared/i18n/locales';
 import { roomErrorMessage, validationMessage } from '../../shared/i18n/messages';
 import { PlanningTask } from '../../tasks/models/planning-task';
 import { TaskService } from '../../tasks/services/task.service';
@@ -46,6 +47,7 @@ import {
 } from '../services/room-validation';
 
 type RoomMode = 'create' | 'join';
+type LocalizedText = () => string;
 
 @Component({
   selector: 'app-room-workflow',
@@ -79,29 +81,25 @@ export class RoomWorkflowComponent {
   private readonly router = inject(Router);
   private readonly identity = inject(IdentityService);
   private readonly document = inject(DOCUMENT);
-  private readonly localeId = inject(LOCALE_ID);
+  readonly i18n = inject(I18nService);
   readonly room = inject(RoomService);
   readonly session = inject(SessionService);
   readonly taskState = inject(TaskService);
-  readonly activeLocale = resolveLocale({
-    pathname: globalThis.location?.pathname ?? '/',
-    persistedLocale: this.identity.localePreference(),
-    languages: globalThis.navigator?.languages ?? [],
-  });
+  readonly activeLocale = this.i18n.locale;
 
   readonly roomMode = signal<RoomMode>('create');
   readonly roomName = signal('');
   readonly joinCode = signal('');
   readonly displayName = signal(this.identity.displayName());
-  readonly setupError = signal('');
+  readonly setupError = signal<LocalizedText | null>(null);
 
   readonly newTaskTitle = signal('');
   readonly newTaskDetails = signal('');
-  readonly taskError = signal('');
+  readonly taskError = signal<LocalizedText | null>(null);
   readonly taskSearch = signal('');
   readonly participantSearch = signal('');
   readonly addTaskOpen = signal(true);
-  readonly notice = signal($localize`:@@notice.entryReady:Create a room or join with a code.`);
+  readonly notice = signal<LocalizedText | null>(() => this.i18n.t('notice.entryReady', 'Create a room or join with a code.'));
 
   readonly activeRoom = this.room.activeRoom;
   readonly activeTask = this.taskState.currentTask;
@@ -134,7 +132,10 @@ export class RoomWorkflowComponent {
       this.statusLabel(participant).toLowerCase().includes(query),
     );
   });
-  readonly readinessLabel = computed(() => $localize`:@@round.readiness:${this.votedCount()}:votedCount: of ${this.totalVoters()}:totalVoters: voted`);
+  readonly readinessLabel = computed(() => this.i18n.t('round.readiness', '{votedCount} of {totalVoters} voted', {
+    votedCount: this.votedCount(),
+    totalVoters: this.totalVoters(),
+  }));
   readonly selectedEstimate = this.session.localVote;
   readonly votesRevealed = this.session.votesRevealed;
   readonly suggestedEstimate = this.session.computedAverage;
@@ -154,11 +155,14 @@ export class RoomWorkflowComponent {
 
     return `${this.formatEstimate(Math.min(...numericVotes))} - ${this.formatEstimate(Math.max(...numericVotes))}`;
   });
-  readonly setupMessage = computed(() => this.setupError() || roomErrorMessage(this.room.error()) || '');
+  readonly setupMessage = computed(() => this.setupError()?.() || roomErrorMessage(this.room.error(), this.i18n) || '');
   readonly isBusy = computed(() => this.room.pendingAction() !== null);
   readonly isCommandBusy = computed(() => this.session.pendingAction() !== null || this.taskState.pendingAction() !== null);
-  readonly taskMessage = computed(() => this.taskError() || roomErrorMessage(this.taskState.error()) || roomErrorMessage(this.session.error()) || '');
-  readonly copyInviteLabel = computed(() => this.room.inviteCopied() ? $localize`:@@button.copied:Copied` : $localize`:@@button.copyInvite:Copy invite`);
+  readonly taskMessage = computed(() => this.taskError()?.() || roomErrorMessage(this.taskState.error(), this.i18n) || roomErrorMessage(this.session.error(), this.i18n) || '');
+  readonly noticeMessage = computed(() => this.notice()?.() ?? '');
+  readonly copyInviteLabel = computed(() => this.room.inviteCopied()
+    ? this.i18n.t('button.copied', 'Copied')
+    : this.i18n.t('button.copyInvite', 'Copy invite'));
   readonly canSaveEstimate = computed(() =>
     this.room.isFacilitator() &&
     this.votesRevealed() &&
@@ -172,15 +176,17 @@ export class RoomWorkflowComponent {
   readonly lastSyncLabel = computed(() => {
     const updatedAt = this.activeRoom()?.updatedAt;
     if (!updatedAt) {
-      return $localize`:@@sync.notStarted:Not synced yet`;
+      return this.i18n.t('sync.notStarted', 'Not synced yet');
     }
 
     const updated = new Date(updatedAt);
     if (Number.isNaN(updated.getTime())) {
-      return $localize`:@@sync.available:Sync available`;
+      return this.i18n.t('sync.available', 'Sync available');
     }
 
-    return $localize`:@@sync.lastSync:Last sync: ${updated.toLocaleTimeString(this.localeId, { hour: 'numeric', minute: '2-digit' })}:time:`;
+    return this.i18n.t('sync.lastSync', 'Last sync: {time}', {
+      time: this.i18n.formatTime(updated),
+    });
   });
   readonly splitNeedsDiscussion = computed(() => {
     if (!this.votesRevealed()) {
@@ -201,18 +207,18 @@ export class RoomWorkflowComponent {
   readonly connectionLabel = computed(() => {
     const state = this.room.connectionState();
     if (state === 'connected') {
-      return $localize`:@@connection.connected:Connected`;
+      return this.i18n.t('connection.connected', 'Connected');
     }
 
     if (state === 'reconnecting' || state === 'connecting') {
-      return $localize`:@@connection.reconnecting:Reconnecting`;
+      return this.i18n.t('connection.reconnecting', 'Reconnecting');
     }
 
     if (state === 'disconnected') {
-      return $localize`:@@connection.disconnected:Disconnected`;
+      return this.i18n.t('connection.disconnected', 'Disconnected');
     }
 
-    return $localize`:@@connection.notConnected:Not connected`;
+    return this.i18n.t('connection.notConnected', 'Not connected');
   });
 
   constructor() {
@@ -227,10 +233,10 @@ export class RoomWorkflowComponent {
         const roomCode = parseInviteRoomCode(`/rooms/${rawCode}`) ?? normalizeRoomCode(rawCode);
         this.roomMode.set('join');
         this.joinCode.set(roomCode);
-        this.setupError.set('');
+        this.setupError.set(null);
 
         if (!validateRoomCode(roomCode).valid) {
-          this.setupError.set($localize`:@@error.invalidInvite:That invite link is not valid.`);
+          this.setupError.set(() => this.i18n.t('error.invalidInvite', 'That invite link is not valid.'));
           this.focusSoon('join-code');
           return;
         }
@@ -249,7 +255,7 @@ export class RoomWorkflowComponent {
 
   setRoomMode(mode: RoomMode): void {
     this.roomMode.set(mode);
-    this.setupError.set('');
+    this.setupError.set(null);
     this.room.clearError();
     this.focusSoon(mode === 'create' ? 'room-name' : 'join-code');
   }
@@ -268,7 +274,7 @@ export class RoomWorkflowComponent {
 
   updateTaskTitle(event: Event): void {
     this.newTaskTitle.set(this.inputValue(event));
-    this.taskError.set('');
+    this.taskError.set(null);
     this.taskState.clearError();
   }
 
@@ -290,13 +296,13 @@ export class RoomWorkflowComponent {
 
   async startRoom(event: Event, mode: RoomMode): Promise<void> {
     event.preventDefault();
-    this.setupError.set('');
+    this.setupError.set(null);
     this.room.clearError();
 
     const displayName = this.displayName().trim();
     const displayValidation = validateDisplayName(displayName);
     if (!displayValidation.valid) {
-      this.setupError.set(validationMessage(displayValidation));
+      this.setupError.set(() => validationMessage(displayValidation, this.i18n));
       this.focusSoon(mode === 'create' ? 'display-name-create' : 'display-name-join');
       return;
     }
@@ -305,7 +311,7 @@ export class RoomWorkflowComponent {
       const roomName = this.roomName().trim();
       const roomValidation = validateRoomName(roomName);
       if (!roomValidation.valid) {
-        this.setupError.set(validationMessage(roomValidation));
+        this.setupError.set(() => validationMessage(roomValidation, this.i18n));
         this.focusSoon('room-name');
         return;
       }
@@ -313,7 +319,9 @@ export class RoomWorkflowComponent {
       const created = await this.room.createRoom(roomName, displayName);
       if (created) {
         const activeRoom = this.activeRoom();
-        this.notice.set($localize`:@@notice.roomCreated:${activeRoom?.roomCode ?? 'Room'}:roomCode: is live. Add a task to begin.`);
+        this.notice.set(() => this.i18n.t('notice.roomCreated', '{roomCode} is live. Add a task to begin.', {
+          roomCode: activeRoom?.roomCode ?? 'Room',
+        }));
         await this.navigateToActiveRoom();
         this.focusSoon('task-title');
       }
@@ -323,14 +331,14 @@ export class RoomWorkflowComponent {
     const roomCode = normalizeRoomCode(this.joinCode());
     const codeValidation = validateRoomCode(roomCode);
     if (!codeValidation.valid) {
-      this.setupError.set(validationMessage(codeValidation));
+      this.setupError.set(() => validationMessage(codeValidation, this.i18n));
       this.focusSoon('join-code');
       return;
     }
 
     const joined = await this.room.joinRoom(roomCode, displayName);
     if (joined) {
-      this.notice.set($localize`:@@notice.roomJoined:Joined ${roomCode}:roomCode:. Your vote is hidden until reveal.`);
+      this.notice.set(() => this.i18n.t('notice.roomJoined', 'Joined {roomCode}. Your vote is hidden until reveal.', { roomCode }));
       await this.navigateToActiveRoom();
       this.focusSoon('active-task-title');
     }
@@ -338,8 +346,8 @@ export class RoomWorkflowComponent {
 
   async leaveRoom(): Promise<void> {
     await this.room.leaveRoom();
-    this.notice.set($localize`:@@notice.roomLeft:Left the room.`);
-    await this.router.navigate([localizedPathFor(this.activeLocale, '/')]);
+    this.notice.set(() => this.i18n.t('notice.roomLeft', 'Left the room.'));
+    await this.router.navigate([localizedPathFor(this.activeLocale(), '/')]);
     this.focusSoon('room-name');
   }
 
@@ -350,19 +358,19 @@ export class RoomWorkflowComponent {
 
   async addTask(event: Event): Promise<void> {
     event.preventDefault();
-    this.taskError.set('');
+    this.taskError.set(null);
     this.taskState.clearError();
 
     const title = this.newTaskTitle().trim();
     const titleValidation = validateTaskTitle(title);
     if (!titleValidation.valid) {
-      this.taskError.set(validationMessage(titleValidation));
+      this.taskError.set(() => validationMessage(titleValidation, this.i18n));
       return;
     }
 
     const detailsValidation = validateTaskDetails(this.newTaskDetails());
     if (!detailsValidation.valid) {
-      this.taskError.set(validationMessage(detailsValidation));
+      this.taskError.set(() => validationMessage(detailsValidation, this.i18n));
       return;
     }
 
@@ -373,7 +381,7 @@ export class RoomWorkflowComponent {
 
     this.newTaskTitle.set('');
     this.newTaskDetails.set('');
-    this.notice.set($localize`:@@notice.taskAdded:Task added.`);
+    this.notice.set(() => this.i18n.t('notice.taskAdded', 'Task added.'));
 
     if (this.room.isFacilitator()) {
       const task = this.tasks().at(-1);
@@ -384,10 +392,10 @@ export class RoomWorkflowComponent {
   }
 
   async selectTask(taskId: string): Promise<void> {
-    this.taskError.set('');
+    this.taskError.set(null);
     const selected = await this.taskState.selectTask(taskId);
     if (selected) {
-      this.notice.set($localize`:@@notice.taskSelected:Task selected. Votes are ready.`);
+      this.notice.set(() => this.i18n.t('notice.taskSelected', 'Task selected. Votes are ready.'));
       this.focusSoon('active-task-title');
     }
   }
@@ -395,16 +403,16 @@ export class RoomWorkflowComponent {
   async castVote(value: EstimateValue): Promise<void> {
     const voted = await this.session.castVote(value);
     if (voted) {
-      this.notice.set($localize`:@@notice.voteSaved:Your ${value}:estimate: vote is saved. You can change it until reveal.`);
+      this.notice.set(() => this.i18n.t('notice.voteSaved', 'Your {estimate} vote is saved. You can change it until reveal.', { estimate: value }));
     }
   }
 
   async revealVotes(): Promise<void> {
     const revealed = await this.session.revealVotes();
     if (revealed) {
-      this.notice.set(this.splitNeedsDiscussion()
-        ? $localize`:@@notice.votesSplit:Votes are split. Discuss the high and low estimates first.`
-        : $localize`:@@notice.votesRevealed:Votes are revealed. Save the final estimate when the team agrees.`);
+      this.notice.set(() => this.splitNeedsDiscussion()
+        ? this.i18n.t('notice.votesSplit', 'Votes are split. Discuss the high and low estimates first.')
+        : this.i18n.t('notice.votesRevealed', 'Votes are revealed. Save the final estimate when the team agrees.'));
     }
   }
 
@@ -413,7 +421,10 @@ export class RoomWorkflowComponent {
     const estimate = this.suggestedEstimate();
     const saved = await this.taskState.saveFinalEstimate(this.session.activeRound());
     if (saved && task) {
-      this.notice.set($localize`:@@notice.finalEstimateSaved:Saved ${this.formatEstimate(estimate)} points for ${task.title}:taskTitle:.`);
+      this.notice.set(() => this.i18n.t('notice.finalEstimateSaved', 'Saved {INTERPOLATION} points for {taskTitle}.', {
+        INTERPOLATION: this.formatEstimate(estimate),
+        taskTitle: task.title,
+      }));
     }
   }
 
@@ -425,14 +436,14 @@ export class RoomWorkflowComponent {
 
     const started = await this.session.resetRound(task.taskId);
     if (started) {
-      this.notice.set($localize`:@@notice.revoteReady:New vote ready. Prior saved estimate stays until a newer one is saved.`);
+      this.notice.set(() => this.i18n.t('notice.revoteReady', 'New vote ready. Prior saved estimate stays until a newer one is saved.'));
     }
   }
 
   async startNextRound(): Promise<void> {
     const started = await this.session.startNextRound();
     if (started) {
-      this.notice.set($localize`:@@notice.nextRoundReady:Next round ready. Pick a card when discussion is done.`);
+      this.notice.set(() => this.i18n.t('notice.nextRoundReady', 'Next round ready. Pick a card when discussion is done.'));
       this.focusSoon('active-task-title');
     }
   }
@@ -440,7 +451,9 @@ export class RoomWorkflowComponent {
   async completeEstimation(): Promise<void> {
     const completed = await this.taskState.completeEstimation();
     if (completed) {
-      this.notice.set($localize`:@@notice.estimationCompleted:Project estimate total is ${this.formatEstimate(this.completedTotal())}:estimate:.`);
+      this.notice.set(() => this.i18n.t('notice.estimationCompleted', 'Project estimate total is {estimate}.', {
+        estimate: this.formatEstimate(this.completedTotal()),
+      }));
     }
   }
 
@@ -460,10 +473,10 @@ export class RoomWorkflowComponent {
     }
 
     if (this.votesRevealed() && participant.estimate !== null) {
-      return $localize`:@@vote.points:${participant.estimate}:estimate: points`;
+      return this.i18n.t('vote.points', '{estimate} points', { estimate: participant.estimate });
     }
 
-    return participant.hasVoted ? $localize`:@@vote.voted:Voted` : $localize`:@@vote.thinking:Thinking`;
+    return participant.hasVoted ? this.i18n.t('vote.voted', 'Voted') : this.i18n.t('vote.thinking', 'Thinking');
   }
 
   participantVoteLabel(participant: ParticipantVoteRow): string {
@@ -475,43 +488,43 @@ export class RoomWorkflowComponent {
       return participant.estimate;
     }
 
-    return participant.hasVoted ? $localize`:@@vote.hidden:Hidden` : '—';
+    return participant.hasVoted ? this.i18n.t('vote.hidden', 'Hidden') : '—';
   }
 
   presenceLabel(presence: ParticipantPresence): string {
     if (presence === 'reconnecting') {
-      return $localize`:@@presence.reconnecting:Reconnecting`;
+      return this.i18n.t('presence.reconnecting', 'Reconnecting');
     }
 
     if (presence === 'disconnected') {
-      return $localize`:@@presence.disconnected:Disconnected`;
+      return this.i18n.t('presence.disconnected', 'Disconnected');
     }
 
     if (presence === 'left') {
-      return $localize`:@@presence.left:Left`;
+      return this.i18n.t('presence.left', 'Left');
     }
 
-    return $localize`:@@presence.here:Here`;
+    return this.i18n.t('presence.here', 'Here');
   }
 
   taskStatusLabel(task: PlanningTask): string {
     if (task.status === 'estimated') {
-      return $localize`:@@taskStatus.estimated:Estimated`;
+      return this.i18n.t('taskStatus.estimated', 'Estimated');
     }
 
     if (task.status === 'estimating') {
-      return task.finalEstimate ? $localize`:@@taskStatus.revote:Re-vote` : $localize`:@@taskStatus.inRound:In round`;
+      return task.finalEstimate ? this.i18n.t('taskStatus.revote', 'Re-vote') : this.i18n.t('taskStatus.inRound', 'In round');
     }
 
-    return $localize`:@@taskStatus.ready:Ready`;
+    return this.i18n.t('taskStatus.ready', 'Ready');
   }
 
   formatEstimate(value: number | null | undefined): string {
-    return formatAppEstimate(value, this.localeId);
+    return formatAppEstimate(value, this.activeLocale(), this.i18n.t('estimate.open', 'Open'));
   }
 
   taskReference(index: number): string {
-    return $localize`:@@task.reference:Task ${index + 1}:taskNumber:`;
+    return this.i18n.t('task.reference', 'Task {taskNumber}', { taskNumber: index + 1 });
   }
 
   participantTone(participant: ParticipantVoteRow, index: number): string {
@@ -528,11 +541,11 @@ export class RoomWorkflowComponent {
 
   cardAssistLabel(card: EstimateValue): string {
     if (card === '?') {
-      return $localize`:@@vote.unknownEstimate:Unknown`;
+      return this.i18n.t('vote.unknownEstimate', 'Unknown');
     }
 
     if (card === '0') {
-      return $localize`:@@vote.zeroEstimate:Zero`;
+      return this.i18n.t('vote.zeroEstimate', 'Zero');
     }
 
     return card;
@@ -546,30 +559,30 @@ export class RoomWorkflowComponent {
     const resumed = await this.room.resumeRoom(roomCode);
     if (resumed) {
       this.displayName.set(this.identity.displayName());
-      this.notice.set($localize`:@@notice.rejoined:Rejoined ${roomCode}:roomCode:.`);
+      this.notice.set(() => this.i18n.t('notice.rejoined', 'Rejoined {roomCode}.', { roomCode }));
       this.focusSoon('active-task-title');
       return;
     }
 
     this.roomMode.set('join');
-    this.setupError.set($localize`:@@error.resumeFailed:We could not resume that room. Enter your name to join again.`);
+    this.setupError.set(() => this.i18n.t('error.resumeFailed', 'We could not resume that room. Enter your name to join again.'));
     this.focusSoon('display-name-join');
   }
 
   private async navigateToActiveRoom(): Promise<void> {
     const roomCode = this.activeRoom()?.roomCode;
     if (roomCode) {
-      await this.router.navigate([localizedPathFor(this.activeLocale, `/rooms/${roomCode.toLowerCase()}`)], { replaceUrl: true });
+      await this.router.navigate([localizedPathFor(this.activeLocale(), `/rooms/${roomCode.toLowerCase()}`)], { replaceUrl: true });
     }
   }
 
-  private localizedRoomAnnouncement(): string {
+  private localizedRoomAnnouncement(): LocalizedText {
     if (this.room.inviteCopied()) {
-      return $localize`:@@notice.inviteCopied:Room link copied.`;
+      return () => this.i18n.t('notice.inviteCopied', 'Room link copied.');
     }
 
     const code = this.activeRoom()?.roomCode ?? '';
-    return $localize`:@@notice.shareCode:Share code ${code}:roomCode:.`;
+    return () => this.i18n.t('notice.shareCode', 'Share code {roomCode}.', { roomCode: code });
   }
 
   private focusSoon(id: string): void {

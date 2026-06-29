@@ -2,6 +2,7 @@ import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { IdentityService } from '../../identity/services/identity.service';
+import { I18nService } from '../../shared/i18n/i18n.service';
 import {
   RecoveryAnchor,
   RoomCommandResult,
@@ -19,6 +20,7 @@ import { normalizeRoomCode } from './room-validation';
 export class RoomService {
   private readonly gateway = inject(RoomGateway);
   private readonly identity = inject(IdentityService);
+  private readonly i18n = inject(I18nService);
   private readonly persistence = inject(RoomPersistence);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -144,7 +146,7 @@ export class RoomService {
     this.persistence.clear(room.roomCode);
     this.activeRoomSignal.set(null);
     this.participantsSignal.set([]);
-    this.announcementSignal.set($localize`:@@notice.roomLeft:Left the room.`);
+    this.announcementSignal.set(this.i18n.t('notice.roomLeft', 'Left the room.'));
   }
 
   async heartbeat(): Promise<void> {
@@ -181,11 +183,13 @@ export class RoomService {
     try {
       await navigator.clipboard.writeText(inviteUrl);
       this.inviteCopiedSignal.set(true);
-      this.announcementSignal.set($localize`:@@notice.inviteCopied:Room link copied.`);
+      this.announcementSignal.set(this.i18n.t('notice.inviteCopied', 'Room link copied.'));
       window.setTimeout(() => this.inviteCopiedSignal.set(false), 1800);
     } catch {
       this.inviteCopiedSignal.set(false);
-      this.announcementSignal.set($localize`:@@notice.shareCode:Share code ${this.activeRoomSignal()?.roomCode ?? ''}:roomCode:.`);
+      this.announcementSignal.set(this.i18n.t('notice.shareCode', 'Share code {roomCode}.', {
+        roomCode: this.activeRoomSignal()?.roomCode ?? '',
+      }));
     }
   }
 
@@ -220,7 +224,7 @@ export class RoomService {
     this.participantsSignal.set(snapshot.participants);
     this.connectionStateSignal.set('connected');
     this.errorSignal.set(null);
-    this.announcementSignal.set($localize`:@@notice.roomLive:${snapshot.roomCode}:roomCode: is live.`);
+    this.announcementSignal.set(this.i18n.t('notice.roomLive', '{roomCode} is live.', { roomCode: snapshot.roomCode }));
   }
 
   private applyParticipantEvent(type: string, participant: RoomParticipant): void {
@@ -237,13 +241,13 @@ export class RoomService {
     this.activeRoomSignal.update((room) => room ? { ...room, participants: updateParticipants(room.participants) } : room);
 
     if (type === 'participantJoined') {
-      this.announcementSignal.set($localize`:@@notice.participantJoined:${participant.displayName}:displayName: joined.`);
+      this.announcementSignal.set(this.i18n.t('notice.participantJoined', '{displayName} joined.', { displayName: participant.displayName }));
     } else if (type === 'participantLeft') {
-      this.announcementSignal.set($localize`:@@notice.participantLeft:${participant.displayName}:displayName: left.`);
+      this.announcementSignal.set(this.i18n.t('notice.participantLeft', '{displayName} left.', { displayName: participant.displayName }));
     } else if (participant.presence === 'reconnecting') {
-      this.announcementSignal.set($localize`:@@notice.participantReconnecting:${participant.displayName}:displayName: is reconnecting.`);
+      this.announcementSignal.set(this.i18n.t('notice.participantReconnecting', '{displayName} is reconnecting.', { displayName: participant.displayName }));
     } else if (participant.presence === 'connected') {
-      this.announcementSignal.set($localize`:@@notice.participantReconnected:${participant.displayName}:displayName: reconnected.`);
+      this.announcementSignal.set(this.i18n.t('notice.participantReconnected', '{displayName} reconnected.', { displayName: participant.displayName }));
     }
   }
 }

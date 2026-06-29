@@ -118,7 +118,7 @@ Start the realtime API:
 npm run api
 ```
 
-In a second terminal, start the localized Angular dev variants:
+In a second terminal, start the Angular frontend:
 
 ```bash
 npm start
@@ -136,18 +136,14 @@ Static session layout proof-of-concepts are available without the API at:
 http://localhost:4200/layout-poc
 ```
 
-`npm start` and `npm run start:locales` run the same multi-locale launcher. The
-browser stays on `http://localhost:4200`; `/en-US`, `/pt-BR`, and `/es-ES` are
-served from that origin. The launcher keeps the Portuguese and Spanish dev
-servers on private local ports behind the Angular dev-server proxy.
+`npm start` and `npm run start:locales` run the same single frontend on
+`http://localhost:4200`. The language selector switches `en-US`, `pt-BR`, and
+`es-ES` in place without reloading the app or using any other frontend port.
 
-The launcher and single-locale dev variants are available as:
+The frontend scripts are:
 
 ```bash
 npm run start:locales
-npm run start:en-US
-npm run start:pt-BR
-npm run start:es-ES
 ```
 
 The Angular app expects the SignalR hub at:
@@ -160,15 +156,12 @@ http://localhost:5050/hubs/rooms
 
 | Command | Purpose |
 | --- | --- |
-| `npm start` | Run all localized app variants on `http://localhost:4200` for local language switching. |
-| `npm run start:locales` | Run the same localized dev launcher as `npm start`. |
-| `npm run start:en-US` | Run the English localized app variant on port `4200`. |
-| `npm run start:pt-BR` | Run only the Brazilian Portuguese localized app variant on port `4200`. |
-| `npm run start:es-ES` | Run only the Spanish localized app variant on port `4200`. |
+| `npm start` | Run the Angular frontend on `http://localhost:4200` with runtime language switching. |
+| `npm run start:locales` | Run the same single-port frontend as `npm start`. |
 | `npm run api` | Run the ASP.NET Core SignalR API on port `5050`. |
 | `npm run build` | Build the Angular app for production. |
-| `npm run build:locales` | Build all configured locale variants. |
-| `npm run extract:i18n` | Extract Angular source messages to `src/locale/messages.en-US.xlf`. |
+| `npm run build:locales` | Build the single runtime-localized Angular app. |
+| `npm run extract:i18n` | Run the runtime translation coverage check. |
 | `npm run i18n:check` | Check `pt-BR` and `es-ES` translation coverage against the source file. |
 | `npm test` | Run Angular unit tests with Vitest. |
 | `npm run test:api` | Run .NET API tests. |
@@ -182,12 +175,10 @@ locale-neutral invite links such as `/rooms/brew-482` remain valid; the app
 resolves the active locale from the URL, stored `coffee-planning-poker.locale`
 preference, browser languages, then `en-US`.
 
-Angular localization is compiled per locale, so switching language reloads the
-matching localized app variant. In production, serve the `build:locales` output
-from one origin. In local development, use `npm start` or
-`npm run start:locales` to keep locale switching on `http://localhost:4200`.
-A single `ng serve --configuration <locale>` process only serves that one
-language.
+Localization is applied at runtime from the checked-in XLIFF resources under
+`src/locale`. Switching language updates app-owned UI copy immediately on the
+same page. In local development and production, serve the app from one origin;
+for the frontend, this project uses `http://localhost:4200`.
 
 Invite links copied from an active room remain locale-neutral so recipients can
 join with their own language preference. Room names, display names, task titles,
@@ -202,10 +193,12 @@ npm run i18n:check
 npm run build:locales
 ```
 
-`messages.pt-BR.xlf` and `messages.es-ES.xlf` should keep concise product copy
-that fits compact controls. Missing display translations fall back to source
-English at build time, while `npm run i18n:check` reports missing or unfinished
-target entries for review.
+`npm run extract:i18n` currently runs the same coverage check as
+`npm run i18n:check` because runtime translations use the existing checked-in
+message IDs. `messages.pt-BR.xlf` and `messages.es-ES.xlf` should keep concise
+product copy that fits compact controls. Missing display translations fall back
+to source English at runtime, while `npm run i18n:check` reports missing or
+unfinished target entries for review.
 
 ## Development Notes
 

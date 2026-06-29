@@ -1,16 +1,16 @@
-<a class="skip-link" href="#main-content" i18n="@@skip.roomWorkflow">Skip to room workflow</a>
+<a class="skip-link" href="#main-content">{{ i18n.t('skip.roomWorkflow', 'Skip to room workflow') }}</a>
 
 <div class="room-shell" [class.is-entry]="!activeRoom()" [class.is-live-room]="activeRoom()">
-  <header class="room-topbar" i18n-aria-label="@@aria.roomStatus" aria-label="Room status">
+  <header class="room-topbar" [attr.aria-label]="i18n.t('aria.roomStatus', 'Room status')">
     <div class="brand-lockup">
       <span class="brand-cup" aria-hidden="true">☕</span>
       <strong>CoffeePlanningPoker</strong>
     </div>
 
     @if (activeRoom(); as roomSession) {
-      <div class="room-code-control" i18n-aria-label="@@aria.currentRoom" aria-label="Current room">
+      <div class="room-code-control" [attr.aria-label]="i18n.t('aria.currentRoom', 'Current room')">
         <span>{{ roomSession.roomCode }}</span>
-        <button class="icon-button compact" type="button" (click)="copyRoomLink()" i18n-aria-label="@@button.copyInvite" aria-label="Copy invite">
+        <button class="icon-button compact" type="button" (click)="copyRoomLink()" [attr.aria-label]="i18n.t('button.copyInvite', 'Copy invite')">
           <svg lucideCopy size="17" aria-hidden="true"></svg>
         </button>
       </div>
@@ -31,8 +31,8 @@
       </button>
     } @else {
       <div class="topbar-title idle">
-        <strong i18n="@@room.noRoom">No room</strong>
-        <span i18n="@@room.createOrJoin">Create or join</span>
+        <strong>{{ i18n.t('room.noRoom', 'No room') }}</strong>
+        <span>{{ i18n.t('room.createOrJoin', 'Create or join') }}</span>
       </div>
     }
 
@@ -40,11 +40,11 @@
       <svg lucideGlobe size="22" aria-hidden="true"></svg>
       <app-locale-selector />
       @if (activeRoom()) {
-        <button class="icon-button" type="button" (click)="leaveRoom()" i18n-aria-label="@@button.leaveRoom" aria-label="Leave room">
+        <button class="icon-button" type="button" (click)="leaveRoom()" [attr.aria-label]="i18n.t('button.leaveRoom', 'Leave room')">
           <svg lucideLogOut size="20" aria-hidden="true"></svg>
         </button>
       }
-      <button class="icon-button" type="button" i18n-aria-label="@@aria.roomMenu" aria-label="Room menu">
+      <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.roomMenu', 'Room menu')">
         <svg lucideMoreVertical size="20" aria-hidden="true"></svg>
       </button>
     </div>
@@ -54,45 +54,45 @@
     @if (!activeRoom()) {
       <section class="entry-card" aria-labelledby="screen-title">
         <div class="entry-heading">
-          <span class="session-pill" i18n="@@setup.startHere">Start here</span>
-          <h1 id="screen-title" i18n="@@setup.setRoom">Set the room</h1>
-          <p i18n="@@setup.roomDetailsHint">Room details appear after create or join succeeds.</p>
+          <span class="session-pill">{{ i18n.t('setup.startHere', 'Start here') }}</span>
+          <h1 id="screen-title">{{ i18n.t('setup.setRoom', 'Set the room') }}</h1>
+          <p>{{ i18n.t('setup.roomDetailsHint', 'Room details appear after create or join succeeds.') }}</p>
         </div>
 
-        <div class="mode-switch" i18n-aria-label="@@aria.setupMode" aria-label="Choose room setup mode">
-          <button type="button" [class.is-active]="roomMode() === 'create'" [attr.aria-pressed]="roomMode() === 'create'" (click)="setRoomMode('create')" i18n="@@button.createRoom">Create room</button>
-          <button type="button" [class.is-active]="roomMode() === 'join'" [attr.aria-pressed]="roomMode() === 'join'" (click)="setRoomMode('join')" i18n="@@button.joinRoom">Join room</button>
+        <div class="mode-switch" [attr.aria-label]="i18n.t('aria.setupMode', 'Choose room setup mode')">
+          <button type="button" [class.is-active]="roomMode() === 'create'" [attr.aria-pressed]="roomMode() === 'create'" (click)="setRoomMode('create')">{{ i18n.t('button.createRoom', 'Create room') }}</button>
+          <button type="button" [class.is-active]="roomMode() === 'join'" [attr.aria-pressed]="roomMode() === 'join'" (click)="setRoomMode('join')">{{ i18n.t('button.joinRoom', 'Join room') }}</button>
         </div>
 
         @if (roomMode() === 'create') {
           <form class="room-form" (submit)="startRoom($event, 'create')" novalidate>
-            <label for="room-name" i18n="@@label.roomName">Room name</label>
-            <input id="room-name" name="room-name" type="text" autocomplete="off" [value]="roomName()" (input)="updateRoomName($event)" i18n-placeholder="@@placeholder.roomName" placeholder="Sprint planning" aria-describedby="setup-error">
+            <label for="room-name">{{ i18n.t('label.roomName', 'Room name') }}</label>
+            <input id="room-name" name="room-name" type="text" autocomplete="off" [value]="roomName()" (input)="updateRoomName($event)" [placeholder]="i18n.t('placeholder.roomName', 'Sprint planning')" aria-describedby="setup-error">
 
-            <label for="display-name-create" i18n="@@label.displayName">Your display name</label>
-            <input id="display-name-create" name="display-name" type="text" autocomplete="name" [value]="displayName()" (input)="updateDisplayName($event)" i18n-placeholder="@@placeholder.displayName" placeholder="Your name" aria-describedby="setup-error">
+            <label for="display-name-create">{{ i18n.t('label.displayName', 'Your display name') }}</label>
+            <input id="display-name-create" name="display-name" type="text" autocomplete="name" [value]="displayName()" (input)="updateDisplayName($event)" [placeholder]="i18n.t('placeholder.displayName', 'Your name')" aria-describedby="setup-error">
 
             <button class="primary-action" type="submit" [disabled]="isBusy()">
               @if (room.pendingAction() === 'create') {
-                <ng-container i18n="@@button.creatingRoom">Creating room</ng-container>
+                <ng-container>{{ i18n.t('button.creatingRoom', 'Creating room') }}</ng-container>
               } @else {
-                <ng-container i18n="@@button.createRoom">Create room</ng-container>
+                <ng-container>{{ i18n.t('button.createRoom', 'Create room') }}</ng-container>
               }
             </button>
           </form>
         } @else {
           <form class="room-form" (submit)="startRoom($event, 'join')" novalidate>
-            <label for="join-code" i18n="@@label.roomCode">Room code</label>
+            <label for="join-code">{{ i18n.t('label.roomCode', 'Room code') }}</label>
             <input id="join-code" name="join-code" type="text" inputmode="text" autocomplete="off" [value]="joinCode()" (input)="updateJoinCode($event)" placeholder="BREW-482" aria-describedby="setup-error">
 
-            <label for="display-name-join" i18n="@@label.displayName">Your display name</label>
-            <input id="display-name-join" name="display-name" type="text" autocomplete="name" [value]="displayName()" (input)="updateDisplayName($event)" i18n-placeholder="@@placeholder.displayName" placeholder="Your name" aria-describedby="setup-error">
+            <label for="display-name-join">{{ i18n.t('label.displayName', 'Your display name') }}</label>
+            <input id="display-name-join" name="display-name" type="text" autocomplete="name" [value]="displayName()" (input)="updateDisplayName($event)" [placeholder]="i18n.t('placeholder.displayName', 'Your name')" aria-describedby="setup-error">
 
             <button class="primary-action" type="submit" [disabled]="isBusy()">
               @if (room.pendingAction() === 'join' || room.pendingAction() === 'resume') {
-                <ng-container i18n="@@button.joiningRoom">Joining room</ng-container>
+                <ng-container>{{ i18n.t('button.joiningRoom', 'Joining room') }}</ng-container>
               } @else {
-                <ng-container i18n="@@button.joinRoom">Join room</ng-container>
+                <ng-container>{{ i18n.t('button.joinRoom', 'Join room') }}</ng-container>
               }
             </button>
           </form>
@@ -102,19 +102,19 @@
           @if (setupMessage()) {
             {{ setupMessage() }}
           } @else {
-            <ng-container i18n="@@notice.entryReady">Create a room or join with a code.</ng-container>
+            <ng-container>{{ i18n.t('notice.entryReady', 'Create a room or join with a code.') }}</ng-container>
           }
         </p>
       </section>
     } @else {
       <aside class="session-panel task-panel" aria-labelledby="tasks-title">
         <div class="panel-heading">
-          <h2 id="tasks-title" i18n="@@heading.tasks">Tasks</h2>
+          <h2 id="tasks-title">{{ i18n.t('heading.tasks', 'Tasks') }}</h2>
           <div class="panel-actions">
-            <button class="icon-button warm" type="button" [attr.aria-expanded]="addTaskOpen()" aria-controls="add-task-panel" (click)="toggleAddTask()" i18n-aria-label="@@button.addTask" aria-label="Add task">
+            <button class="icon-button warm" type="button" [attr.aria-expanded]="addTaskOpen()" aria-controls="add-task-panel" (click)="toggleAddTask()" [attr.aria-label]="i18n.t('button.addTask', 'Add task')">
               <svg lucidePlus size="18" aria-hidden="true"></svg>
             </button>
-            <button class="icon-button" type="button" i18n-aria-label="@@aria.taskMenu" aria-label="Task menu">
+            <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.taskMenu', 'Task menu')">
               <svg lucideMoreVertical size="18" aria-hidden="true"></svg>
             </button>
           </div>
@@ -122,8 +122,8 @@
 
         <label class="search-field" for="task-filter">
           <svg lucideSearch size="18" aria-hidden="true"></svg>
-          <span class="visually-hidden" i18n="@@label.filterTasks">Filter tasks</span>
-          <input id="task-filter" type="search" [value]="taskSearch()" (input)="updateTaskSearch($event)" i18n-placeholder="@@placeholder.filterTasks" placeholder="Filter tasks...">
+          <span class="visually-hidden">{{ i18n.t('label.filterTasks', 'Filter tasks') }}</span>
+          <input id="task-filter" type="search" [value]="taskSearch()" (input)="updateTaskSearch($event)" [placeholder]="i18n.t('placeholder.filterTasks', 'Filter tasks...')">
           <svg lucideFilter size="17" aria-hidden="true"></svg>
         </label>
 
@@ -141,34 +141,34 @@
               </button>
             </li>
           } @empty {
-            <li class="empty-list-item" i18n="@@task.noTasksYet">No tasks yet.</li>
+            <li class="empty-list-item">{{ i18n.t('task.noTasksYet', 'No tasks yet.') }}</li>
           }
         </ul>
 
-        <p class="panel-count" i18n="@@task.count">{{ tasks().length }} tasks</p>
+        <p class="panel-count">{{ i18n.t('task.count', '{INTERPOLATION} tasks', { INTERPOLATION: tasks().length }) }}</p>
 
         @if (addTaskOpen()) {
           <form id="add-task-panel" class="add-task-card" (submit)="addTask($event)" novalidate>
             <div class="add-task-heading">
-              <h3 i18n="@@heading.addTask">Add a task</h3>
-              <button class="icon-button compact" type="button" (click)="toggleAddTask()" i18n-aria-label="@@aria.collapseAddTask" aria-label="Collapse add task">
+              <h3>{{ i18n.t('heading.addTask', 'Add a task') }}</h3>
+              <button class="icon-button compact" type="button" (click)="toggleAddTask()" [attr.aria-label]="i18n.t('aria.collapseAddTask', 'Collapse add task')">
                 <svg lucideChevronDown size="18" aria-hidden="true"></svg>
               </button>
             </div>
 
-            <label class="visually-hidden" for="task-title" i18n="@@label.taskTitle">Task title</label>
-            <input id="task-title" name="task-title" type="text" [value]="newTaskTitle()" (input)="updateTaskTitle($event)" i18n-placeholder="@@placeholder.taskTitle" placeholder="Task title..." aria-describedby="task-error">
+            <label class="visually-hidden" for="task-title">{{ i18n.t('label.taskTitle', 'Task title') }}</label>
+            <input id="task-title" name="task-title" type="text" [value]="newTaskTitle()" (input)="updateTaskTitle($event)" [placeholder]="i18n.t('placeholder.taskTitle', 'Task title...')" aria-describedby="task-error">
 
-            <label class="visually-hidden" for="task-details" i18n="@@label.taskNotes">Task notes</label>
-            <textarea id="task-details" name="task-details" rows="4" [value]="newTaskDetails()" (input)="updateTaskDetails($event)" i18n-placeholder="@@placeholder.taskNotes" placeholder="Add details (optional)..."></textarea>
+            <label class="visually-hidden" for="task-details">{{ i18n.t('label.taskNotes', 'Task notes') }}</label>
+            <textarea id="task-details" name="task-details" rows="4" [value]="newTaskDetails()" (input)="updateTaskDetails($event)" [placeholder]="i18n.t('placeholder.taskNotes', 'Add details (optional)...')"></textarea>
 
             <div class="form-actions">
-              <button class="secondary-action" type="button" (click)="toggleAddTask()" i18n="@@button.cancel">Cancel</button>
+              <button class="secondary-action" type="button" (click)="toggleAddTask()">{{ i18n.t('button.cancel', 'Cancel') }}</button>
               <button class="primary-action" type="submit" [disabled]="taskState.pendingAction() === 'addTask'">
                 @if (taskState.pendingAction() === 'addTask') {
-                  <ng-container i18n="@@button.addingTask">Adding task</ng-container>
+                  <ng-container>{{ i18n.t('button.addingTask', 'Adding task') }}</ng-container>
                 } @else {
-                  <ng-container i18n="@@button.addTask">Add task</ng-container>
+                  <ng-container>{{ i18n.t('button.addTask', 'Add task') }}</ng-container>
                 }
               </button>
             </div>
@@ -177,7 +177,7 @@
               @if (taskMessage()) {
                 {{ taskMessage() }}
               } @else {
-                <ng-container i18n="@@task.sharedHint">New tasks are shared with the room.</ng-container>
+                <ng-container>{{ i18n.t('task.sharedHint', 'New tasks are shared with the room.') }}</ng-container>
               }
             </p>
           </form>
@@ -187,32 +187,32 @@
       <section class="session-stage" aria-labelledby="active-task-title">
         @if (isCompleted()) {
           <div class="completion-banner" aria-live="polite">
-            <p i18n="@@section.projectEstimate">Project estimate</p>
+            <p>{{ i18n.t('section.projectEstimate', 'Project estimate') }}</p>
             <strong>{{ formatEstimate(completedTotal()) }}</strong>
-            <span i18n="@@completion.totalHint">Total includes archived estimates and saved visible tasks.</span>
+            <span>{{ i18n.t('completion.totalHint', 'Total includes archived estimates and saved visible tasks.') }}</span>
           </div>
         }
 
         @if (activeTask(); as task) {
           <div class="stage-toolbar">
             <div>
-              <p i18n="@@section.taskToEstimate">Active task</p>
+              <p>{{ i18n.t('section.taskToEstimate', 'Active task') }}</p>
               <h1 id="active-task-title" tabindex="-1">{{ task.title }}</h1>
               @if (task.details) {
                 <span>{{ task.details }}</span>
               }
             </div>
             <div class="stage-icons">
-              <button class="icon-button" type="button" i18n-aria-label="@@aria.bookmarkTask" aria-label="Bookmark task">
+              <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.bookmarkTask', 'Bookmark task')">
                 <svg lucideBookmark size="22" aria-hidden="true"></svg>
               </button>
-              <button class="icon-button" type="button" i18n-aria-label="@@aria.taskOptions" aria-label="Task options">
+              <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.taskOptions', 'Task options')">
                 <svg lucideMoreVertical size="22" aria-hidden="true"></svg>
               </button>
             </div>
           </div>
 
-          <div class="vote-progress-card" i18n-aria-label="@@aria.votingProgress" aria-label="Voting progress">
+          <div class="vote-progress-card" [attr.aria-label]="i18n.t('aria.votingProgress', 'Voting progress')">
             <svg lucideUsers size="28" aria-hidden="true"></svg>
             <strong>{{ readinessLabel() }}</strong>
             <span class="progress-track" aria-hidden="true">
@@ -222,12 +222,12 @@
 
           <section class="estimate-zone" aria-labelledby="vote-heading">
             <div class="estimate-heading">
-              <h2 id="vote-heading" i18n="@@heading.pickEstimate">Pick an estimate card</h2>
+              <h2 id="vote-heading">{{ i18n.t('heading.pickEstimate', 'Pick an estimate card') }}</h2>
               @if (selectedEstimate()) {
-                <span class="selected-pill" i18n="@@vote.selected">Selected {{ selectedEstimate() }}</span>
+                <span class="selected-pill">{{ i18n.t('vote.selected', 'Selected {INTERPOLATION}', { INTERPOLATION: selectedEstimate() }) }}</span>
               }
             </div>
-            <div class="estimate-grid" role="group" i18n-aria-label="@@aria.estimateCards" aria-label="Estimate cards">
+            <div class="estimate-grid" role="group" [attr.aria-label]="i18n.t('aria.estimateCards', 'Estimate cards')">
               @for (card of session.estimateCards(); track card) {
                 <button class="estimate-card" type="button" [class.is-selected]="selectedEstimate() === card" [disabled]="!session.canVote() || isCompleted()" [attr.aria-pressed]="selectedEstimate() === card" (click)="castVote(card)">
                   <span>{{ card }}</span>
@@ -235,14 +235,14 @@
                 </button>
               }
             </div>
-            <p class="vote-tip" i18n="@@vote.changeUntilReveal">Tip: You can change your vote until revealed</p>
+            <p class="vote-tip">{{ i18n.t('vote.changeUntilReveal', 'Tip: You can change your vote until revealed') }}</p>
           </section>
 
           @if (room.isFacilitator()) {
-            <div class="primary-command-row" i18n-aria-label="@@aria.roundActions" aria-label="Round actions">
+            <div class="primary-command-row" [attr.aria-label]="i18n.t('aria.roundActions', 'Round actions')">
               <button class="primary-action reveal-action" type="button" [disabled]="!session.canReveal() || isCompleted()" (click)="revealVotes()">
                 <svg lucideEye size="21" aria-hidden="true"></svg>
-                <ng-container i18n="@@button.revealVotes">Reveal votes</ng-container>
+                <ng-container>{{ i18n.t('button.revealVotes', 'Reveal votes') }}</ng-container>
               </button>
             </div>
           }
@@ -259,15 +259,15 @@
                 }
               </div>
 
-              <div class="average-panel">
+                <div class="average-panel">
                 @if (suggestedEstimate() !== null) {
-                  <strong i18n="@@estimate.averageValue">Average {{ formatEstimate(suggestedEstimate()) }}</strong>
+                  <strong>{{ i18n.t('estimate.averageValue', 'Average {INTERPOLATION}', { INTERPOLATION: formatEstimate(suggestedEstimate()) }) }}</strong>
                   @if (revealedVoteRange()) {
-                    <span i18n="@@estimate.range">Range: {{ revealedVoteRange() }}</span>
+                    <span>{{ i18n.t('estimate.range', 'Range: {INTERPOLATION}', { INTERPOLATION: revealedVoteRange() }) }}</span>
                   }
                 } @else {
-                  <strong i18n="@@reveal.noNumericEstimate">No numeric estimate yet</strong>
-                  <span i18n="@@reveal.discussionSignals">All revealed votes are discussion signals. Start a re-vote with at least one numeric card.</span>
+                  <strong>{{ i18n.t('reveal.noNumericEstimate', 'No numeric estimate yet') }}</strong>
+                  <span>{{ i18n.t('reveal.discussionSignals', 'All revealed votes are discussion signals. Start a re-vote with at least one numeric card.') }}</span>
                 }
               </div>
 
@@ -276,25 +276,25 @@
                   <button class="primary-action save-action" type="button" [disabled]="!canSaveEstimate() || isCompleted()" (click)="saveFinalEstimate()">
                     <svg lucideSave size="21" aria-hidden="true"></svg>
                     @if (taskState.pendingAction() === 'saveFinalEstimate') {
-                      <ng-container i18n="@@button.savingEstimate">Saving estimate</ng-container>
+                      <ng-container>{{ i18n.t('button.savingEstimate', 'Saving estimate') }}</ng-container>
                     } @else {
-                      <ng-container i18n="@@button.saveFinalEstimate">Save final estimate</ng-container>
+                      <ng-container>{{ i18n.t('button.saveFinalEstimate', 'Save final estimate') }}</ng-container>
                     }
                   </button>
-                  <button class="secondary-action" type="button" [disabled]="!activeTask() || isCommandBusy() || isCompleted()" (click)="startReVote()" i18n="@@button.startRevote">Start re-vote</button>
-                  <button class="secondary-action" type="button" [disabled]="tasks().length === 0 || isCommandBusy() || isCompleted()" (click)="startNextRound()" i18n="@@button.startNextRound">Start next round</button>
-                  <button class="secondary-action" type="button" [disabled]="!canComplete()" (click)="completeEstimation()" i18n="@@button.completeEstimation">Complete estimation</button>
+                  <button class="secondary-action" type="button" [disabled]="!activeTask() || isCommandBusy() || isCompleted()" (click)="startReVote()">{{ i18n.t('button.startRevote', 'Start re-vote') }}</button>
+                  <button class="secondary-action" type="button" [disabled]="tasks().length === 0 || isCommandBusy() || isCompleted()" (click)="startNextRound()">{{ i18n.t('button.startNextRound', 'Start next round') }}</button>
+                  <button class="secondary-action" type="button" [disabled]="!canComplete()" (click)="completeEstimation()">{{ i18n.t('button.completeEstimation', 'Complete estimation') }}</button>
                 </div>
               }
             } @else {
-              <p i18n="@@round.coveredUntilReveal">Votes stay covered until the facilitator reveals them.</p>
+              <p>{{ i18n.t('round.coveredUntilReveal', 'Votes stay covered until the facilitator reveals them.') }}</p>
             }
           </section>
         } @else {
           <div class="empty-round-state" aria-live="polite">
-            <p i18n="@@section.planningRound">Planning round</p>
-            <h1 id="active-task-title" tabindex="-1" i18n="@@round.noTaskSelected">No task selected</h1>
-            <span i18n="@@round.addTaskThenSelect">Add a task, then the facilitator selects it to start hidden voting.</span>
+            <p>{{ i18n.t('section.planningRound', 'Planning round') }}</p>
+            <h1 id="active-task-title" tabindex="-1">{{ i18n.t('round.noTaskSelected', 'No task selected') }}</h1>
+            <span>{{ i18n.t('round.addTaskThenSelect', 'Add a task, then the facilitator selects it to start hidden voting.') }}</span>
           </div>
         }
       </section>
@@ -302,18 +302,18 @@
       <aside class="session-panel participants-panel" aria-labelledby="participants-title">
         <div class="panel-heading">
           <h2 id="participants-title">
-            <ng-container i18n="@@heading.participants">Participants</ng-container>
+            <ng-container>{{ i18n.t('heading.participants', 'Participants') }}</ng-container>
             <span>{{ totalVoters() }}</span>
           </h2>
-          <button class="icon-button" type="button" i18n-aria-label="@@aria.participantMenu" aria-label="Participant menu">
+          <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.participantMenu', 'Participant menu')">
             <svg lucideMoreVertical size="18" aria-hidden="true"></svg>
           </button>
         </div>
 
         <label class="search-field" for="participant-filter">
           <svg lucideSearch size="18" aria-hidden="true"></svg>
-          <span class="visually-hidden" i18n="@@label.searchParticipants">Search participants</span>
-          <input id="participant-filter" type="search" [value]="participantSearch()" (input)="updateParticipantSearch($event)" i18n-placeholder="@@placeholder.searchParticipants" placeholder="Search participants...">
+          <span class="visually-hidden">{{ i18n.t('label.searchParticipants', 'Search participants') }}</span>
+          <input id="participant-filter" type="search" [value]="participantSearch()" (input)="updateParticipantSearch($event)" [placeholder]="i18n.t('placeholder.searchParticipants', 'Search participants...')">
         </label>
 
         <ul class="participant-list">
@@ -324,26 +324,26 @@
                 <strong>
                   {{ participant.displayName }}
                   @if (participant.participantId === activeRoom()?.localParticipantId) {
-                    <span i18n="@@participant.you">(You)</span>
+                    <span>{{ i18n.t('participant.you', '(You)') }}</span>
                   }
                 </strong>
                 <small>
                   <span class="presence-dot" aria-hidden="true"></span>
                   {{ presenceLabel(participant.presence) }}
                   @if (participant.role === 'facilitator') {
-                    · <ng-container i18n="@@role.facilitator">Facilitator</ng-container>
+                    · <ng-container>{{ i18n.t('role.facilitator', 'Facilitator') }}</ng-container>
                   }
                 </small>
               </span>
               <span class="vote-chip" [class.is-revealed]="votesRevealed() && participant.estimate !== null" [class.is-thinking]="!participant.hasVoted" [class.is-away]="participant.presence !== 'connected'">{{ participantVoteLabel(participant) }}</span>
             </li>
           } @empty {
-            <li class="empty-list-item" i18n="@@participant.noMatches">No participants match that search.</li>
+            <li class="empty-list-item">{{ i18n.t('participant.noMatches', 'No participants match that search.') }}</li>
           }
         </ul>
 
         @if (archivedEstimateTotal() > 0) {
-          <p class="archived-total" i18n="@@estimate.archivedTotal">Archived estimate total: {{ formatEstimate(archivedEstimateTotal()) }}</p>
+          <p class="archived-total">{{ i18n.t('estimate.archivedTotal', 'Archived estimate total: {INTERPOLATION}', { INTERPOLATION: formatEstimate(archivedEstimateTotal()) }) }}</p>
         }
 
         <button class="copy-link-button" type="button" (click)="copyRoomLink()">
@@ -359,20 +359,20 @@
       <span class="status-item success">
         <svg lucideCheckCircle size="22" aria-hidden="true"></svg>
         @if (isCommandBusy()) {
-          <ng-container i18n="@@status.syncing">Syncing room state...</ng-container>
+          <ng-container>{{ i18n.t('status.syncing', 'Syncing room state...') }}</ng-container>
         } @else {
-          {{ notice() || room.announcement() }}
+          {{ noticeMessage() || room.announcement() }}
         }
       </span>
       <span aria-hidden="true">•</span>
       <span>{{ lastSyncLabel() }}</span>
       <span class="status-item center">
         <svg lucideCloud size="24" aria-hidden="true"></svg>
-        <ng-container i18n="@@sync.autoOn">Auto-sync is on</ng-container>
+        <ng-container>{{ i18n.t('sync.autoOn', 'Auto-sync is on') }}</ng-container>
       </span>
       <button class="status-button" type="button">
         <svg lucideSettings size="22" aria-hidden="true"></svg>
-        <ng-container i18n="@@button.roomSettings">Room settings</ng-container>
+        <ng-container>{{ i18n.t('button.roomSettings', 'Room settings') }}</ng-container>
       </button>
     </footer>
   }

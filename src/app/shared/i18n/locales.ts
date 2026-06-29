@@ -12,9 +12,9 @@ export const SOURCE_LOCALE: SupportedLocale = 'en-US';
 export const SUPPORTED_LOCALES = ['pt-BR', 'en-US', 'es-ES'] as const satisfies readonly SupportedLocale[];
 
 export const LOCALE_OPTIONS: readonly LocaleOption[] = [
-  { locale: 'pt-BR', label: $localize`:@@locale.ptBR:Portuguese (Brazil)`, nativeLabel: 'Portugues (Brasil)', flag: '🇧🇷' },
-  { locale: 'en-US', label: $localize`:@@locale.enUS:English (United States)`, nativeLabel: 'English (United States)', flag: '🇺🇸' },
-  { locale: 'es-ES', label: $localize`:@@locale.esES:Spanish (Spain)`, nativeLabel: 'Espanol (Espana)', flag: '🇪🇸' },
+  { locale: 'pt-BR', label: 'Portuguese (Brazil)', nativeLabel: 'Portugues (Brasil)', flag: '🇧🇷' },
+  { locale: 'en-US', label: 'English (United States)', nativeLabel: 'English (United States)', flag: '🇺🇸' },
+  { locale: 'es-ES', label: 'Spanish (Spain)', nativeLabel: 'Espanol (Espana)', flag: '🇪🇸' },
 ];
 
 export function isSupportedLocale(value: string | null | undefined): value is SupportedLocale {

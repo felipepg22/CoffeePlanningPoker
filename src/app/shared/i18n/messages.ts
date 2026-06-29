@@ -1,76 +1,77 @@
 import { RoomError, RoomErrorCode } from '../../rooms/models/room-session';
 import { ValidationCode, ValidationResult } from '../../rooms/services/room-validation';
+import { I18nService } from './i18n.service';
 
-export function validationMessage(result: ValidationResult): string {
+export function validationMessage(result: ValidationResult, i18n: I18nService): string {
   if (result.valid) {
     return '';
   }
 
   switch (result.code) {
     case 'room_name_too_short':
-      return $localize`:@@validation.roomNameTooShort:Enter a room name with at least ${result.params['min']}:min: characters.`;
+      return i18n.t('validation.roomNameTooShort', 'Enter a room name with at least {min} characters.', result.params);
     case 'room_name_too_long':
-      return $localize`:@@validation.roomNameTooLong:Keep the room name under ${result.params['max']}:max: characters.`;
+      return i18n.t('validation.roomNameTooLong', 'Keep the room name under {max} characters.', result.params);
     case 'display_name_too_short':
-      return $localize`:@@validation.displayNameTooShort:Enter a display name with at least ${result.params['min']}:min: characters.`;
+      return i18n.t('validation.displayNameTooShort', 'Enter a display name with at least {min} characters.', result.params);
     case 'display_name_too_long':
-      return $localize`:@@validation.displayNameTooLong:Keep your display name under ${result.params['max']}:max: characters.`;
+      return i18n.t('validation.displayNameTooLong', 'Keep your display name under {max} characters.', result.params);
     case 'invalid_room_code':
-      return $localize`:@@validation.invalidRoomCode:Enter a valid room code.`;
+      return i18n.t('validation.invalidRoomCode', 'Enter a valid room code.');
     case 'task_title_too_short':
-      return $localize`:@@validation.taskTitleTooShort:Add a task title before starting a new round.`;
+      return i18n.t('validation.taskTitleTooShort', 'Add a task title before starting a new round.');
     case 'task_title_too_long':
-      return $localize`:@@validation.taskTitleTooLong:Keep the task title under ${result.params['max']}:max: characters.`;
+      return i18n.t('validation.taskTitleTooLong', 'Keep the task title under {max} characters.', result.params);
     case 'task_details_too_long':
-      return $localize`:@@validation.taskDetailsTooLong:Keep task notes under ${result.params['max']}:max: characters.`;
+      return i18n.t('validation.taskDetailsTooLong', 'Keep task notes under {max} characters.', result.params);
   }
 }
 
-export function roomErrorMessage(error: RoomError | null | undefined): string {
+export function roomErrorMessage(error: RoomError | null | undefined, i18n: I18nService): string {
   if (!error) {
     return '';
   }
 
-  return knownRoomErrorMessage(error.code) ??
-    $localize`:@@error.unknown:Something changed before that action finished. Try again.`;
+  return knownRoomErrorMessage(error.code, i18n) ??
+    i18n.t('error.unknown', 'Something changed before that action finished. Try again.');
 }
 
-export function knownRoomErrorMessage(code: RoomErrorCode): string | null {
+export function knownRoomErrorMessage(code: RoomErrorCode, i18n: I18nService): string | null {
   switch (code) {
     case 'invalid_room_name':
-      return $localize`:@@error.invalidRoomName:Enter a valid room name and try again.`;
+      return i18n.t('error.invalidRoomName', 'Enter a valid room name and try again.');
     case 'invalid_display_name':
-      return $localize`:@@error.invalidDisplayName:Enter a valid display name and try again.`;
+      return i18n.t('error.invalidDisplayName', 'Enter a valid display name and try again.');
     case 'invalid_room_code':
-      return $localize`:@@error.invalidRoomCode:Check the room code and try again.`;
+      return i18n.t('error.invalidRoomCode', 'Check the room code and try again.');
     case 'room_unavailable':
-      return $localize`:@@error.roomUnavailable:That room is unavailable. Check the code or create a new room.`;
+      return i18n.t('error.roomUnavailable', 'That room is unavailable. Check the code or create a new room.');
     case 'resume_rejected':
-      return $localize`:@@error.resumeRejected:We could not resume that room. Enter your name to join again.`;
+      return i18n.t('error.resumeRejected', 'We could not resume that room. Enter your name to join again.');
     case 'duplicate_join_rejected':
-      return $localize`:@@error.duplicateJoinRejected:That participant session is already active. Rejoin with your saved browser session.`;
+      return i18n.t('error.duplicateJoinRejected', 'That participant session is already active. Rejoin with your saved browser session.');
     case 'invalid_task_title':
-      return $localize`:@@error.invalidTaskTitle:Add a task title before starting a new round.`;
+      return i18n.t('error.invalidTaskTitle', 'Add a task title before starting a new round.');
     case 'forbidden':
-      return $localize`:@@error.forbidden:Only the facilitator can do that.`;
+      return i18n.t('error.forbidden', 'Only the facilitator can do that.');
     case 'task_not_found':
-      return $localize`:@@error.taskNotFound:That task is no longer available.`;
+      return i18n.t('error.taskNotFound', 'That task is no longer available.');
     case 'no_active_task':
-      return $localize`:@@error.noActiveTask:Select a task before working with votes.`;
+      return i18n.t('error.noActiveTask', 'Select a task before working with votes.');
     case 'stale_round':
-      return $localize`:@@error.staleRound:This round changed. Use the latest room state.`;
+      return i18n.t('error.staleRound', 'This round changed. Use the latest room state.');
     case 'invalid_estimate':
-      return $localize`:@@error.invalidEstimate:Choose a valid estimate card.`;
+      return i18n.t('error.invalidEstimate', 'Choose a valid estimate card.');
     case 'vote_closed':
-      return $localize`:@@error.voteClosed:Votes are closed for this round.`;
+      return i18n.t('error.voteClosed', 'Votes are closed for this round.');
     case 'round_not_revealed':
-      return $localize`:@@error.roundNotRevealed:Reveal votes before saving an estimate.`;
+      return i18n.t('error.roundNotRevealed', 'Reveal votes before saving an estimate.');
     case 'no_numeric_votes':
-      return $localize`:@@error.noNumericVotes:A numeric vote is required before saving an estimate.`;
+      return i18n.t('error.noNumericVotes', 'A numeric vote is required before saving an estimate.');
     case 'room_completed':
-      return $localize`:@@error.roomCompleted:This room estimation is already complete.`;
+      return i18n.t('error.roomCompleted', 'This room estimation is already complete.');
     case 'connection_failed':
-      return $localize`:@@error.connectionFailed:The room connection failed. Check your network and retry.`;
+      return i18n.t('error.connectionFailed', 'The room connection failed. Check your network and retry.');
   }
 }
 

@@ -26,10 +26,10 @@ describe('locale helpers', () => {
   });
 
   it('keeps locale switches on the current origin', () => {
-    const spanishDevLocation = {
+    const spanishLocation = {
       protocol: 'http:',
       hostname: 'localhost',
-      port: '4202',
+      port: '4200',
       pathname: '/es-ES/rooms/brew-482',
       search: '',
       hash: '',
@@ -44,7 +44,7 @@ describe('locale helpers', () => {
       hash: '#votes',
     };
 
-    expect(localizedUrlFor('en-US', spanishDevLocation)).toBe('/en-US/rooms/brew-482');
+    expect(localizedUrlFor('en-US', spanishLocation)).toBe('/en-US/rooms/brew-482');
     expect(localizedUrlFor('pt-BR', englishDevLocation)).toBe('/pt-BR/rooms/brew-482?round=active#votes');
   });
 });

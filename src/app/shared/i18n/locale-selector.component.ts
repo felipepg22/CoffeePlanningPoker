@@ -1,19 +1,19 @@
 import { Component, inject } from '@angular/core';
 
-import { IdentityService } from '../../identity/services/identity.service';
-import { LOCALE_OPTIONS, SupportedLocale, localizedUrlFor, resolveLocale } from './locales';
+import { I18nService } from './i18n.service';
+import { LOCALE_OPTIONS, SupportedLocale } from './locales';
 
 @Component({
   selector: 'app-locale-selector',
   template: `
-    <div class="locale-selector" role="group" i18n-aria-label="@@locale.selectorLabel" aria-label="Language">
+    <div class="locale-selector" role="group" [attr.aria-label]="i18n.t('locale.selectorLabel', 'Language')">
       @for (option of localeOptions; track option.locale) {
         <button
           class="locale-option"
           type="button"
-          [class.is-active]="option.locale === activeLocale"
-          [attr.aria-label]="option.label"
-          [attr.aria-pressed]="option.locale === activeLocale"
+          [class.is-active]="option.locale === activeLocale()"
+          [attr.aria-label]="localeLabel(option.locale)"
+          [attr.aria-pressed]="option.locale === activeLocale()"
           [title]="option.nativeLabel"
           (click)="selectLocale(option.locale)"
         >
@@ -71,36 +71,24 @@ import { LOCALE_OPTIONS, SupportedLocale, localizedUrlFor, resolveLocale } from 
   `],
 })
 export class LocaleSelectorComponent {
-  private readonly identity = inject(IdentityService);
+  readonly i18n = inject(I18nService);
 
   readonly localeOptions = LOCALE_OPTIONS;
-  readonly activeLocale = resolveLocale({
-    pathname: globalThis.location?.pathname ?? '/',
-    persistedLocale: this.identity.localePreference(),
-    languages: globalThis.navigator?.languages ?? [],
-  });
+  readonly activeLocale = this.i18n.locale;
 
   selectLocale(locale: SupportedLocale): void {
-    this.identity.setLocalePreference(locale);
-    const target = this.localeTarget(locale);
-    if (this.absoluteUrl(target) !== this.currentUrl()) {
-      this.navigate(target);
+    this.i18n.setLocale(locale);
+  }
+
+  localeLabel(locale: SupportedLocale): string {
+    if (locale === 'pt-BR') {
+      return this.i18n.t('locale.ptBR', 'Portuguese (Brazil)');
     }
-  }
 
-  localeTarget(locale: SupportedLocale): string {
-    return localizedUrlFor(locale, globalThis.location);
-  }
+    if (locale === 'es-ES') {
+      return this.i18n.t('locale.esES', 'Spanish (Spain)');
+    }
 
-  protected navigate(target: string): void {
-    globalThis.location.assign(target);
-  }
-
-  private currentUrl(): string {
-    return globalThis.location.href;
-  }
-
-  private absoluteUrl(target: string): string {
-    return new URL(target, globalThis.location.href).href;
+    return this.i18n.t('locale.enUS', 'English (United States)');
   }
 }
