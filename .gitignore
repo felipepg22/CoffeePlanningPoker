@@ -1,23 +1,35 @@
 # Angular specific
 /dist/
+/client/dist/
 /out-tsc/
+/client/out-tsc/
 /tmp/
+/client/tmp/
 /coverage/
+/client/coverage/
 /e2e/test-output/
+/client/e2e/test-output/
 /.angular/
+/client/.angular/
 .angular/
 
 # Node modules and dependency files
 /node_modules/
+/client/node_modules/
 /package-lock.json
+/client/package-lock.json
 /yarn.lock
+/client/yarn.lock
 
 # Environment files
 /.env
+/client/.env
 
 # Angular CLI and build artefacts
 /.angular-cli.json
+/client/.angular-cli.json
 /.ng/
+/client/.ng/
 
 # .NET build artefacts
 bin/

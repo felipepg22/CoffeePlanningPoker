@@ -85,17 +85,20 @@ flowchart TB
 ## Project Structure
 
 ```text
-src/
-  app/
-    identity/       Display-name and participant identity state
-    rooms/          Room workflow, validation, persistence, SignalR gateway
-    shared/i18n/    Locale resolution, selector, formatting, and message helpers
-  locale/           Angular XLIFF translation resources
+client/
+  src/
+    app/
+      identity/       Display-name and participant identity state
+      rooms/          Room workflow, validation, persistence, SignalR gateway
+      shared/i18n/    Locale resolution, selector, formatting, and message helpers
+    locale/           Angular XLIFF translation resources
+  public/             Frontend static assets
+  scripts/            Frontend maintenance scripts
+  PRODUCT.md          Product register and principles
+  DESIGN.md           Starter visual direction
 server/
   CoffeePlanningPoker.Api/        SignalR room API
   CoffeePlanningPoker.Api.Tests/  API unit tests
-PRODUCT.md         Product register and principles
-DESIGN.md          Starter visual direction
 ```
 
 ## Requirements
@@ -109,6 +112,7 @@ DESIGN.md          Starter visual direction
 Install dependencies:
 
 ```bash
+cd client
 npm install
 ```
 
@@ -154,6 +158,8 @@ http://localhost:5050/hubs/rooms
 
 ## Useful Scripts
 
+Run these from `client/`.
+
 | Command | Purpose |
 | --- | --- |
 | `npm start` | Run the Angular frontend on `http://localhost:4200` with runtime language switching. |
@@ -176,7 +182,7 @@ resolves the active locale from the URL, stored `coffee-planning-poker.locale`
 preference, browser languages, then `en-US`.
 
 Localization is applied at runtime from the checked-in XLIFF resources under
-`src/locale`. Switching language updates app-owned UI copy immediately on the
+`client/src/locale`. Switching language updates app-owned UI copy immediately on the
 same page. In local development and production, serve the app from one origin;
 for the frontend, this project uses `http://localhost:4200`.
 
@@ -213,6 +219,7 @@ unfinished target entries for review.
 Before finishing functional changes, run the relevant checks:
 
 ```bash
+cd client
 npm test
 npm run build
 npm run build:locales
