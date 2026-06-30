@@ -156,6 +156,13 @@ The Angular app expects the SignalR hub at:
 http://localhost:5050/hubs/rooms
 ```
 
+Build and run the API container from the repository root:
+
+```bash
+docker build -t coffee-planning-poker-api ./server
+docker run --rm -p 5050:8080 coffee-planning-poker-api
+```
+
 ## Useful Scripts
 
 Run these from `client/`.
