@@ -169,6 +169,32 @@ The compose stack starts:
 | Client | `coffee-planning-poker-client` | `http://localhost:4200` |
 | API | `coffee-planning-poker-api` | `http://localhost:5050` |
 
+## Deployment
+
+Deploy the app as two services:
+
+- `client/`: a static Angular site.
+- `server/`: an ASP.NET Core SignalR web service.
+
+For a free Render deployment, create a Web Service from `server/` and a Static
+Site from `client/`. Set the client Static Site environment variable to point at
+the deployed API hub:
+
+```text
+ROOM_HUB_URL=https://<api-service>.onrender.com/hubs/rooms
+```
+
+Set the API Web Service environment variables to allow the deployed frontend and
+generate correct invite links:
+
+```text
+ClientOrigin=https://<client-site>.onrender.com
+CorsAllowedOrigins=https://<client-site>.onrender.com
+```
+
+Multiple CORS origins can be separated with semicolons in `CorsAllowedOrigins`.
+Localhost origins remain enabled for development.
+
 Build and run the API container from the repository root:
 
 ```bash

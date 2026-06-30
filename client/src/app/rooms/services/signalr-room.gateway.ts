@@ -30,8 +30,20 @@ import {
 } from '../models/room-session';
 import { RoomGateway } from './room-gateway';
 
+interface RuntimeConfig {
+  roomHubUrl?: string;
+}
+
+declare global {
+  interface Window {
+    coffeePlanningPokerConfig?: RuntimeConfig;
+  }
+}
+
+const DEFAULT_ROOM_HUB_URL = 'http://localhost:5050/hubs/rooms';
+
 export const ROOM_HUB_URL = new InjectionToken<string>('ROOM_HUB_URL', {
-  factory: () => 'http://localhost:5050/hubs/rooms',
+  factory: () => window.coffeePlanningPokerConfig?.roomHubUrl?.trim() || DEFAULT_ROOM_HUB_URL,
 });
 
 @Injectable({ providedIn: 'root' })

@@ -3,12 +3,15 @@ using CoffeePlanningPoker.Api.Rooms;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var clientOrigin = builder.Configuration["ClientOrigin"] ?? "http://localhost:4200";
+var allowedOrigins = ResolveAllowedOrigins(builder.Configuration, clientOrigin);
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AngularDev", policy =>
+    options.AddPolicy("ClientApp", policy =>
     {
         policy
-            .WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -16,7 +19,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton(new RoomStoreOptions(
-    ClientOrigin: "http://localhost:4200",
+    ClientOrigin: clientOrigin,
     RoomTtl: TimeSpan.FromHours(2)));
 builder.Services.AddSingleton<IRoomClock, SystemRoomClock>();
 builder.Services.AddSingleton<InMemoryRoomStore>();
@@ -28,11 +31,30 @@ builder.Services.AddSignalR()
 
 var app = builder.Build();
 
-app.UseCors("AngularDev");
+app.UseCors("ClientApp");
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
-app.MapHub<RoomHub>("/hubs/rooms").RequireCors("AngularDev");
+app.MapHub<RoomHub>("/hubs/rooms").RequireCors("ClientApp");
 
 app.Run();
+
+static string[] ResolveAllowedOrigins(IConfiguration configuration, string clientOrigin)
+{
+    var configuredOrigins = configuration
+        .GetSection("Cors:AllowedOrigins")
+        .Get<string[]>()
+        ?? [];
+
+    var environmentOrigins = (configuration["CorsAllowedOrigins"] ?? string.Empty)
+        .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    return configuredOrigins
+        .Concat(environmentOrigins)
+        .Append(clientOrigin)
+        .Append("http://localhost:4200")
+        .Append("http://127.0.0.1:4200")
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+}
 
 public partial class Program;
