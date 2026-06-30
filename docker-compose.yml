@@ -1,0 +1,20 @@
+services:
+  client:
+    container_name: coffee-planning-poker-client
+    build:
+      context: ./client
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+  api:
+    container_name: coffee-planning-poker-api
+    build:
+      context: ./server
+    ports:
+      - "5050:8080"
+
+networks:
+  default:
+    name: coffee-planning-poker

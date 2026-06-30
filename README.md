@@ -156,6 +156,19 @@ The Angular app expects the SignalR hub at:
 http://localhost:5050/hubs/rooms
 ```
 
+Build and run the client and API containers from the repository root:
+
+```bash
+docker compose up --build
+```
+
+The compose stack starts:
+
+| Service | Container | URL |
+| --- | --- | --- |
+| Client | `coffee-planning-poker-client` | `http://localhost:4200` |
+| API | `coffee-planning-poker-api` | `http://localhost:5050` |
+
 Build and run the API container from the repository root:
 
 ```bash
