@@ -193,8 +193,12 @@ ClientOrigin=https://<client-site>.onrender.com
 CorsAllowedOrigins=https://<client-site>.onrender.com
 ```
 
-Multiple CORS origins can be separated with semicolons in `CorsAllowedOrigins`.
-Localhost origins remain enabled for development.
+Multiple CORS origins can be separated with semicolons or commas in
+`CorsAllowedOrigins`. The API also accepts `CLIENT_ORIGIN` and
+`CORS_ALLOWED_ORIGINS` if your host uses snake-case environment variable names.
+Configured origins are normalized to `scheme://host[:port]`, so accidental
+trailing slashes or paths do not prevent CORS matching. Localhost origins remain
+enabled for development.
 
 After redeploying the Static Site, verify the generated browser config:
 
@@ -204,6 +208,15 @@ https://<client-site>.onrender.com/app-config.js
 
 It must contain the deployed HTTPS API hub URL, not `localhost` or `http://`.
 Room creation should POST to the API service under `/hubs/rooms/negotiate`.
+
+Verify the API environment that Render actually loaded:
+
+```text
+https://<api-service>.onrender.com/health/config
+```
+
+The `allowedOrigins` list must include the exact frontend origin shown in the
+browser address bar.
 
 Build and run the API container from the repository root:
 
