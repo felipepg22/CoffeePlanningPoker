@@ -185,8 +185,19 @@ the build fails if it is missing or still points at localhost.
 ROOM_HUB_URL=https://<api-service>.onrender.com/hubs/rooms
 ```
 
+The repository includes `render.yaml` for the client Static Site. If the service
+is configured manually in Render instead of from that blueprint, add this
+Redirects/Rewrites rule to the Static Site:
+
+| Source path | Destination path | Action |
+| --- | --- | --- |
+| `/*` | `/index.html` | Rewrite |
+
+This rule is required for invite links and refreshes on Angular routes such as
+`/rooms/brew-482`.
+
 Set the API Web Service environment variables to allow the deployed frontend and
-generate correct invite links:
+keep server-generated invite URLs aligned with the deployed frontend:
 
 ```text
 ClientOrigin=https://<client-site>.onrender.com
