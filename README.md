@@ -178,7 +178,8 @@ Deploy the app as two services:
 
 For a free Render deployment, create a Web Service from `server/` and a Static
 Site from `client/`. Set the client Static Site environment variable to point at
-the deployed API hub:
+the deployed API hub. This variable is required for Render Static Site builds;
+the build fails if it is missing or still points at localhost.
 
 ```text
 ROOM_HUB_URL=https://<api-service>.onrender.com/hubs/rooms
@@ -194,6 +195,15 @@ CorsAllowedOrigins=https://<client-site>.onrender.com
 
 Multiple CORS origins can be separated with semicolons in `CorsAllowedOrigins`.
 Localhost origins remain enabled for development.
+
+After redeploying the Static Site, verify the generated browser config:
+
+```text
+https://<client-site>.onrender.com/app-config.js
+```
+
+It must contain the deployed HTTPS API hub URL, not `localhost` or `http://`.
+Room creation should POST to the API service under `/hubs/rooms/negotiate`.
 
 Build and run the API container from the repository root:
 
