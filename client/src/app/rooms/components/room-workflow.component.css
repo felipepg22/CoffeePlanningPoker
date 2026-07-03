@@ -114,6 +114,72 @@ h3 {
   font-size: 1.45rem;
 }
 
+.brand-cup--animated {
+  position: relative;
+  isolation: isolate;
+  transform-origin: 50% 70%;
+  animation: brand-cup-settle 2200ms var(--ease-out-quint) infinite;
+}
+
+.brand-cup-glyph {
+  position: relative;
+  z-index: 1;
+}
+
+.steam-lift {
+  position: absolute;
+  inset-block-start: -0.16rem;
+  width: 0.38rem;
+  height: 0.82rem;
+  border-radius: 999px;
+  border: 1.5px solid oklch(0.95 0.028 84 / 0.8);
+  border-block-end: 0;
+  opacity: 0.34;
+  filter: blur(0.1px);
+  animation: brand-steam-rise 1800ms var(--ease-out-quart) infinite;
+}
+
+.steam-lift--left {
+  inset-inline-start: 0.5rem;
+}
+
+.steam-lift--right {
+  inset-inline-end: 0.48rem;
+  animation-delay: 220ms;
+}
+
+@keyframes brand-cup-settle {
+  0%, 100% {
+    transform: translateY(0);
+    filter: none;
+  }
+
+  40% {
+    transform: translateY(-0.03rem);
+    filter: drop-shadow(0 0.16rem 0.35rem oklch(0.12 0.02 48 / 0.18));
+  }
+
+  60% {
+    transform: translateY(0.02rem);
+  }
+}
+
+@keyframes brand-steam-rise {
+  0% {
+    transform: translateY(0.32rem) scaleX(0.92);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.52;
+  }
+
+  100% {
+    transform: translateY(-0.24rem) scaleX(1.08);
+    opacity: 0;
+  }
+}
+
 .room-code-control,
 .connection-pill,
 .topbar-title,
@@ -953,5 +1019,15 @@ button:hover:not(:disabled) {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .brand-cup--animated {
+    filter: none;
+    transform: none;
+  }
+
+  .steam-lift {
+    opacity: 0.36;
+    transform: translateY(0);
   }
 }
