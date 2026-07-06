@@ -1,0 +1,38 @@
+name: CoffeePlanningPoker Frontend validation CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-frontend:
+    name: Install, check, test, and build frontend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: client/.nvmrc
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check translations
+        run: npm run i18n:check
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
