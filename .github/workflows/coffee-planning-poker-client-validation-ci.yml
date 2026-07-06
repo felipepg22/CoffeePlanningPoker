@@ -25,6 +25,9 @@ jobs:
           cache: npm
           cache-dependency-path: client/package-lock.json
 
+      - name: Prepare npm cache
+        run: mkdir -p "$(npm config get cache)"
+
       - name: Install dependencies
         run: npm ci
 
