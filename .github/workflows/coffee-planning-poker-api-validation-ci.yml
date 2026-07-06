@@ -1,0 +1,29 @@
+name: CoffeePlanningPoker API validation CD
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-api:
+    name: Restore, build, and test API
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.x
+
+      - name: Restore
+        run: dotnet restore CoffeePlanningPoker.slnx
+
+      - name: Build
+        run: dotnet build CoffeePlanningPoker.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test CoffeePlanningPoker.slnx --configuration Release --no-build --verbosity normal
