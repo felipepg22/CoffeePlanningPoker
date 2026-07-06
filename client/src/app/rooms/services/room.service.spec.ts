@@ -102,6 +102,30 @@ describe('RoomService', () => {
     expect(localStorage.getItem('coffee-planning-poker.room.BREW-482')).toBeNull();
     expect(service.error()?.code).toBe('resume_rejected');
   });
+
+  it('copies invite links from the current frontend origin', async () => {
+    const originalClipboard = navigator.clipboard;
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+
+    try {
+      gateway.nextResult = success(snapshot({ inviteUrl: 'https://api.example.com/rooms/brew-482' }));
+      await service.createRoom('Sprint planning', 'Felipe');
+
+      await service.copyInviteLink();
+
+      expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/rooms/brew-482`);
+      expect(service.inviteCopied()).toBe(true);
+    } finally {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: originalClipboard,
+      });
+    }
+  });
 });
 
 class FakeRoomGateway extends RoomGateway {

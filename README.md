@@ -178,22 +178,56 @@ Deploy the app as two services:
 
 For a free Render deployment, create a Web Service from `server/` and a Static
 Site from `client/`. Set the client Static Site environment variable to point at
-the deployed API hub:
+the deployed API hub. This variable is required for Render Static Site builds;
+the build fails if it is missing or still points at localhost.
 
 ```text
 ROOM_HUB_URL=https://<api-service>.onrender.com/hubs/rooms
 ```
 
+The repository includes `render.yaml` for the client Static Site. If the service
+is configured manually in Render instead of from that blueprint, add this
+Redirects/Rewrites rule to the Static Site:
+
+| Source path | Destination path | Action |
+| --- | --- | --- |
+| `/*` | `/index.html` | Rewrite |
+
+This rule is required for invite links and refreshes on Angular routes such as
+`/rooms/brew-482`.
+
 Set the API Web Service environment variables to allow the deployed frontend and
-generate correct invite links:
+keep server-generated invite URLs aligned with the deployed frontend:
 
 ```text
 ClientOrigin=https://<client-site>.onrender.com
 CorsAllowedOrigins=https://<client-site>.onrender.com
 ```
 
-Multiple CORS origins can be separated with semicolons in `CorsAllowedOrigins`.
-Localhost origins remain enabled for development.
+Multiple CORS origins can be separated with semicolons or commas in
+`CorsAllowedOrigins`. The API also accepts `CLIENT_ORIGIN` and
+`CORS_ALLOWED_ORIGINS` if your host uses snake-case environment variable names.
+Configured origins are normalized to `scheme://host[:port]`, so accidental
+trailing slashes or paths do not prevent CORS matching. Localhost origins remain
+enabled for development.
+
+After redeploying the Static Site, verify the generated browser config:
+
+```text
+https://<client-site>.onrender.com/app-config.js
+```
+
+It must contain the deployed HTTPS API hub URL, not `localhost` or `http://`.
+Room creation should POST to the API service under `/hubs/rooms/negotiate`.
+
+Verify the API environment that Render actually loaded:
+
+```text
+https://<api-service>.onrender.com/health/config
+```
+
+The `allowedOrigins` list must include the exact frontend origin shown in the
+browser address bar.
 
 Build and run the API container from the repository root:
 

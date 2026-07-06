@@ -1,6 +1,6 @@
 {
-  "files": ["src/index.html"],
-  "exclude": ["dist/**"],
+  "files": ["client/src/index.html"],
+  "exclude": ["client/dist/**"],
   "insertBefore": "</body>",
   "commentSyntax": "html",
   "cspChecked": true

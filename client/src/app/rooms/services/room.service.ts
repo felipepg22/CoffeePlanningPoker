@@ -175,13 +175,13 @@ export class RoomService {
   }
 
   async copyInviteLink(): Promise<void> {
-    const inviteUrl = this.activeRoomSignal()?.inviteUrl;
-    if (!inviteUrl) {
+    const room = this.activeRoomSignal();
+    if (!room) {
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(inviteUrl);
+      await navigator.clipboard.writeText(this.inviteUrlFor(room));
       this.inviteCopiedSignal.set(true);
       this.announcementSignal.set(this.i18n.t('notice.inviteCopied', 'Room link copied.'));
       window.setTimeout(() => this.inviteCopiedSignal.set(false), 1800);
@@ -225,6 +225,11 @@ export class RoomService {
     this.connectionStateSignal.set('connected');
     this.errorSignal.set(null);
     this.announcementSignal.set(this.i18n.t('notice.roomLive', '{roomCode} is live.', { roomCode: snapshot.roomCode }));
+  }
+
+  private inviteUrlFor(room: RoomSnapshot): string {
+    const roomPath = `/rooms/${encodeURIComponent(room.roomCode.toLowerCase())}`;
+    return new URL(roomPath, globalThis.location?.origin ?? room.inviteUrl).toString();
   }
 
   private applyParticipantEvent(type: string, participant: RoomParticipant): void {

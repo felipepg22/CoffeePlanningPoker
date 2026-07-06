@@ -3,7 +3,11 @@
 <div class="room-shell" [class.is-entry]="!activeRoom()" [class.is-live-room]="activeRoom()">
   <header class="room-topbar" [attr.aria-label]="i18n.t('aria.roomStatus', 'Room status')">
     <div class="brand-lockup">
-      <span class="brand-cup" aria-hidden="true">☕</span>
+      <span class="brand-cup brand-cup--animated" aria-hidden="true">
+        <span class="brand-cup-glyph">☕</span>
+        <span class="steam-lift steam-lift--left"></span>
+        <span class="steam-lift steam-lift--right"></span>
+      </span>
       <strong>CoffeePlanningPoker</strong>
     </div>
 
