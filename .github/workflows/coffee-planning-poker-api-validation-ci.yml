@@ -1,4 +1,4 @@
-name: CoffeePlanningPoker API validation CD
+name: CoffeePlanningPoker API validation CI
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   validate-api:
-    name: Restore, build, and test API
+    name: Validate server
     runs-on: ubuntu-latest
 
     steps:
