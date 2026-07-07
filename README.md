@@ -37,10 +37,11 @@ The app is designed as a focused collaboration tool, not a marketing page or cas
 table. The visual direction is warm and coffee-room flavored, while the interface
 stays dense, readable, and fast for repeated team sessions.
 
-The live room uses a three-pane session layout: tasks on the left, the active
-voting round in the center, and participants on the right. On smaller screens the
-same workflow stacks into task, voting, and participant sections without changing
-the room actions.
+The live room uses the Countertop Command Center layout: tasks on the left, the
+active voting and reveal board in the center, and participants on the right, with
+persistent room and sync bars. On smaller screens the same workflow stacks into
+voting, participants, and task management sections without changing the room
+actions.
 
 ```mermaid
 flowchart LR

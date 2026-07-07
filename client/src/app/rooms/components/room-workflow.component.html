@@ -26,7 +26,6 @@
 
       <div class="topbar-title">
         <strong>{{ roomSession.roomName }}</strong>
-        <svg lucideChevronDown size="17" aria-hidden="true"></svg>
       </div>
 
       <button class="invite-button" type="button" (click)="copyRoomLink()">
@@ -48,9 +47,6 @@
           <svg lucideLogOut size="20" aria-hidden="true"></svg>
         </button>
       }
-      <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.roomMenu', 'Room menu')">
-        <svg lucideMoreVertical size="20" aria-hidden="true"></svg>
-      </button>
     </div>
   </header>
 
@@ -117,9 +113,6 @@
           <div class="panel-actions">
             <button class="icon-button warm" type="button" [attr.aria-expanded]="addTaskOpen()" aria-controls="add-task-panel" (click)="toggleAddTask()" [attr.aria-label]="i18n.t('button.addTask', 'Add task')">
               <svg lucidePlus size="18" aria-hidden="true"></svg>
-            </button>
-            <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.taskMenu', 'Task menu')">
-              <svg lucideMoreVertical size="18" aria-hidden="true"></svg>
             </button>
           </div>
         </div>
@@ -205,14 +198,6 @@
               @if (task.details) {
                 <span>{{ task.details }}</span>
               }
-            </div>
-            <div class="stage-icons">
-              <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.bookmarkTask', 'Bookmark task')">
-                <svg lucideBookmark size="22" aria-hidden="true"></svg>
-              </button>
-              <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.taskOptions', 'Task options')">
-                <svg lucideMoreVertical size="22" aria-hidden="true"></svg>
-              </button>
             </div>
           </div>
 
@@ -309,9 +294,6 @@
             <ng-container>{{ i18n.t('heading.participants', 'Participants') }}</ng-container>
             <span>{{ totalVoters() }}</span>
           </h2>
-          <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.participantMenu', 'Participant menu')">
-            <svg lucideMoreVertical size="18" aria-hidden="true"></svg>
-          </button>
         </div>
 
         <label class="search-field" for="participant-filter">
@@ -374,10 +356,6 @@
         <svg lucideCloud size="24" aria-hidden="true"></svg>
         <ng-container>{{ i18n.t('sync.autoOn', 'Auto-sync is on') }}</ng-container>
       </span>
-      <button class="status-button" type="button">
-        <svg lucideSettings size="22" aria-hidden="true"></svg>
-        <ng-container>{{ i18n.t('button.roomSettings', 'Room settings') }}</ng-container>
-      </button>
     </footer>
   }
 </div>

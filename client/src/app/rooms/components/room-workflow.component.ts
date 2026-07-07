@@ -3,7 +3,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  LucideBookmark,
   LucideCheckCircle,
   LucideChevronDown,
   LucideChevronRight,
@@ -15,11 +14,9 @@ import {
   LucideGripVertical,
   LucideLink,
   LucideLogOut,
-  LucideMoreVertical,
   LucidePlus,
   LucideSave,
   LucideSearch,
-  LucideSettings,
   LucideUserPlus,
   LucideUsers,
 } from '@lucide/angular';
@@ -53,7 +50,6 @@ type LocalizedText = () => string;
   selector: 'app-room-workflow',
   imports: [
     LocaleSelectorComponent,
-    LucideBookmark,
     LucideCheckCircle,
     LucideChevronDown,
     LucideChevronRight,
@@ -65,11 +61,9 @@ type LocalizedText = () => string;
     LucideGripVertical,
     LucideLink,
     LucideLogOut,
-    LucideMoreVertical,
     LucidePlus,
     LucideSave,
     LucideSearch,
-    LucideSettings,
     LucideUserPlus,
     LucideUsers,
   ],

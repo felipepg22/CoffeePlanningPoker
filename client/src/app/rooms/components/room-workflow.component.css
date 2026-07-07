@@ -415,7 +415,8 @@ a:focus-visible {
 .room-workbench.is-live-room {
   display: grid;
   min-height: 0;
-  grid-template-columns: minmax(18rem, 0.68fr) minmax(32rem, 1.65fr) minmax(20rem, 0.74fr);
+  grid-template-columns: minmax(18rem, 0.72fr) minmax(34rem, 1.62fr) minmax(20rem, 0.76fr);
+  overflow: hidden;
 }
 
 .session-panel,
@@ -429,7 +430,8 @@ a:focus-visible {
   align-content: start;
   gap: 1rem;
   background: linear-gradient(155deg, oklch(0.18 0.036 48), oklch(0.12 0.024 52));
-  padding: 1.35rem;
+  padding: 1.15rem 1.35rem;
+  overflow: auto;
 }
 
 .participants-panel {
@@ -477,7 +479,7 @@ a:focus-visible {
 .participant-list {
   display: grid;
   gap: 0.18rem;
-  max-height: min(48dvh, 34rem);
+  max-height: min(42dvh, 31rem);
   margin: 0;
   overflow: auto;
   padding: 0;
@@ -490,7 +492,8 @@ a:focus-visible {
   border: 1px solid oklch(0.96 0.006 76 / 0.12);
   background: oklch(0.12 0.02 50 / 0.68);
   color: oklch(0.92 0.006 76);
-  padding: 0.75rem;
+  min-height: 3.25rem;
+  padding: 0.6rem 0.7rem;
   text-align: start;
 }
 
@@ -571,12 +574,13 @@ a:focus-visible {
   background:
     radial-gradient(circle at 46% 0%, oklch(0.29 0.08 235 / 0.4), transparent 25rem),
     linear-gradient(150deg, oklch(0.12 0.025 235), oklch(0.19 0.034 50));
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: clamp(1.25rem, 2vw, 2rem);
+  overflow: auto;
 }
 
 .stage-toolbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 
@@ -586,12 +590,8 @@ a:focus-visible {
 }
 
 .stage-toolbar h1 {
-  font-size: clamp(1.7rem, 3vw, 2.25rem);
-}
-
-.stage-icons {
-  display: flex;
-  gap: 0.35rem;
+  max-width: 22ch;
+  font-size: 2rem;
 }
 
 .vote-progress-card {
@@ -599,7 +599,7 @@ a:focus-visible {
   border: 1px solid oklch(0.96 0.006 76 / 0.13);
   border-radius: 8px;
   background: oklch(0.14 0.022 235 / 0.72);
-  padding: 0.9rem 1rem;
+  padding: 0.85rem 1rem;
 }
 
 .vote-progress-card svg {
@@ -652,12 +652,12 @@ a:focus-visible {
 .estimate-grid {
   display: grid;
   grid-template-columns: repeat(9, minmax(4.25rem, 1fr));
-  gap: 0.75rem;
+  gap: 0.7rem;
 }
 
 .estimate-card {
   display: grid;
-  min-height: 8.35rem;
+  min-height: 7.9rem;
   place-items: center;
   border: 1px solid oklch(0.96 0.006 76 / 0.2);
   border-radius: 8px;
@@ -698,11 +698,12 @@ a:focus-visible {
 .reveal-board {
   display: grid;
   gap: 1rem;
-  min-height: 6rem;
+  min-height: 6.2rem;
   border: 1px solid oklch(0.96 0.006 76 / 0.14);
-  border-radius: 16px 16px 8px 8px;
+  border-radius: 14px 14px 8px 8px;
   background: oklch(0.13 0.024 48 / 0.78);
-  padding: 1rem;
+  margin-block-start: 0.15rem;
+  padding: 1rem 1.1rem;
 }
 
 .reveal-board > p {
@@ -711,7 +712,7 @@ a:focus-visible {
 
 .revealed-votes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7.2rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
   gap: 0.7rem;
 }
 
@@ -812,7 +813,8 @@ a:focus-visible {
   gap: 0.8rem;
   border-block-end: 1px solid oklch(0.96 0.006 76 / 0.1);
   background: oklch(0.13 0.022 50 / 0.55);
-  padding: 0.75rem;
+  min-height: 4.7rem;
+  padding: 0.65rem 0.75rem;
 }
 
 .participant-row:last-child {
@@ -875,7 +877,7 @@ a:focus-visible {
   border-block-start: 1px solid oklch(0.96 0.006 76 / 0.15);
   background: oklch(0.075 0.018 52 / 0.96);
   color: oklch(0.82 0.012 76);
-  padding: 0.8rem clamp(1rem, 2vw, 1.5rem);
+  padding: 0.75rem clamp(1rem, 2vw, 1.5rem);
 }
 
 .status-item,
@@ -889,6 +891,10 @@ a:focus-visible {
 
 .status-item.center {
   margin-inline: auto;
+}
+
+.session-status > span:last-child {
+  margin-inline-start: auto;
 }
 
 button:hover:not(:disabled) {
@@ -936,12 +942,26 @@ button:hover:not(:disabled) {
   .room-workbench.is-live-room {
     display: flex;
     flex-direction: column;
+    overflow: visible;
+  }
+
+  .session-stage {
+    order: 1;
+  }
+
+  .participants-panel {
+    order: 2;
+  }
+
+  .task-panel {
+    order: 3;
   }
 
   .session-panel,
   .session-stage {
     border-inline-end: 0;
     border-block-end: 1px solid oklch(0.96 0.006 76 / 0.15);
+    overflow: visible;
   }
 
   .task-list,
@@ -959,8 +979,28 @@ button:hover:not(:disabled) {
     grid-template-columns: 1fr;
   }
 
+  .stage-toolbar h1 {
+    max-width: none;
+    font-size: 1.75rem;
+  }
+
   .status-item.center {
     margin-inline: 0;
+  }
+
+  .session-status {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .session-status > span[aria-hidden] {
+    display: none;
+  }
+
+  .session-status > span:last-child {
+    margin-inline-start: 0;
   }
 }
 
