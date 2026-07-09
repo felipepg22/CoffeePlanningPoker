@@ -11,6 +11,7 @@ import {
   RoomParticipant,
   RoomPendingAction,
   RoomSnapshot,
+  PlanningPokerRoomMode,
 } from '../models/room-session';
 import { RoomGateway } from './room-gateway';
 import { RoomPersistence } from './room-persistence';
@@ -77,7 +78,7 @@ export class RoomService {
     return this.persistence.read(roomCode) !== null;
   }
 
-  async createRoom(roomName: string, displayName: string): Promise<boolean> {
+  async createRoom(roomName: string, displayName: string, roomMode: PlanningPokerRoomMode = 'taskEstimation'): Promise<boolean> {
     this.pendingActionSignal.set('create');
     this.errorSignal.set(null);
     this.identity.setDisplayName(displayName);
@@ -86,6 +87,7 @@ export class RoomService {
       roomName: roomName.trim(),
       displayName: displayName.trim(),
       participantId: this.identity.participantId(),
+      roomMode,
     });
 
     this.pendingActionSignal.set(null);

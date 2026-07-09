@@ -17,6 +17,7 @@ import {
   SaveFinalEstimateCommand,
   SelectTaskCommand,
   StartNextRoundCommand,
+  StartSimplePlanningPokerRoundCommand,
 } from '../models/room-session';
 
 export abstract class RoomGateway {
@@ -33,6 +34,9 @@ export abstract class RoomGateway {
   abstract revealVotes(command: RevealVotesCommand): Promise<RoomCommandResult>;
   abstract resetRound(command: ResetRoundCommand): Promise<RoomCommandResult>;
   abstract startNextRound(command: StartNextRoundCommand): Promise<RoomCommandResult>;
+  startSimplePlanningPokerRound(_command: StartSimplePlanningPokerRoundCommand): Promise<RoomCommandResult> {
+    throw new Error('Simple planning poker rounds are not supported by this room gateway.');
+  }
   abstract saveFinalEstimate(command: SaveFinalEstimateCommand): Promise<RoomCommandResult>;
   abstract completeEstimation(command: CompleteEstimationCommand): Promise<RoomCommandResult>;
 }

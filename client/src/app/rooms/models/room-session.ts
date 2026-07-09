@@ -3,6 +3,7 @@ import { PlanningTask, RoomEstimationStatus } from '../../tasks/models/planning-
 
 export type ParticipantPresence = 'connected' | 'reconnecting' | 'disconnected' | 'left';
 export type ParticipantRole = 'facilitator' | 'participant';
+export type PlanningPokerRoomMode = 'taskEstimation' | 'simplePlanningPoker';
 export type RoomConnectionState = 'idle' | 'connecting' | 'connected' | 'reconnecting' | 'disconnected';
 export type RoomPendingAction = 'create' | 'join' | 'resume' | 'leave' | null;
 
@@ -23,6 +24,7 @@ export interface RoomSnapshot {
   createdAt: string;
   updatedAt: string;
   snapshotVersion: number;
+  roomMode?: PlanningPokerRoomMode;
   participants: readonly RoomParticipant[];
   planningSession: RoomPlanningSession | null;
 }
@@ -61,6 +63,9 @@ export type RoomErrorCode =
   | 'round_not_revealed'
   | 'no_numeric_votes'
   | 'room_completed'
+  | 'invalid_room_mode'
+  | 'room_mode_restricted'
+  | 'no_votes_cast'
   | 'connection_failed';
 
 export interface RecoveryAnchor {
@@ -87,6 +92,7 @@ export interface CreateRoomCommand {
   roomName: string;
   participantId: string;
   displayName: string;
+  roomMode: PlanningPokerRoomMode;
 }
 
 export interface JoinRoomCommand {
@@ -147,6 +153,11 @@ export interface StartNextRoundCommand {
   roomCode: string;
   participantId: string;
   taskId: string | null;
+}
+
+export interface StartSimplePlanningPokerRoundCommand {
+  roomCode: string;
+  participantId: string;
 }
 
 export interface SaveFinalEstimateCommand {

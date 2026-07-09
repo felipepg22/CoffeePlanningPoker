@@ -18,6 +18,18 @@ public static class RoomErrorCodes
     public const string RoundNotRevealed = "round_not_revealed";
     public const string NoNumericVotes = "no_numeric_votes";
     public const string RoomCompleted = "room_completed";
+    public const string InvalidRoomMode = "invalid_room_mode";
+    public const string RoomModeRestricted = "room_mode_restricted";
+    public const string NoVotesCast = "no_votes_cast";
+}
+
+public static class RoomModes
+{
+    public const string TaskEstimation = "taskEstimation";
+    public const string SimplePlanningPoker = "simplePlanningPoker";
+
+    public static bool IsValid(string value) =>
+        value is TaskEstimation or SimplePlanningPoker;
 }
 
 public static class ParticipantRoles
@@ -72,7 +84,7 @@ public static class RoomEstimationStatuses
     public const string Completed = "completed";
 }
 
-public sealed record CreateRoomRequest(string RoomName, string ParticipantId, string DisplayName);
+public sealed record CreateRoomRequest(string RoomName, string ParticipantId, string DisplayName, string? RoomMode = null);
 
 public sealed record JoinRoomRequest(string RoomCode, string ParticipantId, string DisplayName);
 
@@ -93,6 +105,8 @@ public sealed record RevealVotesRequest(string RoomCode, string ParticipantId, s
 public sealed record ResetRoundRequest(string RoomCode, string ParticipantId, string TaskId);
 
 public sealed record StartNextRoundRequest(string RoomCode, string ParticipantId, string? TaskId);
+
+public sealed record StartSimplePlanningPokerRoundRequest(string RoomCode, string ParticipantId);
 
 public sealed record SaveFinalEstimateRequest(string RoomCode, string ParticipantId, string TaskId, string RoundId);
 
@@ -126,7 +140,7 @@ public sealed record ParticipantVoteDto(
 
 public sealed record PlanningRoundDto(
     string RoundId,
-    string TaskId,
+    string? TaskId,
     string Status,
     DateTimeOffset CreatedAt,
     DateTimeOffset? RevealedAt,
@@ -147,6 +161,7 @@ public sealed record RoomPlanningSessionDto(
 public sealed record RoomSnapshotDto(
     string RoomCode,
     string RoomName,
+    string RoomMode,
     string InviteUrl,
     string LocalParticipantId,
     string ResumeToken,

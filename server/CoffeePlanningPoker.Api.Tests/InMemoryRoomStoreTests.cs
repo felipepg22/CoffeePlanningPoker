@@ -161,6 +161,114 @@ public sealed class InMemoryRoomStoreTests
     }
 
     [Fact]
+    public void SimplePlanningPokerRoomStartsWithAnImmediateTasklessVotingRound()
+    {
+        var store = CreateStore();
+
+        var defaultRoom = store.CreateRoom(new CreateRoomRequest("Sprint planning", "p-1", "Felipe"), "c-1");
+        var created = store.CreateRoom(new CreateRoomRequest("Quick estimates", "p-2", "Sam", RoomModes.SimplePlanningPoker), "c-2");
+        var planning = created.Snapshot!.PlanningSession!;
+
+        Assert.Equal(RoomModes.TaskEstimation, defaultRoom.Snapshot!.RoomMode);
+        Assert.Equal(RoomModes.SimplePlanningPoker, created.Snapshot.RoomMode);
+        Assert.Empty(planning.Tasks);
+        Assert.Null(planning.CurrentTaskId);
+        Assert.NotNull(planning.ActiveRound);
+        Assert.Null(planning.ActiveRound!.TaskId);
+        Assert.Equal(PlanningRoundStatuses.Voting, planning.ActiveRound.Status);
+        Assert.Empty(planning.CompletedRounds);
+    }
+
+    [Fact]
+    public void SimplePlanningPokerHidesVotesThenRevealsNumericAverageAndDiscussionOnlyResult()
+    {
+        var store = CreateStore();
+        var created = CreateSimpleRoom(store);
+        var roundId = created.Snapshot!.PlanningSession!.ActiveRound!.RoundId;
+        store.JoinRoom(new JoinRoomRequest(created.Snapshot.RoomCode, "p-2", "Sam"), "c-2");
+
+        store.CastVote(new CastVoteRequest(created.Snapshot.RoomCode, "p-1", roundId, "1"));
+        store.CastVote(new CastVoteRequest(created.Snapshot.RoomCode, "p-2", roundId, "2"));
+        var preReveal = store.GetClientSnapshots(created.Snapshot.RoomCode).Single(snapshot => snapshot.ConnectionId == "c-1").Snapshot.PlanningSession!.ActiveRound!;
+        var revealed = store.RevealVotes(new RevealVotesRequest(created.Snapshot.RoomCode, "p-1", roundId));
+
+        Assert.Null(preReveal.Votes.Single(vote => vote.ParticipantId == "p-2").Estimate);
+        Assert.True(revealed.Success);
+        Assert.Equal(1.5m, revealed.Snapshot!.PlanningSession!.ActiveRound!.ComputedAverage);
+        Assert.All(revealed.Snapshot.PlanningSession.ActiveRound.Votes, vote => Assert.NotNull(vote.Estimate));
+
+        var next = store.StartSimplePlanningPokerRound(new StartSimplePlanningPokerRoundRequest(created.Snapshot.RoomCode, "p-1"));
+        var discussionRoundId = next.Snapshot!.PlanningSession!.ActiveRound!.RoundId;
+        store.CastVote(new CastVoteRequest(created.Snapshot.RoomCode, "p-1", discussionRoundId, "?"));
+        var discussion = store.RevealVotes(new RevealVotesRequest(created.Snapshot.RoomCode, "p-1", discussionRoundId));
+
+        Assert.True(discussion.Success);
+        Assert.Null(discussion.Snapshot!.PlanningSession!.ActiveRound!.ComputedAverage);
+    }
+
+    [Fact]
+    public void SimplePlanningPokerRejectsTaskOnlyOperationsWithoutChangingItsRound()
+    {
+        var store = CreateStore();
+        var created = CreateSimpleRoom(store);
+        var round = created.Snapshot!.PlanningSession!.ActiveRound!;
+        store.CastVote(new CastVoteRequest(created.Snapshot.RoomCode, "p-1", round.RoundId, "5"));
+
+        var results = new RoomCommandResult[]
+        {
+            store.AddTask(new AddTaskRequest(created.Snapshot.RoomCode, "p-1", "A task", null)),
+            store.SelectTask(new SelectTaskRequest(created.Snapshot.RoomCode, "p-1", "task-1")),
+            store.ResetRound(new ResetRoundRequest(created.Snapshot.RoomCode, "p-1", "task-1")),
+            store.StartNextRound(new StartNextRoundRequest(created.Snapshot.RoomCode, "p-1", null)),
+            store.SaveFinalEstimate(new SaveFinalEstimateRequest(created.Snapshot.RoomCode, "p-1", "task-1", round.RoundId)),
+            store.CompleteEstimation(new CompleteEstimationRequest(created.Snapshot.RoomCode, "p-1")),
+        };
+        var snapshot = store.GetClientSnapshots(created.Snapshot.RoomCode).Single(snapshot => snapshot.ConnectionId == "c-1").Snapshot;
+
+        Assert.All(results, result =>
+        {
+            Assert.False(result.Success);
+            Assert.Equal(RoomErrorCodes.RoomModeRestricted, result.Error!.Code);
+        });
+        Assert.Empty(snapshot.PlanningSession!.Tasks);
+        Assert.Equal(round.RoundId, snapshot.PlanningSession.ActiveRound!.RoundId);
+        Assert.Equal(PlanningRoundStatuses.Voting, snapshot.PlanningSession.ActiveRound.Status);
+        Assert.True(snapshot.PlanningSession.ActiveRound.Votes.Single().HasVoted);
+    }
+
+    [Fact]
+    public void SimplePlanningPokerNewRoundRequiresRevealAndReplacesTheRevealedResult()
+    {
+        var store = CreateStore();
+        var created = CreateSimpleRoom(store);
+        var firstRoundId = created.Snapshot!.PlanningSession!.ActiveRound!.RoundId;
+        store.JoinRoom(new JoinRoomRequest(created.Snapshot.RoomCode, "p-2", "Sam"), "c-2");
+        var emptyReveal = store.RevealVotes(new RevealVotesRequest(created.Snapshot.RoomCode, "p-1", firstRoundId));
+        store.CastVote(new CastVoteRequest(created.Snapshot.RoomCode, "p-1", firstRoundId, "8"));
+
+        var beforeReveal = store.StartSimplePlanningPokerRound(new StartSimplePlanningPokerRoundRequest(created.Snapshot.RoomCode, "p-1"));
+        var forbidden = store.StartSimplePlanningPokerRound(new StartSimplePlanningPokerRoundRequest(created.Snapshot.RoomCode, "p-2"));
+        var revealed = store.RevealVotes(new RevealVotesRequest(created.Snapshot.RoomCode, "p-1", firstRoundId));
+        var lateJoin = store.JoinRoom(new JoinRoomRequest(created.Snapshot.RoomCode, "p-3", "Alex"), "c-3");
+        var freshRound = store.StartSimplePlanningPokerRound(new StartSimplePlanningPokerRoundRequest(created.Snapshot.RoomCode, "p-1"));
+
+        Assert.False(beforeReveal.Success);
+        Assert.Equal(RoomErrorCodes.RoundNotRevealed, beforeReveal.Error!.Code);
+        Assert.False(forbidden.Success);
+        Assert.Equal(RoomErrorCodes.Forbidden, forbidden.Error!.Code);
+        Assert.False(emptyReveal.Success);
+        Assert.Equal(RoomErrorCodes.NoVotesCast, emptyReveal.Error!.Code);
+        Assert.True(revealed.Success);
+        Assert.Equal(PlanningRoundStatuses.Revealed, lateJoin.Snapshot!.PlanningSession!.ActiveRound!.Status);
+        Assert.False(store.CastVote(new CastVoteRequest(created.Snapshot.RoomCode, "p-3", firstRoundId, "3")).Success);
+        Assert.True(freshRound.Success);
+        Assert.NotEqual(firstRoundId, freshRound.Snapshot!.PlanningSession!.ActiveRound!.RoundId);
+        Assert.Equal(PlanningRoundStatuses.Voting, freshRound.Snapshot.PlanningSession.ActiveRound.Status);
+        Assert.DoesNotContain(freshRound.Snapshot.PlanningSession.ActiveRound.Votes, vote => vote.HasVoted);
+        Assert.Empty(freshRound.Snapshot.PlanningSession.CompletedRounds);
+    }
+
+    [Fact]
     public void AddTaskValidatesTitleAndFacilitatorSelectsCurrentTask()
     {
         var store = CreateStore();
@@ -374,6 +482,9 @@ public sealed class InMemoryRoomStoreTests
         var selected = store.SelectTask(new SelectTaskRequest(created.Snapshot.RoomCode, "p-1", taskId));
         return (created.Snapshot.RoomCode, taskId, selected.Snapshot!.PlanningSession!.ActiveRound!.RoundId);
     }
+
+    private static RoomCommandResult CreateSimpleRoom(InMemoryRoomStore store) =>
+        store.CreateRoom(new CreateRoomRequest("Quick estimates", "p-1", "Felipe", RoomModes.SimplePlanningPoker), "c-1");
 
     private static void SaveRound(
         InMemoryRoomStore store,

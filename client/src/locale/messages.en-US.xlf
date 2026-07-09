@@ -1099,6 +1099,20 @@
           <context context-type="linenumber">73</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="label.sessionType" datatype="html"><source>Session type</source></trans-unit>
+      <trans-unit id="mode.taskEstimation" datatype="html"><source>Task estimation</source></trans-unit>
+      <trans-unit id="mode.taskEstimationHint" datatype="html"><source>Estimate tasks and save final estimates.</source></trans-unit>
+      <trans-unit id="mode.simplePlanningPoker" datatype="html"><source>Simple planning poker</source></trans-unit>
+      <trans-unit id="mode.simplePlanningPokerHint" datatype="html"><source>Run quick, task-free voting rounds.</source></trans-unit>
+      <trans-unit id="heading.currentVote" datatype="html"><source>Current vote</source></trans-unit>
+      <trans-unit id="button.startNewRound" datatype="html"><source>Start new round</source></trans-unit>
+      <trans-unit id="notice.simpleRoomCreated" datatype="html"><source>{roomCode} is live. Pick a card to begin.</source></trans-unit>
+      <trans-unit id="notice.simpleVotesRevealed" datatype="html"><source>Votes are revealed. Start a new round when discussion is done.</source></trans-unit>
+      <trans-unit id="notice.simpleRoundReady" datatype="html"><source>New round ready. Pick a card when discussion is done.</source></trans-unit>
+      <trans-unit id="reveal.simpleDiscussionSignals" datatype="html"><source>All revealed votes are discussion signals. Start a new round when the team is ready.</source></trans-unit>
+      <trans-unit id="error.invalidRoomMode" datatype="html"><source>Choose a valid room mode.</source></trans-unit>
+      <trans-unit id="error.roomModeRestricted" datatype="html"><source>That action is not available in this room mode.</source></trans-unit>
+      <trans-unit id="error.noVotesCast" datatype="html"><source>At least one vote is required before revealing.</source></trans-unit>
     </body>
   </file>
 </xliff>

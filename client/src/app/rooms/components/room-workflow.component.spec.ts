@@ -163,6 +163,23 @@ describe('RoomWorkflowComponent', () => {
     expect(component.canSaveEstimate()).toBe(false);
   });
 
+  it('creates a taskless simple planning poker room and hides task-only controls', async () => {
+    gateway.nextResult = success(snapshot({ roomMode: 'simplePlanningPoker', activeTaskId: null, roundStatus: 'revealed', hasLocalVote: true, localEstimate: '5', computedAverage: 5 }));
+    component.roomName.set('Quick sizing');
+    component.displayName.set('Felipe');
+    component.setPlanningMode('simplePlanningPoker');
+
+    await component.startRoom(new Event('submit'), 'create');
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(gateway.lastCreateRoom?.roomMode).toBe('simplePlanningPoker');
+    expect(text).toContain('Simple planning poker');
+    expect(text).toContain('Start new round');
+    expect(text).not.toContain('Add task');
+    expect(text).not.toContain('Save final estimate');
+  });
+
   it('shows completed totals and reconnecting state', async () => {
     gateway.nextResult = success(snapshot({ completed: true, completedTotal: 7.5 }));
     component.roomName.set('Sprint planning');
@@ -191,8 +208,10 @@ class FakeRoomGateway extends RoomGateway {
   lastAddTask: AddTaskCommand | null = null;
   lastSelectTask: SelectTaskCommand | null = null;
   lastCastVote: CastVoteCommand | null = null;
+  lastCreateRoom: CreateRoomCommand | null = null;
 
-  override createRoom(_command: CreateRoomCommand): Promise<RoomCommandResult> {
+  override createRoom(command: CreateRoomCommand): Promise<RoomCommandResult> {
+    this.lastCreateRoom = command;
     return Promise.resolve(this.nextResult);
   }
 
@@ -255,7 +274,7 @@ function success(snapshotValue: RoomSnapshot): RoomCommandResult {
 function snapshot(options: {
   snapshotVersion?: number;
   extraTask?: boolean;
-  activeTaskId?: string;
+  activeTaskId?: string | null;
   roundId?: string;
   localRole?: 'facilitator' | 'participant';
   roundStatus?: 'voting' | 'revealed' | 'closed';
@@ -264,9 +283,10 @@ function snapshot(options: {
   hasLocalVote?: boolean;
   completed?: boolean;
   completedTotal?: number;
+  roomMode?: 'taskEstimation' | 'simplePlanningPoker';
 } = {}): RoomSnapshot {
   const now = new Date().toISOString();
-  const activeTaskId = options.activeTaskId ?? 'task-1';
+  const activeTaskId = options.activeTaskId === undefined ? 'task-1' : options.activeTaskId;
   const tasks = [
     {
       taskId: 'task-1',
@@ -290,6 +310,7 @@ function snapshot(options: {
   return {
     roomCode: 'BREW-482',
     roomName: 'Sprint planning',
+    roomMode: options.roomMode ?? 'taskEstimation',
     inviteUrl: 'http://localhost:4200/rooms/brew-482',
     localParticipantId: 'p-1',
     resumeToken: 'token-1',

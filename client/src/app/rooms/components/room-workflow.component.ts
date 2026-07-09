@@ -34,7 +34,7 @@ import { localizedPathFor } from '../../shared/i18n/locales';
 import { roomErrorMessage, validationMessage } from '../../shared/i18n/messages';
 import { PlanningTask } from '../../tasks/models/planning-task';
 import { TaskService } from '../../tasks/services/task.service';
-import { ParticipantPresence } from '../models/room-session';
+import { ParticipantPresence, PlanningPokerRoomMode } from '../models/room-session';
 import { RoomService } from '../services/room.service';
 import {
   normalizeRoomCode,
@@ -46,7 +46,7 @@ import {
   validateTaskTitle,
 } from '../services/room-validation';
 
-type RoomMode = 'create' | 'join';
+type EntryMode = 'create' | 'join';
 type LocalizedText = () => string;
 
 @Component({
@@ -87,7 +87,8 @@ export class RoomWorkflowComponent {
   readonly taskState = inject(TaskService);
   readonly activeLocale = this.i18n.locale;
 
-  readonly roomMode = signal<RoomMode>('create');
+  readonly roomMode = signal<EntryMode>('create');
+  readonly selectedPlanningMode = signal<PlanningPokerRoomMode>('taskEstimation');
   readonly roomName = signal('');
   readonly joinCode = signal('');
   readonly displayName = signal(this.identity.displayName());
@@ -102,6 +103,10 @@ export class RoomWorkflowComponent {
   readonly notice = signal<LocalizedText | null>(() => this.i18n.t('notice.entryReady', 'Create a room or join with a code.'));
 
   readonly activeRoom = this.room.activeRoom;
+  readonly isSimplePlanningPoker = computed(() => this.activeRoom()?.roomMode === 'simplePlanningPoker');
+  readonly stageTitle = computed(() => this.isSimplePlanningPoker()
+    ? this.i18n.t('heading.currentVote', 'Current vote')
+    : this.activeTask()?.title ?? '');
   readonly activeTask = this.taskState.currentTask;
   readonly tasks = this.taskState.tasks;
   readonly participantRows = this.session.participantRows;
@@ -253,11 +258,15 @@ export class RoomWorkflowComponent {
       });
   }
 
-  setRoomMode(mode: RoomMode): void {
+  setRoomMode(mode: EntryMode): void {
     this.roomMode.set(mode);
     this.setupError.set(null);
     this.room.clearError();
     this.focusSoon(mode === 'create' ? 'room-name' : 'join-code');
+  }
+
+  setPlanningMode(mode: PlanningPokerRoomMode): void {
+    this.selectedPlanningMode.set(mode);
   }
 
   updateRoomName(event: Event): void {
@@ -294,7 +303,7 @@ export class RoomWorkflowComponent {
     this.addTaskOpen.update((isOpen) => !isOpen);
   }
 
-  async startRoom(event: Event, mode: RoomMode): Promise<void> {
+  async startRoom(event: Event, mode: EntryMode): Promise<void> {
     event.preventDefault();
     this.setupError.set(null);
     this.room.clearError();
@@ -316,14 +325,16 @@ export class RoomWorkflowComponent {
         return;
       }
 
-      const created = await this.room.createRoom(roomName, displayName);
+      const created = await this.room.createRoom(roomName, displayName, this.selectedPlanningMode());
       if (created) {
         const activeRoom = this.activeRoom();
-        this.notice.set(() => this.i18n.t('notice.roomCreated', '{roomCode} is live. Add a task to begin.', {
+        this.notice.set(() => this.isSimplePlanningPoker()
+          ? this.i18n.t('notice.simpleRoomCreated', '{roomCode} is live. Pick a card to begin.', { roomCode: activeRoom?.roomCode ?? 'Room' })
+          : this.i18n.t('notice.roomCreated', '{roomCode} is live. Add a task to begin.', {
           roomCode: activeRoom?.roomCode ?? 'Room',
-        }));
+          }));
         await this.navigateToActiveRoom();
-        this.focusSoon('task-title');
+        this.focusSoon(this.isSimplePlanningPoker() ? 'active-task-title' : 'task-title');
       }
       return;
     }
@@ -412,7 +423,9 @@ export class RoomWorkflowComponent {
     if (revealed) {
       this.notice.set(() => this.splitNeedsDiscussion()
         ? this.i18n.t('notice.votesSplit', 'Votes are split. Discuss the high and low estimates first.')
-        : this.i18n.t('notice.votesRevealed', 'Votes are revealed. Save the final estimate when the team agrees.'));
+        : this.isSimplePlanningPoker()
+          ? this.i18n.t('notice.simpleVotesRevealed', 'Votes are revealed. Start a new round when discussion is done.')
+          : this.i18n.t('notice.votesRevealed', 'Votes are revealed. Save the final estimate when the team agrees.'));
     }
   }
 
@@ -444,6 +457,14 @@ export class RoomWorkflowComponent {
     const started = await this.session.startNextRound();
     if (started) {
       this.notice.set(() => this.i18n.t('notice.nextRoundReady', 'Next round ready. Pick a card when discussion is done.'));
+      this.focusSoon('active-task-title');
+    }
+  }
+
+  async startSimplePlanningPokerRound(): Promise<void> {
+    const started = await this.session.startSimplePlanningPokerRound();
+    if (started) {
+      this.notice.set(() => this.i18n.t('notice.simpleRoundReady', 'New round ready. Pick a card when discussion is done.'));
       this.focusSoon('active-task-title');
     }
   }

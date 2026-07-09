@@ -57,6 +57,12 @@ export class SessionService {
     this.pendingActionSignal() === null,
   );
   readonly canReset = computed(() => this.room.isFacilitator() && this.room.planningSession()?.currentTaskId !== null && this.pendingActionSignal() === null);
+  readonly canStartSimplePlanningPokerRound = computed(() =>
+    this.room.isFacilitator() &&
+    this.room.activeRoom()?.roomMode === 'simplePlanningPoker' &&
+    this.activeRound()?.status === 'revealed' &&
+    this.pendingActionSignal() === null,
+  );
 
   async castVote(estimate: EstimateValue): Promise<boolean> {
     const round = this.activeRound();
@@ -110,6 +116,13 @@ export class SessionService {
       roomCode: room.roomCode,
       participantId: room.localParticipantId,
       taskId,
+    }));
+  }
+
+  async startSimplePlanningPokerRound(): Promise<boolean> {
+    return this.run('startSimplePlanningPokerRound', (room) => this.gateway.startSimplePlanningPokerRound({
+      roomCode: room.roomCode,
+      participantId: room.localParticipantId,
     }));
   }
 

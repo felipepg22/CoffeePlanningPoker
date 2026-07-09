@@ -88,6 +88,9 @@ public sealed class RoomHub(InMemoryRoomStore store) : Hub
     public Task<RoomCommandResult> StartNextRound(StartNextRoundRequest request) =>
         MutatePlanningSession(store.StartNextRound(request));
 
+    public Task<RoomCommandResult> StartSimplePlanningPokerRound(StartSimplePlanningPokerRoundRequest request) =>
+        MutatePlanningSession(store.StartSimplePlanningPokerRound(request));
+
     public Task<RoomCommandResult> SaveFinalEstimate(SaveFinalEstimateRequest request) =>
         MutatePlanningSession(store.SaveFinalEstimate(request));
 

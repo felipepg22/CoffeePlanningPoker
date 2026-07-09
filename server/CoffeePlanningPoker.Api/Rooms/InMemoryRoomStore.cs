@@ -14,6 +14,7 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
     {
         var roomName = request.RoomName.Trim();
         var displayName = request.DisplayName.Trim();
+        var roomMode = request.RoomMode ?? RoomModes.TaskEstimation;
 
         if (!RoomValidation.IsValidRoomName(roomName))
         {
@@ -23,6 +24,11 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
         if (!RoomValidation.IsValidDisplayName(displayName))
         {
             return Failure(RoomErrorCodes.InvalidDisplayName, "Enter a display name with at least 2 characters.");
+        }
+
+        if (!RoomModes.IsValid(roomMode))
+        {
+            return Failure(RoomErrorCodes.InvalidRoomMode, "Choose a valid room mode.");
         }
 
         lock (gate)
@@ -43,10 +49,15 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
             var room = new RoomState(
                 RoomCode: roomCode,
                 RoomName: roomName,
+                RoomMode: roomMode,
                 CreatedAt: now,
                 LastActivityAt: now,
                 UpdatedAt: now,
                 SnapshotVersion: 1);
+            if (roomMode == RoomModes.SimplePlanningPoker)
+            {
+                room.ActiveRound = CreateRound(null, now);
+            }
             room.Participants[participant.ParticipantId] = participant;
             rooms[roomCode] = room;
             connections[connectionId] = new ConnectionAnchor(roomCode, participant.ParticipantId);
@@ -195,6 +206,12 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
 
         return MutateAsMember(request.RoomCode, request.ParticipantId, (room, participant, now) =>
         {
+            var restricted = RejectTaskEstimationOnlyOperation(room);
+            if (restricted is not null)
+            {
+                return restricted;
+            }
+
             if (room.EstimationStatus == RoomEstimationStatuses.Completed)
             {
                 return Failure(RoomErrorCodes.RoomCompleted, "This room estimation is already complete.", room.RoomCode);
@@ -215,6 +232,12 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
     {
         return MutateAsFacilitator(request.RoomCode, request.ParticipantId, (room, participant, now) =>
         {
+            var restricted = RejectTaskEstimationOnlyOperation(room);
+            if (restricted is not null)
+            {
+                return restricted;
+            }
+
             if (room.EstimationStatus == RoomEstimationStatuses.Completed)
             {
                 return Failure(RoomErrorCodes.RoomCompleted, "This room estimation is already complete.", room.RoomCode);
@@ -288,6 +311,11 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
                 return Success(room, participant);
             }
 
+            if (room.RoomMode == RoomModes.SimplePlanningPoker && room.ActiveRound.Votes.Count == 0)
+            {
+                return Failure(RoomErrorCodes.NoVotesCast, "At least one vote is required before revealing.", room.RoomCode);
+            }
+
             room.ActiveRound.Status = PlanningRoundStatuses.Revealed;
             room.ActiveRound.RevealedAt = now;
             Touch(room, now);
@@ -299,6 +327,12 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
     {
         return MutateAsFacilitator(request.RoomCode, request.ParticipantId, (room, participant, now) =>
         {
+            var restricted = RejectTaskEstimationOnlyOperation(room);
+            if (restricted is not null)
+            {
+                return restricted;
+            }
+
             if (room.EstimationStatus == RoomEstimationStatuses.Completed)
             {
                 return Failure(RoomErrorCodes.RoomCompleted, "This room estimation is already complete.", room.RoomCode);
@@ -322,6 +356,12 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
     {
         return MutateAsFacilitator(request.RoomCode, request.ParticipantId, (room, participant, now) =>
         {
+            var restricted = RejectTaskEstimationOnlyOperation(room);
+            if (restricted is not null)
+            {
+                return restricted;
+            }
+
             if (room.EstimationStatus == RoomEstimationStatuses.Completed)
             {
                 return Failure(RoomErrorCodes.RoomCompleted, "This room estimation is already complete.", room.RoomCode);
@@ -347,6 +387,12 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
     {
         return MutateAsFacilitator(request.RoomCode, request.ParticipantId, (room, participant, now) =>
         {
+            var restricted = RejectTaskEstimationOnlyOperation(room);
+            if (restricted is not null)
+            {
+                return restricted;
+            }
+
             if (room.EstimationStatus == RoomEstimationStatuses.Completed)
             {
                 return Failure(RoomErrorCodes.RoomCompleted, "This room estimation is already complete.", room.RoomCode);
@@ -394,6 +440,12 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
     {
         return MutateAsFacilitator(request.RoomCode, request.ParticipantId, (room, participant, now) =>
         {
+            var restricted = RejectTaskEstimationOnlyOperation(room);
+            if (restricted is not null)
+            {
+                return restricted;
+            }
+
             if (!HasSavedFinalEstimate(room))
             {
                 return Failure(RoomErrorCodes.NoNumericVotes, "Save at least one final estimate before completing estimation.", room.RoomCode);
@@ -401,6 +453,26 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
 
             room.EstimationStatus = RoomEstimationStatuses.Completed;
             room.CompletedTotalEstimate = CalculateTotal(room);
+            Touch(room, now);
+            return Success(room, participant);
+        });
+    }
+
+    public RoomCommandResult StartSimplePlanningPokerRound(StartSimplePlanningPokerRoundRequest request)
+    {
+        return MutateAsFacilitator(request.RoomCode, request.ParticipantId, (room, participant, now) =>
+        {
+            if (room.RoomMode != RoomModes.SimplePlanningPoker)
+            {
+                return Failure(RoomErrorCodes.RoomModeRestricted, "Simple planning poker rounds are only available in Simple planning poker rooms.", room.RoomCode);
+            }
+
+            if (room.ActiveRound?.Status != PlanningRoundStatuses.Revealed)
+            {
+                return Failure(RoomErrorCodes.RoundNotRevealed, "Reveal votes before starting a new round.", room.RoomCode);
+            }
+
+            room.ActiveRound = CreateRound(null, now);
             Touch(room, now);
             return Success(room, participant);
         });
@@ -554,7 +626,7 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
         return $"task-{room.NextTaskNumber}";
     }
 
-    private static PlanningRoundState CreateRound(string taskId, DateTimeOffset now) =>
+    private static PlanningRoundState CreateRound(string? taskId, DateTimeOffset now) =>
         new(
             RoundId: $"round-{Guid.NewGuid():N}",
             TaskId: taskId,
@@ -596,6 +668,11 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
         return null;
     }
 
+    private static RoomCommandResult? RejectTaskEstimationOnlyOperation(RoomState room) =>
+        room.RoomMode == RoomModes.SimplePlanningPoker
+            ? Failure(RoomErrorCodes.RoomModeRestricted, "This action is unavailable in a Simple planning poker room.", room.RoomCode)
+            : null;
+
     private static void CloseActiveRound(RoomState room, DateTimeOffset now)
     {
         if (room.ActiveRound is null)
@@ -632,7 +709,7 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
             var pruned = room.CompletedRounds[0];
             room.CompletedRounds.RemoveAt(0);
 
-            var task = FindTask(room, pruned.TaskId);
+            var task = pruned.TaskId is null ? null : FindTask(room, pruned.TaskId);
             if (task?.FinalEstimate is { Archived: false } estimate &&
                 StringComparer.Ordinal.Equals(estimate.RoundId, pruned.RoundId))
             {
@@ -662,6 +739,7 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
         new(
             room.RoomCode,
             room.RoomName,
+            room.RoomMode,
             $"{options.ClientOrigin.TrimEnd('/')}/rooms/{room.RoomCode.ToLowerInvariant()}",
             localParticipant.ParticipantId,
             localParticipant.ResumeToken,
@@ -755,6 +833,7 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
     private sealed class RoomState(
         string RoomCode,
         string RoomName,
+        string RoomMode,
         DateTimeOffset CreatedAt,
         DateTimeOffset LastActivityAt,
         DateTimeOffset UpdatedAt,
@@ -762,6 +841,7 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
     {
         public string RoomCode { get; } = RoomCode;
         public string RoomName { get; } = RoomName;
+        public string RoomMode { get; } = RoomMode;
         public DateTimeOffset CreatedAt { get; } = CreatedAt;
         public DateTimeOffset LastActivityAt { get; set; } = LastActivityAt;
         public DateTimeOffset UpdatedAt { get; set; } = UpdatedAt;
@@ -809,12 +889,12 @@ public sealed class InMemoryRoomStore(RoomStoreOptions options, IRoomClock clock
 
     private sealed class PlanningRoundState(
         string RoundId,
-        string TaskId,
+        string? TaskId,
         string Status,
         DateTimeOffset CreatedAt)
     {
         public string RoundId { get; } = RoundId;
-        public string TaskId { get; } = TaskId;
+        public string? TaskId { get; } = TaskId;
         public string Status { get; set; } = Status;
         public DateTimeOffset CreatedAt { get; } = CreatedAt;
         public DateTimeOffset? RevealedAt { get; set; }

@@ -70,6 +70,12 @@ export function knownRoomErrorMessage(code: RoomErrorCode, i18n: I18nService): s
       return i18n.t('error.noNumericVotes', 'A numeric vote is required before saving an estimate.');
     case 'room_completed':
       return i18n.t('error.roomCompleted', 'This room estimation is already complete.');
+    case 'invalid_room_mode':
+      return i18n.t('error.invalidRoomMode', 'Choose a valid room mode.');
+    case 'room_mode_restricted':
+      return i18n.t('error.roomModeRestricted', 'That action is not available in this room mode.');
+    case 'no_votes_cast':
+      return i18n.t('error.noVotesCast', 'At least one vote is required before revealing.');
     case 'connection_failed':
       return i18n.t('error.connectionFailed', 'The room connection failed. Check your network and retry.');
   }
@@ -103,5 +109,8 @@ export const ALL_ROOM_ERROR_CODES: readonly RoomErrorCode[] = [
   'round_not_revealed',
   'no_numeric_votes',
   'room_completed',
+  'invalid_room_mode',
+  'room_mode_restricted',
+  'no_votes_cast',
   'connection_failed',
 ];
