@@ -10,6 +10,10 @@ CoffeePlanningPoker is the collaborative estimation context for teams running li
 A live collaboration space where one team estimates planning tasks together.
 _Avoid_: Session room, meeting, lobby
 
+**Room Mode**:
+The permanent workflow selected when a room is created: **Task estimation** for a backlog-based workflow, or **Simple planning poker** for repeated taskless votes.
+_Avoid_: Session type, room setting
+
 **Room Code**:
 A short human-readable code used to join a room.
 _Avoid_: Join code, invite code, room id
@@ -67,7 +71,7 @@ The estimation workflow inside a room, including its tasks, active round, comple
 _Avoid_: Estimation session, game, workflow
 
 **Planning Round**:
-One voting cycle for a single planning task.
+One voting cycle. In Task estimation it belongs to one planning task; in Simple planning poker it is explicitly taskless.
 _Avoid_: Round, vote round, estimation round
 
 **Estimate Card**:

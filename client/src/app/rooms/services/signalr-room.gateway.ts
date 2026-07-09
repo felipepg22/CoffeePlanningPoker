@@ -27,6 +27,7 @@ import {
   SaveFinalEstimateCommand,
   SelectTaskCommand,
   StartNextRoundCommand,
+  StartSimplePlanningPokerRoundCommand,
 } from '../models/room-session';
 import { RoomGateway } from './room-gateway';
 
@@ -98,6 +99,10 @@ export class SignalRRoomGateway extends RoomGateway {
 
   override async startNextRound(command: StartNextRoundCommand): Promise<RoomCommandResult> {
     return this.invoke('StartNextRound', command);
+  }
+
+  override async startSimplePlanningPokerRound(command: StartSimplePlanningPokerRoundCommand): Promise<RoomCommandResult> {
+    return this.invoke('StartSimplePlanningPokerRound', command);
   }
 
   override async saveFinalEstimate(command: SaveFinalEstimateCommand): Promise<RoomCommandResult> {

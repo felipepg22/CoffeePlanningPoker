@@ -6,8 +6,9 @@
 ![License](https://img.shields.io/badge/license-MIT-0f766e)
 
 CoffeePlanningPoker is a live planning poker app for teams estimating work together.
-It starts directly in the room workflow: create or join a room, add tasks, vote with
-estimate cards, reveal the spread, discuss, and save the final estimate.
+It starts directly in the room workflow: create or join a room, choose task estimation
+or a lightweight taskless planning-poker mode, vote with estimate cards, reveal the
+spread, discuss, and save final estimates when working from a backlog.
 
 ```text
       )  (
@@ -25,6 +26,8 @@ estimate cards, reveal the spread, discuss, and save the final estimate.
 - Keep participant presence visible during live sessions.
 - Recover a room after refresh with a locally stored resume token.
 - Add and select tasks from a compact backlog queue.
+- Choose **Task estimation** (the default) or **Simple planning poker** when creating a room.
+- Run repeated taskless votes in Simple planning poker, then start a fresh round after Reveal.
 - Vote with Fibonacci-style estimate cards: `0`, `1`, `2`, `3`, `5`, `8`, `13`, `21`, `?`.
 - Reveal votes only when the facilitator is ready.
 - Highlight large estimate spreads so the team knows when to discuss.
@@ -37,10 +40,10 @@ The app is designed as a focused collaboration tool, not a marketing page or cas
 table. The visual direction is warm and coffee-room flavored, while the interface
 stays dense, readable, and fast for repeated team sessions.
 
-The live room uses a three-pane session layout: tasks on the left, the active
-voting round in the center, and participants on the right. On smaller screens the
-same workflow stacks into task, voting, and participant sections without changing
-the room actions.
+Task estimation uses a three-pane session layout: tasks on the left, the active
+voting round in the center, and participants on the right. Simple planning poker
+removes the task panel and its task-only actions so repeated live votes stay focused.
+On smaller screens the active workflow stacks without changing available actions.
 
 ```mermaid
 flowchart LR
@@ -54,6 +57,10 @@ flowchart LR
   G --> H
   H --> I["Start next round"]
 ```
+
+For Simple planning poker, choose that room mode at creation, invite the team, vote,
+Reveal, then use **Start new round** to replace the revealed result. This mode does not
+keep a backlog, final estimates, totals, completion state, or round history.
 
 ## Architecture
 

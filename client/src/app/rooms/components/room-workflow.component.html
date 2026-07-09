@@ -76,6 +76,18 @@
             <label for="display-name-create">{{ i18n.t('label.displayName', 'Your display name') }}</label>
             <input id="display-name-create" name="display-name" type="text" autocomplete="name" [value]="displayName()" (input)="updateDisplayName($event)" [placeholder]="i18n.t('placeholder.displayName', 'Your name')" aria-describedby="setup-error">
 
+            <fieldset class="planning-mode-picker">
+              <legend>{{ i18n.t('label.sessionType', 'Session type') }}</legend>
+              <label>
+                <input type="radio" name="planning-mode" value="taskEstimation" [checked]="selectedPlanningMode() === 'taskEstimation'" (change)="setPlanningMode('taskEstimation')">
+                <span><strong>{{ i18n.t('mode.taskEstimation', 'Task estimation') }}</strong><small>{{ i18n.t('mode.taskEstimationHint', 'Estimate tasks and save final estimates.') }}</small></span>
+              </label>
+              <label>
+                <input type="radio" name="planning-mode" value="simplePlanningPoker" [checked]="selectedPlanningMode() === 'simplePlanningPoker'" (change)="setPlanningMode('simplePlanningPoker')">
+                <span><strong>{{ i18n.t('mode.simplePlanningPoker', 'Simple planning poker') }}</strong><small>{{ i18n.t('mode.simplePlanningPokerHint', 'Run quick, task-free voting rounds.') }}</small></span>
+              </label>
+            </fieldset>
+
             <button class="primary-action" type="submit" [disabled]="isBusy()">
               @if (room.pendingAction() === 'create') {
                 <ng-container>{{ i18n.t('button.creatingRoom', 'Creating room') }}</ng-container>
@@ -111,6 +123,7 @@
         </p>
       </section>
     } @else {
+      @if (!isSimplePlanningPoker()) {
       <aside class="session-panel task-panel" aria-labelledby="tasks-title">
         <div class="panel-heading">
           <h2 id="tasks-title">{{ i18n.t('heading.tasks', 'Tasks') }}</h2>
@@ -187,9 +200,10 @@
           </form>
         }
       </aside>
+      }
 
-      <section class="session-stage" aria-labelledby="active-task-title">
-        @if (isCompleted()) {
+      <section class="session-stage" [class.is-simple-mode]="isSimplePlanningPoker()" aria-labelledby="active-task-title">
+        @if (isCompleted() && !isSimplePlanningPoker()) {
           <div class="completion-banner" aria-live="polite">
             <p>{{ i18n.t('section.projectEstimate', 'Project estimate') }}</p>
             <strong>{{ formatEstimate(completedTotal()) }}</strong>
@@ -197,15 +211,21 @@
           </div>
         }
 
-        @if (activeTask(); as task) {
+        @if (isSimplePlanningPoker() || activeTask()) {
           <div class="stage-toolbar">
             <div>
-              <p>{{ i18n.t('section.taskToEstimate', 'Active task') }}</p>
-              <h1 id="active-task-title" tabindex="-1">{{ task.title }}</h1>
-              @if (task.details) {
-                <span>{{ task.details }}</span>
+              @if (isSimplePlanningPoker()) {
+                <p class="mode-label">{{ i18n.t('mode.simplePlanningPoker', 'Simple planning poker') }}</p>
+                <h1 id="active-task-title" tabindex="-1">{{ stageTitle() }}</h1>
+              } @else {
+                <p>{{ i18n.t('section.taskToEstimate', 'Active task') }}</p>
+                <h1 id="active-task-title" tabindex="-1">{{ stageTitle() }}</h1>
+              @if (activeTask()?.details) {
+                <span>{{ activeTask()?.details }}</span>
+              }
               }
             </div>
+            @if (!isSimplePlanningPoker()) {
             <div class="stage-icons">
               <button class="icon-button" type="button" [attr.aria-label]="i18n.t('aria.bookmarkTask', 'Bookmark task')">
                 <svg lucideBookmark size="22" aria-hidden="true"></svg>
@@ -214,6 +234,7 @@
                 <svg lucideMoreVertical size="22" aria-hidden="true"></svg>
               </button>
             </div>
+            }
           </div>
 
           <div class="vote-progress-card" [attr.aria-label]="i18n.t('aria.votingProgress', 'Voting progress')">
@@ -271,12 +292,15 @@
                   }
                 } @else {
                   <strong>{{ i18n.t('reveal.noNumericEstimate', 'No numeric estimate yet') }}</strong>
-                  <span>{{ i18n.t('reveal.discussionSignals', 'All revealed votes are discussion signals. Start a re-vote with at least one numeric card.') }}</span>
+                  <span>{{ isSimplePlanningPoker() ? i18n.t('reveal.simpleDiscussionSignals', 'All revealed votes are discussion signals. Start a new round when the team is ready.') : i18n.t('reveal.discussionSignals', 'All revealed votes are discussion signals. Start a re-vote with at least one numeric card.') }}</span>
                 }
               </div>
 
               @if (room.isFacilitator()) {
                 <div class="secondary-command-row">
+                  @if (isSimplePlanningPoker()) {
+                    <button class="secondary-action" type="button" [disabled]="!session.canStartSimplePlanningPokerRound()" (click)="startSimplePlanningPokerRound()">{{ i18n.t('button.startNewRound', 'Start new round') }}</button>
+                  } @else {
                   <button class="primary-action save-action" type="button" [disabled]="!canSaveEstimate() || isCompleted()" (click)="saveFinalEstimate()">
                     <svg lucideSave size="21" aria-hidden="true"></svg>
                     @if (taskState.pendingAction() === 'saveFinalEstimate') {
@@ -288,6 +312,7 @@
                   <button class="secondary-action" type="button" [disabled]="!activeTask() || isCommandBusy() || isCompleted()" (click)="startReVote()">{{ i18n.t('button.startRevote', 'Start re-vote') }}</button>
                   <button class="secondary-action" type="button" [disabled]="tasks().length === 0 || isCommandBusy() || isCompleted()" (click)="startNextRound()">{{ i18n.t('button.startNextRound', 'Start next round') }}</button>
                   <button class="secondary-action" type="button" [disabled]="!canComplete()" (click)="completeEstimation()">{{ i18n.t('button.completeEstimation', 'Complete estimation') }}</button>
+                  }
                 </div>
               }
             } @else {

@@ -1250,6 +1250,20 @@
           <context context-type="linenumber">73</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="label.sessionType" datatype="html"><source>Session type</source><target>Tipo de sessão</target></trans-unit>
+      <trans-unit id="mode.taskEstimation" datatype="html"><source>Task estimation</source><target>Estimativa de tarefas</target></trans-unit>
+      <trans-unit id="mode.taskEstimationHint" datatype="html"><source>Estimate tasks and save final estimates.</source><target>Estime tarefas e salve as estimativas finais.</target></trans-unit>
+      <trans-unit id="mode.simplePlanningPoker" datatype="html"><source>Simple planning poker</source><target>Planning poker simples</target></trans-unit>
+      <trans-unit id="mode.simplePlanningPokerHint" datatype="html"><source>Run quick, task-free voting rounds.</source><target>Faça rodadas rápidas de votação sem tarefas.</target></trans-unit>
+      <trans-unit id="heading.currentVote" datatype="html"><source>Current vote</source><target>Votação atual</target></trans-unit>
+      <trans-unit id="button.startNewRound" datatype="html"><source>Start new round</source><target>Iniciar nova rodada</target></trans-unit>
+      <trans-unit id="notice.simpleRoomCreated" datatype="html"><source>{roomCode} is live. Pick a card to begin.</source><target>{roomCode} está ativa. Escolha uma carta para começar.</target></trans-unit>
+      <trans-unit id="notice.simpleVotesRevealed" datatype="html"><source>Votes are revealed. Start a new round when discussion is done.</source><target>Os votos foram revelados. Inicie uma nova rodada quando a discussão terminar.</target></trans-unit>
+      <trans-unit id="notice.simpleRoundReady" datatype="html"><source>New round ready. Pick a card when discussion is done.</source><target>Nova rodada pronta. Escolha uma carta quando a discussão terminar.</target></trans-unit>
+      <trans-unit id="reveal.simpleDiscussionSignals" datatype="html"><source>All revealed votes are discussion signals. Start a new round when the team is ready.</source><target>Todos os votos revelados são sinais de discussão. Inicie uma nova rodada quando a equipe estiver pronta.</target></trans-unit>
+      <trans-unit id="error.invalidRoomMode" datatype="html"><source>Choose a valid room mode.</source><target>Escolha um modo de sala válido.</target></trans-unit>
+      <trans-unit id="error.roomModeRestricted" datatype="html"><source>That action is not available in this room mode.</source><target>Esta ação não está disponível neste modo de sala.</target></trans-unit>
+      <trans-unit id="error.noVotesCast" datatype="html"><source>At least one vote is required before revealing.</source><target>É necessário ao menos um voto antes de revelar.</target></trans-unit>
     </body>
   </file>
 </xliff>

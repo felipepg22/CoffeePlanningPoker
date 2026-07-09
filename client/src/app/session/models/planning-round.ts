@@ -12,7 +12,7 @@ export interface ParticipantVote {
 
 export interface PlanningRound {
   roundId: string;
-  taskId: string;
+  taskId: string | null;
   status: PlanningRoundStatus;
   createdAt: string;
   revealedAt: string | null;
@@ -26,4 +26,5 @@ export type SessionPendingAction =
   | 'revealVotes'
   | 'resetRound'
   | 'startNextRound'
+  | 'startSimplePlanningPokerRound'
   | null;
