@@ -41,8 +41,15 @@ describe('LocaleSelectorComponent', () => {
 
   it('renders compact locale controls with selected state', () => {
     const buttons = Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[];
+    const flags = Array.from(fixture.nativeElement.querySelectorAll('img.locale-flag')) as HTMLImageElement[];
 
-    expect(buttons.map((button) => button.textContent?.trim())).toEqual(['🇧🇷', '🇺🇸', '🇪🇸']);
+    expect(flags.map((flag) => flag.getAttribute('src'))).toEqual([
+      '/flags/br.svg',
+      '/flags/us.svg',
+      '/flags/es.svg',
+    ]);
+    expect(flags.every((flag) => flag.alt === '' && flag.getAttribute('aria-hidden') === 'true')).toBe(true);
+    expect(buttons.every((button) => button.textContent?.trim() === '')).toBe(true);
     expect(buttons[1].getAttribute('aria-pressed')).toBe('true');
     expect(buttons.every((button) => button.getAttribute('aria-label'))).toBe(true);
   });

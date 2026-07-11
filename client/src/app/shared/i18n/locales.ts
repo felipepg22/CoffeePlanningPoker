@@ -4,7 +4,7 @@ export interface LocaleOption {
   readonly locale: SupportedLocale;
   readonly label: string;
   readonly nativeLabel: string;
-  readonly flag: string;
+  readonly flagAsset: string;
 }
 
 export const SOURCE_LOCALE: SupportedLocale = 'en-US';
@@ -12,9 +12,9 @@ export const SOURCE_LOCALE: SupportedLocale = 'en-US';
 export const SUPPORTED_LOCALES = ['pt-BR', 'en-US', 'es-ES'] as const satisfies readonly SupportedLocale[];
 
 export const LOCALE_OPTIONS: readonly LocaleOption[] = [
-  { locale: 'pt-BR', label: 'Portuguese (Brazil)', nativeLabel: 'Portugues (Brasil)', flag: '🇧🇷' },
-  { locale: 'en-US', label: 'English (United States)', nativeLabel: 'English (United States)', flag: '🇺🇸' },
-  { locale: 'es-ES', label: 'Spanish (Spain)', nativeLabel: 'Espanol (Espana)', flag: '🇪🇸' },
+  { locale: 'pt-BR', label: 'Portuguese (Brazil)', nativeLabel: 'Portugues (Brasil)', flagAsset: '/flags/br.svg' },
+  { locale: 'en-US', label: 'English (United States)', nativeLabel: 'English (United States)', flagAsset: '/flags/us.svg' },
+  { locale: 'es-ES', label: 'Spanish (Spain)', nativeLabel: 'Espanol (Espana)', flagAsset: '/flags/es.svg' },
 ];
 
 export function isSupportedLocale(value: string | null | undefined): value is SupportedLocale {
