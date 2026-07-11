@@ -17,7 +17,7 @@ import { LOCALE_OPTIONS, SupportedLocale } from './locales';
           [title]="option.nativeLabel"
           (click)="selectLocale(option.locale)"
         >
-          <span class="flag-emoji" aria-hidden="true">{{ option.flag }}</span>
+          <img class="locale-flag" [src]="option.flagAsset" alt="" aria-hidden="true">
         </button>
       }
     </div>
@@ -57,10 +57,12 @@ import { LOCALE_OPTIONS, SupportedLocale } from './locales';
       outline-offset: 2px;
     }
 
-    .flag-emoji {
-      font-size: 1.08rem;
-      font-weight: 400;
-      line-height: 1;
+    .locale-flag {
+      display: block;
+      width: 1.35rem;
+      height: auto;
+      border: 1px solid oklch(0.98 0.004 258 / 0.28);
+      border-radius: 0.125rem;
     }
 
     @media (prefers-reduced-motion: reduce) {
